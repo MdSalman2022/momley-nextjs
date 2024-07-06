@@ -1,17 +1,15 @@
-import Banner from "@/components/Main/Home/Banner/page";
-import BooksInHome from "@/components/Main/Home/BooksInHome/page";
-import Categories from "@/components/Main/Home/Categories/page";
-import Image from "next/image";
-import { Suspense } from "react";
-import useBook from "./hooks/useBook";
-import Loading from "@/components/Shared/Loading";
+import React, { lazy, Suspense } from "react";
+import Link from "next/link";
+import useBook from "@/app/hooks/useBook";
+const BookCard = lazy(() => import("@/components/Shared/BookCard"));
 
-export default async function Home() {
+const BooksInHome = async () => {
+  const { getAllBookDetails } = useBook();
+  const allBooks = await getAllBookDetails(1, 20);
   return (
-    <div className="bg-white">
-      <div className="container mx-auto flex flex-col gap-5">
-        <Banner />
-        <Categories />
+    <div className="py-5 flex flex-col items-start">
+      <p>New Arrival</p>
+      <div className="py-5 flex flex-col gap-3 items-center w-full">
         <Suspense
           fallback={
             <div className="flex flex-col md:grid grid-cols-5 gap-5">
@@ -32,9 +30,20 @@ export default async function Home() {
             </div>
           }
         >
-          <BooksInHome />
+          <div className="flex flex-col md:grid grid-cols-5 gap-5">
+            {allBooks &&
+              allBooks?.books
+                ?.slice(0, 20)
+                ?.map((book, index) => <BookCard key={index} book={book} />)}
+          </div>
         </Suspense>
+
+        <Link href="/books">
+          <button className="primary-btn">See All</button>
+        </Link>
       </div>
     </div>
   );
-}
+};
+
+export default BooksInHome;
