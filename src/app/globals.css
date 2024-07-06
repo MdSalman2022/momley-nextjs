@@ -1,3 +1,21 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .primary-btn {
+    @apply h-10 flex items-center px-4 bg-[#000000] text-white font-semibold rounded shadow-md hover:bg-[#111111] transition-all duration-300;
+  }
+  .primary-outline-btn {
+    @apply transition-all duration-300 h-10 flex items-center px-4 border border-[#000000]  text-[#000000] hover:text-white font-semibold rounded hover:bg-[#111111] focus:outline-none;
+  }
+  .input-box {
+    @apply mt-1 px-3 h-10 flex items-center bg-[#FFFFFF] rounded-md text-sm shadow-sm placeholder-slate-400 border border-[#F2F2F2]
+      focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500
+      disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none
+      invalid:border-pink-500 invalid:text-pink-600
+      focus:invalid:border-pink-500 focus:invalid:ring-pink-500 text-black;
+  }
+}

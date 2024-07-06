@@ -14,8 +14,8 @@ const StateProvider = ({ children }) => {
   const [totalPages, setTotalPages] = useState(0);
   const [writerName, setWriterName] = useState("");
 
-  console.log(page);
-  console.log(pageSize);
+  // console.log(page);
+  // console.log(pageSize);
   const {
     data: { books: allBooks = [] } = {},
     isLoading,
@@ -38,14 +38,14 @@ const StateProvider = ({ children }) => {
     },
     {
       onSuccess: (data) => {
-        console.log(data);
+        // console.log(data);
         const totalCount = data.totalDataLength; // Assuming the API response provides the total count of books
         const calculatedTotalPages = Math.ceil(totalCount / pageSize);
         setTotalPages(calculatedTotalPages);
       },
     }
   );
-  console.log("allBooks", allBooks);
+  // console.log("allBooks", allBooks);
 
   const [cart, setCart] = useState([]);
 

@@ -17,8 +17,7 @@ export default function RootLayout({ children }) {
           <StateProvider>
             <body className={inter.className}>
               <Header />
-              {children}
-
+              <div className="mt-24">{children}</div>
               <Footer />
             </body>
           </StateProvider>

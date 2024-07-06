@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
 import { BsBag, BsCartPlus, BsDash, BsPlus } from "react-icons/bs";
 import { FaMinus, FaPlus, FaStar, FaStarHalf } from "react-icons/fa";
+import CartIcon from "../../../public/images/CartIcon.svg";
+import Image from "next/image";
 
 const BookCard = ({ book }) => {
   const { cart, setCart } = useContext(StateContext);
@@ -115,21 +117,23 @@ const BookCard = ({ book }) => {
       // console.log(firstImage);
       setImageUrl(firstImage);
     } else {
-      setImageUrl(book.image);
+      setImageUrl(book?.image);
     }
   }, [book]);
 
   // console.log(imageUrl);
 
+  console.log("book", book);
+
   return (
     <div className="flex flex-col items-center justify-between gap-3 border border-[#EEEEEE] p-3 rounded text-black">
-      <Link href={`/book/${book._id}`}>
+      <Link href={`/book/${book?._id}`}>
         <img className="object-cover w-[164px] h-[217px]" src={imageUrl} />
       </Link>
-      <Link href={`/book/${book._id}`}>
-        <p className="font-semibold text-sm text-center">{book.name}</p>
+      <Link href={`/book/${book?._id}`}>
+        <p className="font-semibold text-sm text-center">{book?.name}</p>
       </Link>
-      <p className="text-sm">{book.writer}</p>
+      <p className="text-sm">{book?.writer}</p>
       <p className="font-semibold ">৳ {book?.pricing?.price}</p>
       <span className="flex items-center">
         <FaStar />
@@ -141,8 +145,9 @@ const BookCard = ({ book }) => {
       {cartCount < 1 && (
         <div
           onClick={handleAddToCart}
-          className="primary-outline-btn w-40 flex justify-center"
+          className="primary-outline-btn w-40 flex justify-center gap-2 cursor-pointer"
         >
+          <Image src={CartIcon} alt="" className="w-5 h-5" />
           Add to cart
         </div>
       )}
