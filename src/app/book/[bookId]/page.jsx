@@ -16,6 +16,8 @@ import BookCartControl from "./BookCartControl";
 import RelatedBooks from "./RelatedBooks";
 import RecommendedBooks from "./RecommendedBooks";
 import useBook from "@/app/hooks/useBook";
+import ReviewCard from "./ReviewCard";
+import SecurityCard from "./SecurityCard";
 
 const BookDetails = async ({ params }) => {
   console.log("params", params);
@@ -29,7 +31,7 @@ const BookDetails = async ({ params }) => {
       <div className="bg-white">
         <div className="container mx-auto text-black">
           <p className="py-5">
-            Home/ Categories/ {bookDetails?.categoryInfo?.category}
+            Home/ Categories / {bookDetails?.categoryInfo?.category}
           </p>
           {/* <Login /> */}
           <div className="grid grid-cols-4">
@@ -38,7 +40,7 @@ const BookDetails = async ({ params }) => {
                 <div className="flex flex-col gap-5">
                   {bookDetails.images && bookDetails.images.length > 0 && (
                     <img
-                      className="object-cover w-full md:w-fit lg:w-[360px] h-[400px]"
+                      className="object-contain w-full md:w-fit lg:w-[360px] h-[400px]"
                       src={bookDetails.images[0]}
                     />
                   )}
@@ -48,29 +50,40 @@ const BookDetails = async ({ params }) => {
                         <img
                           key={index}
                           src={image}
-                          className="w-20 h-40 object-cover"
+                          className="w-[100px] h-[100px] object-contain border"
                         />
                       ))}
                     </div>
                   )}
                 </div>
                 <div className="flex flex-col gap-4">
-                  <h2 className="text-2xl">{bookDetails?.name}</h2>
-                  <div className="text-4xl text-red-500 font-bold">
-                    Tk {bookDetails?.pricing?.price}
+                  <div className="flex flex-col">
+                    <h2 className="text-2xl">{bookDetails?.name}</h2>
+                    <div className="text-4xl text-red-500 font-bold">
+                      Tk {bookDetails?.pricing?.price}
+                    </div>
                   </div>
-                  <p>Writer: {bookDetails?.specification?.author}</p>
-                  <p>Publisher: {bookDetails?.specification?.brand}</p>
-                  <p>Category: {bookDetails?.categoryInfo?.category}</p>
-                  <div className="flex gap-2">
-                    <p>
-                      Availability:{" "}
-                      <span className="text-green-500">In Stock</span>
-                    </p>
-                    <p>
-                      <span className="font-semibold">SKU:</span>
-                      {bookDetails?.inventory?.sku}
-                    </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <span className="flex items-center gap-2">
+                      <span className="font-bold">Writer:</span>
+                      <span>{bookDetails?.specification?.author}</span>
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <span className="font-bold">Publisher:</span>
+                      <span>{bookDetails?.specification?.brand}</span>
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <span className="font-bold">Category:</span>
+                      <span>{bookDetails?.categoryInfo?.category}</span>
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <span className="font-bold">Availability:</span>
+                      <span>In Stock</span>
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <span className="font-bold">SKU:</span>
+                      <span> {bookDetails?.inventory?.sku}</span>
+                    </span>
                   </div>
                   <div className="primary-btn w-fit">
                     Offer Ends in: 2 days 09:20:30
@@ -137,71 +150,8 @@ const BookDetails = async ({ params }) => {
               </div>
             </div>
             <div className="col-span-1 flex flex-col gap-5">
-              <div className="flex flex-col gap-3 text-sm border p-5">
-                <div className="flex flex-nowrap items-center gap-5 py-3 border-b">
-                  <MdOutlineSecurityUpdateGood className="text-3xl" />
-                  <div className="flex flex-col">
-                    <p className="font-semibold">SECURED PAYMENT</p>
-                    <p>We ensure secure payment</p>
-                  </div>
-                </div>
-                <div className="flex flex-nowrap items-center gap-5 py-3 border-b">
-                  <FaShippingFast className="text-3xl" />
-                  <div className="flex flex-col">
-                    <p className="font-semibold">FREE SHIPPING</p>
-                    <p>ON ALL Tk above 700 TK</p>
-                  </div>
-                </div>
-                <div className="flex flex-nowrap items-center gap-5 py-3 ">
-                  <SiMoneygram className="text-3xl" />
-                  <div className="flex flex-col">
-                    <p className="font-semibold">MONEY BACK GUARANTEE</p>
-                    <p>Any back within 7 days </p>
-                  </div>
-                </div>
-              </div>
-              <div className="border rounded p-3">
-                <p className="font-semibold text-xl">Review</p>
-                <div className="grid grid-cols-2 gap-5">
-                  <div className="flex flex-col items-start gap-2">
-                    <p className="text-lg">121 Customers</p>
-                    <p className="text-6xl">4.6</p>
-                    <span className="flex items-center text-yellow-400">
-                      <FaStar />
-                      <FaStar />
-                      <FaStar />
-                      <FaStar />
-                      <FaStarHalf />
-                    </span>
-                    <p>out of 5</p>
-                  </div>
-                  <div className="flex flex-col items-start gap-5">
-                    <p>Rating</p>
-                    <div>
-                      <div className="flex items-start gap-5">
-                        <p>5</p>
-                        <span className="h-5 w-32 p-2 bg-green-500"></span>
-                      </div>
-                      <div className="flex items-start gap-5">
-                        <p>4</p>
-                        <span className="h-5 w-28 p-2 bg-blue-500"></span>
-                      </div>
-                      <div className="flex items-start gap-5">
-                        <p>3</p>
-                        <span className="h-5 w-10 p-2 bg-orange-500"></span>
-                      </div>
-                      <div className="flex items-start gap-5">
-                        <p>2</p>
-                        <span className="h-5 w-5 p-2 bg-yellow-500"></span>
-                      </div>
-                      <div className="flex items-start gap-5">
-                        <p>1</p>
-                        <span className="h-5 w-2 p-2 bg-red-500"></span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <SecurityCard />
+              <ReviewCard />
               <RecommendedBooks bookId={bookId} />
             </div>
             <div className="col-span-4">

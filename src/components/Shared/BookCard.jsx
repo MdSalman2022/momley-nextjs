@@ -126,7 +126,7 @@ const BookCard = ({ book }) => {
   console.log("book", book);
 
   return (
-    <div className="flex flex-col items-center justify-between gap-3 border border-[#EEEEEE] p-3 rounded text-black">
+    <div className="flex flex-col items-center justify-between gap-3 border border-[#EEEEEE80] p-3 rounded text-black">
       <Link href={`/book/${book?._id}`}>
         <img className="object-cover w-[164px] h-[217px]" src={imageUrl} />
       </Link>
@@ -145,7 +145,7 @@ const BookCard = ({ book }) => {
       {cartCount < 1 && (
         <div
           onClick={handleAddToCart}
-          className="primary-outline-btn w-40 flex justify-center gap-2 cursor-pointer"
+          className="primary-outline-btn w-full flex justify-center gap-2 cursor-pointer"
         >
           <Image src={CartIcon} alt="" className="w-5 h-5" />
           Add to cart

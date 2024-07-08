@@ -10,7 +10,7 @@ export default function RelatedBooks({ bookId }) {
     <div className="flex flex-col w-full">
       <p className="text-xl font-semibold">Related Products</p>
       <div className="col-span-4 grid grid-cols-6 gap-5 py-5">
-        {allBooks.map((book, index) => (
+        {allBooks.slice(0, 6)?.map((book, index) => (
           <BookCard key={book._id} book={book} />
         ))}
       </div>

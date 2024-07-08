@@ -41,11 +41,11 @@ const PriceRange = () => {
         <div
           onClick={() => handleFilterPrice(price)}
           key={index}
-          className="form-control border-b py-3 "
+          className="form-control border-b py-3 last:border-0"
         >
-          <label className="label justify-start gap-5 cursor-pointer">
+          <label className="flex justify-start gap-6 cursor-pointer">
             <input type="radio" name="priceRange" className="radio radio-sm" />
-            <span className="label-text">Under {price}</span>
+            <span className="">Under {price}</span>
           </label>
         </div>
       ))}

@@ -8,7 +8,7 @@ import Loading from "@/components/Shared/Loading";
 
 export default async function Home() {
   return (
-    <div className="bg-white">
+    <div className="bg-white w-full">
       <div className="container mx-auto flex flex-col gap-5">
         <Banner />
         <Categories />

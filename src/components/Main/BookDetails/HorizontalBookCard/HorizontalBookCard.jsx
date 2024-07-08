@@ -3,6 +3,8 @@ import React, { useContext, useEffect, useState } from "react";
 import { BsCartPlus } from "react-icons/bs";
 import { FaMinus, FaPlus, FaStar, FaStarHalf } from "react-icons/fa";
 import { StateContext } from "../../../../contexts/StateProvider/StateProvider";
+import CartIcon from "../../../../../public/images/CartIcon.svg";
+import Image from "next/image";
 
 const HorizontalBookCard = ({ book }) => {
   const { cart, setCart } = useContext(StateContext);
@@ -64,7 +66,7 @@ const HorizontalBookCard = ({ book }) => {
   };
 
   return (
-    <div className="border rounded p-3">
+    <div className="rounded p-3">
       <div className="grid grid-cols-3 gap-3">
         <div className="flex flex-col justify-between gap-3">
           <img
@@ -72,19 +74,19 @@ const HorizontalBookCard = ({ book }) => {
             src={book?.images[0]}
             alt={book?.name}
           />
-          <div className="flex items-center rounded-sm justify-between border border-black">
+          <div className="flex items-center rounded-sm justify-between border border-[#E0E0E0]">
             <span
               onClick={handleMinusClick}
-              className="flex items-center rounded-sm-l border-black justify-center w-12 h-10 border-r"
+              className="flex items-center rounded-sm-l bg-[#F4F0F5] border-[#E0E0E0] justify-center w-12 h-10 border-r"
             >
               <FaMinus />
             </span>
-            <span className="flex items-center justify-center w-12 h-10 ">
+            <span className="flex items-center justify-center w-12 h-10 bg-[#F4F0F5]">
               {cartCount}
             </span>
             <span
               onClick={handlePlusClick}
-              className="flex items-center rounded-sm-r border-black justify-center bg-gray-500 text-white w-12 h-10 border-l"
+              className="flex items-center rounded-sm-r border-[#E0E0E0] justify-center bg-gray-500 text-white w-12 h-10 border-l"
             >
               <FaPlus />
             </span>
@@ -95,7 +97,7 @@ const HorizontalBookCard = ({ book }) => {
             <p>{book?.name}</p>
 
             <div className="flex flex-col">
-              <p>Price: {book?.price}</p>
+              <p>Price: {book?.pricing?.price}</p>
               <span className="flex items-center text-yellow-400">
                 <FaStar />
                 <FaStar />
@@ -108,9 +110,9 @@ const HorizontalBookCard = ({ book }) => {
           </div>
           <button
             onClick={handleAddToCart}
-            className="primary-outline-btn flex items-center justify-center rounded-sm"
+            className="primary-outline-btn flex items-center justify-center rounded-[4px] gap-2 border-[#333333] h-10"
           >
-            <BsCartPlus className="text-xl" />
+            <Image src={CartIcon} className="w-5 h-5 object-contain" />
             Add to Bag
           </button>
         </div>

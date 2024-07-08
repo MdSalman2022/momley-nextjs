@@ -5,6 +5,12 @@ import { ReactQueryClientProvider } from "@/components/Shared/ReactQueryClientPr
 import { AuthProvider } from "@/contexts/AuthProvider/AuthProvider";
 import Header from "@/components/Shared/Header";
 import Footer from "@/components/Shared/Footer";
+import Favicon from "./favicon.ico";
+
+export const metadata = {
+  title: "Momley",
+  icons: [{ rel: "icon", url: Favicon.src }],
+};
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,7 +23,7 @@ export default function RootLayout({ children }) {
           <StateProvider>
             <body className={inter.className}>
               <Header />
-              <div className="mt-24">{children}</div>
+              <div className="mt-32">{children}</div>
               <Footer />
             </body>
           </StateProvider>

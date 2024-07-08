@@ -6,7 +6,7 @@
 
 @layer components {
   .primary-btn {
-    @apply h-10 flex items-center px-4 bg-[#000000] text-white font-semibold rounded shadow-md hover:bg-[#111111] transition-all duration-300;
+    @apply h-10 flex items-center px-4 bg-[#333333] text-white font-semibold rounded shadow-md hover:bg-[#111111] transition-all duration-300;
   }
   .primary-outline-btn {
     @apply transition-all duration-300 h-10 flex items-center px-4 border border-[#000000]  text-[#000000] hover:text-white font-semibold rounded hover:bg-[#111111] focus:outline-none;

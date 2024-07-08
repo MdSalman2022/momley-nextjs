@@ -33,7 +33,7 @@ export default function AuthorsList({ authors }) {
         <label
           key={index}
           onClick={() => handleFilterWriter(author)}
-          className="label justify-start gap-5 cursor-pointer border-b"
+          className="flex justify-start gap-5 cursor-pointer border-b last:border-0"
         >
           <input type="radio" name="priceRange" className="radio radio-sm" />
           <div className="flex gap-5 py-3 ">

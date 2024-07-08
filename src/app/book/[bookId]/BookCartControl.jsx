@@ -63,15 +63,21 @@ export default function BookCartControl() {
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-3">
       {" "}
       <p>Quantity</p>
-      <div className="flex items-center gap-3">
-        <button onClick={handleMinusClick} className="p-2 px-3 border">
+      <div className="flex items-center gap-3 border w-fit h-9">
+        <button
+          onClick={handleMinusClick}
+          className="h-full w-10 flex justify-center items-center border-r"
+        >
           <FaMinus />
         </button>
-        <span>{cartCount}</span>
-        <button onClick={handlePlusClick} className="p-2 px-3 primary-btn">
+        <span className="w-6 flex justify-center">{cartCount}</span>
+        <button
+          onClick={handlePlusClick}
+          className="h-full w-10 flex justify-center items-center text-white bg-[#4F4F4F]"
+        >
           <FaPlus />
         </button>
       </div>

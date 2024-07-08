@@ -62,7 +62,7 @@ const Header = () => {
                 className="input-box w-[540px] h-[52px] pl-3 rounded-lg border-2 border-[#333333]"
                 placeholder="Search for Products, Brands & Categories"
               />
-              <button className="absolute right-1 top-1 rounded bg-black text-white flex items-center justify-center w-[87px] h-11">
+              <button className="absolute right-1 top-2 rounded bg-black text-white flex items-center justify-center w-[87px] h-11">
                 <GrSearch className="text-2xl" />
               </button>
             </div>

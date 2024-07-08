@@ -3,8 +3,14 @@ import { StateContext } from "@/contexts/StateProvider/StateProvider";
 import React, { useContext } from "react";
 
 const CategoryList = ({ categories }) => {
-  const { pageSize, page, setTotalPages, filterBooks, setFilterBooks } =
-    useContext(StateContext);
+  const {
+    pageSize,
+    page,
+    setTotalPages,
+    filterBooks,
+    setFilterBooks,
+    setWriterName,
+  } = useContext(StateContext);
 
   const handleFilterCategory = (category) => {
     setWriterName(category);
@@ -33,7 +39,7 @@ const CategoryList = ({ categories }) => {
         <label
           key={index}
           onClick={() => handleFilterCategory(category)}
-          className="label justify-start gap-5 cursor-pointer border-b"
+          className="flex justify-start gap-5 cursor-pointer border-b last:border-0"
         >
           <input type="radio" name="priceRange" className="radio radio-sm" />
           <div className="flex gap-5 py-3 ">
