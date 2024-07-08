@@ -10,13 +10,22 @@ import brandImage4 from "../../../../../public/images/brands/4.png";
 import brandImage5 from "../../../../../public/images/brands/5.png";
 import brandImage6 from "../../../../../public/images/brands/6.png";
 import brandImage7 from "../../../../../public/images/brands/7.png";
+import { TruncateText } from "@/libs/utils/common";
 
-function truncateText(text, maxLength) {
-  if (text.length > maxLength) {
-    return text.substring(0, maxLength) + "...";
-  }
-  return text;
-}
+const CategoryLink = ({ categories, productImage, truncateText }) => (
+  <>
+    {categories.map((category, index) => (
+      <Link
+        href={`/category/${category}`}
+        key={index}
+        className="flex justify-between items-center gap-10 h-24 w-60 p-5 hover:bg-gray-100"
+      >
+        <Image src={productImage} alt={"product"} className="w-16 h-16" />
+        {TruncateText(category, 18)}
+      </Link>
+    ))}
+  </>
+);
 
 const Categories = async () => {
   const { getAllAuthors, getAllCategories } = useBook();
@@ -58,64 +67,28 @@ const Categories = async () => {
       >
         <div className="flex flex-col">
           <div className="flex items-center">
-            {categories.map((category, index) => (
-              <Link
-                href={`/category/${category}`}
-                key={index}
-                className="flex justify-between items-center gap-10 h-24 w-60 p-5 hover:bg-gray-100"
-              >
-                <Image
-                  src={productImage}
-                  alt={"product"}
-                  className="w-16 h-16"
-                />
-                {truncateText(category, 18)}
-              </Link>
-            ))}
-            {categories.map((category, index) => (
-              <Link
-                href={`/category/${category}`}
-                key={index}
-                className="flex justify-between items-center gap-10 h-24 w-60 p-5 hover:bg-gray-100"
-              >
-                <Image
-                  src={productImage}
-                  alt={"product"}
-                  className="w-16 h-16"
-                />
-                {truncateText(category, 18)}
-              </Link>
-            ))}
+            <CategoryLink
+              categories={categories}
+              productImage={productImage}
+              truncateText={TruncateText}
+            />
+            <CategoryLink
+              categories={categories}
+              productImage={productImage}
+              truncateText={TruncateText}
+            />
           </div>
           <div className="flex items-center">
-            {categories.map((category, index) => (
-              <Link
-                href={`/category/${category}`}
-                key={index}
-                className="flex justify-between items-center gap-10 h-24 w-60 p-5 hover:bg-gray-100"
-              >
-                <Image
-                  src={productImage}
-                  alt={"product"}
-                  className="w-16 h-16"
-                />
-                {truncateText(category, 18)}
-              </Link>
-            ))}
-            {categories.map((category, index) => (
-              <Link
-                href={`/category/${category}`}
-                key={index}
-                className="flex justify-between items-center gap-10 h-24 w-60 p-5 hover:bg-gray-100"
-              >
-                <Image
-                  src={productImage}
-                  alt={"product"}
-                  className="w-16 h-16"
-                />
-                {truncateText(category, 18)}
-              </Link>
-            ))}
+            <CategoryLink
+              categories={categories}
+              productImage={productImage}
+              truncateText={TruncateText}
+            />
+            <CategoryLink
+              categories={categories}
+              productImage={productImage}
+              truncateText={TruncateText}
+            />
           </div>
         </div>
       </Suspense>

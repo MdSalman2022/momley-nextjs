@@ -40,7 +40,7 @@ const Header = () => {
 
   return (
     <div className="flex mx-auto container w-full justify-center">
-      <div className="bg-white flex flex-col fixed w-full">
+      <div className="bg-white flex flex-col fixed w-full z-[300]">
         <div className="container mx-auto py-2">
           {isModalOpen && (
             <ModalBox isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}>

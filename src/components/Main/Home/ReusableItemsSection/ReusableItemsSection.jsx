@@ -2,8 +2,12 @@ import React, { lazy, Suspense } from "react";
 import Link from "next/link";
 import { GrSearch } from "react-icons/gr";
 const BookCard = lazy(() => import("@/components/Shared/BookCard"));
+import NewLatestCollectionMen from "../../../../../public/images/ads/NewLatestCollectionMen.png";
+import TrendingWomenCollection from "../../../../../public/images/ads/TrendingWomenCollection.png";
+import Image from "next/image";
+import { FaArrowRightLong } from "react-icons/fa6";
 
-const ReusableItemsSection = ({ title, items }) => {
+const ReusableItemsSection = ({ title, items, ads, bottomAds }) => {
   console.log("items", items);
   return (
     <div className="py-5 flex flex-col items-start">
@@ -27,6 +31,40 @@ const ReusableItemsSection = ({ title, items }) => {
         </div>
       </div>
       <div className="py-5 flex flex-col gap-3 items-center w-full">
+        <div className={`grid grid-cols-${ads?.length} gap-6 w-full`}>
+          {ads?.map((ad, index) => {
+            return (
+              <div className="relative w-full h-[116px]">
+                <Image
+                  src={ad?.image}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute top-0 left-0 p-4">
+                  <p className={`text-[15px]`} style={{ color: ad.TextColor }}>
+                    {ad.firstLine}
+                  </p>
+                  <p
+                    className={`font-bold text-2xl`}
+                    style={{ color: ad.TextColor }}
+                  >
+                    {ad.secondLine}
+                  </p>
+                  <p className={`text-xs`} style={{ color: ad.TextColor }}>
+                    {ad.thirdLine}
+                  </p>
+                  <span
+                    className={`text-sm font-semibold flex items-center gap-2`}
+                    style={{ color: ad.TextColor }}
+                  >
+                    <p>Shop Now</p>
+                    <FaArrowRightLong />
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
         <Suspense
           fallback={
             <div className="flex flex-col md:grid grid-cols-5 gap-5">
@@ -55,9 +93,43 @@ const ReusableItemsSection = ({ title, items }) => {
           </div>
         </Suspense>
 
-        <Link href="/books">
+        {/* <Link href="/books">
           <button className="primary-btn">See All</button>
-        </Link>
+        </Link> */}
+        <div className={`grid grid-cols-${bottomAds?.length} gap-6 w-full`}>
+          {bottomAds?.map((ad, index) => {
+            return (
+              <div className="relative w-full h-[226px]">
+                <Image
+                  src={ad?.image}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute top-0 left-0 p-4 h-full flex flex-col justify-center items-start">
+                  <p className={`text-[15px]`} style={{ color: ad.TextColor }}>
+                    {ad.firstLine}
+                  </p>
+                  <p
+                    className={`font-bold text-2xl`}
+                    style={{ color: ad.TextColor }}
+                  >
+                    {ad.secondLine}
+                  </p>
+                  <p className={`text-xs`} style={{ color: ad.TextColor }}>
+                    {ad.thirdLine}
+                  </p>
+                  <span
+                    className={`text-sm font-semibold flex items-center gap-2 mt-5`}
+                    style={{ color: ad.TextColor }}
+                  >
+                    <p>Shop Now</p>
+                    <FaArrowRightLong />
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
