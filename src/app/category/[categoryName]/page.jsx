@@ -1,12 +1,12 @@
 import React from "react";
 import Banner from "@/components/Main/Home/Banner/page";
 import BookCard from "@/components/Shared/BookCard";
-import useCategory from "@/app/hooks/useCategory";
+import useCategory from "@/hooks/useCategory";
 import CategoryPagination from "./CategoryPagination";
 import ResetButton from "./ResetButton";
 import BooksList from "./BooksList";
 import CategoryPageTitle from "./CategoryPageTitle";
-import useBook from "@/app/hooks/useBook";
+import useBook from "@/hooks/useBook";
 import CategoryPageFilter from "./CategoryPageFilter";
 
 const Category = async ({ params }) => {

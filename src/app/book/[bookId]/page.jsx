@@ -15,7 +15,7 @@ import Loading from "@/components/Shared/Loading";
 import BookCartControl from "./BookCartControl";
 import RelatedBooks from "./RelatedBooks";
 import RecommendedBooks from "./RecommendedBooks";
-import useBook from "@/app/hooks/useBook";
+import useBook from "@/hooks/useBook";
 import ReviewCard from "./ReviewCard";
 import SecurityCard from "./SecurityCard";
 

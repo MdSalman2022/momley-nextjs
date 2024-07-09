@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from "react";
 import Link from "next/link";
-import useBook from "@/app/hooks/useBook";
+import useBook from "@/hooks/useBook";
 import { GrSearch } from "react-icons/gr";
 import ReusableItemsSection from "../ReusableItemsSection/ReusableItemsSection";
 const BookCard = lazy(() => import("@/components/Shared/BookCard"));

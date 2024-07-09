@@ -3,8 +3,6 @@ import BooksInHome from "@/components/Main/Home/BooksInHome/page";
 import Categories from "@/components/Main/Home/Categories/page";
 import Image from "next/image";
 import { Suspense } from "react";
-import useBook from "./hooks/useBook";
-import Loading from "@/components/Shared/Loading";
 
 export default async function Home() {
   return (

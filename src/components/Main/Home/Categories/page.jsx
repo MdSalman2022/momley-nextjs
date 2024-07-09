@@ -1,4 +1,4 @@
-import useBook from "@/app/hooks/useBook";
+import useBook from "@/hooks/useBook";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
