@@ -1,14 +1,8 @@
-'use client';
+import React from "react";
+import { redirect } from "next/navigation";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+const Profile = () => {
+  redirect("/profile/edit-profile");
+};
 
-export default function UserRedirect() {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.replace('/user/edit-profile');
-  }, [router]);
-
-  return null;
-}
+export default Profile;

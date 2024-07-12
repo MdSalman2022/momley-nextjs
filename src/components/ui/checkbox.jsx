@@ -5,6 +5,7 @@ import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
 import { CheckIcon } from "@radix-ui/react-icons"
 
 import { cn } from "@/lib/utils"
+import { FaCheck } from "react-icons/fa6"
 
 const Checkbox = React.forwardRef(({ className, ...props }, ref) => (
   <CheckboxPrimitive.Root
@@ -15,7 +16,7 @@ const Checkbox = React.forwardRef(({ className, ...props }, ref) => (
     )}
     {...props}>
     <CheckboxPrimitive.Indicator className={cn("flex items-center justify-center text-current")}>
-      <CheckIcon className="h-4 w-4" />
+      <FaCheck className="h-3 w-3" />
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>
 ))

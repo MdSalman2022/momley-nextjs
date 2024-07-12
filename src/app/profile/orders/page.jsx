@@ -16,6 +16,7 @@ const MyOrders = () => {
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
+  const [selectedStatus, setSelectedStatus] = useState("Active");
   const pages = [
     "All",
     "Unpaid",
@@ -121,7 +122,7 @@ const MyOrders = () => {
     },
   ];
   const handleValueChange = (value) => {
-    setSelectedPaymentStatus(value);
+    setSelectedStatus(value);
   };
   const paymentOptions = ["Paid", "Due", "Partial"];
 

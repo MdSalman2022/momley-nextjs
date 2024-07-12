@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useState } from "react";
+import React, { useState } from "react";
 
 export function DataTable({
   columns,
@@ -60,7 +60,10 @@ export function DataTable({
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead
+                    key={header.id}
+                    className="font-semibold text-[#333333]"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -82,7 +85,12 @@ export function DataTable({
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    {React.isValidElement(cell.getValue())
+                      ? cell.getValue()
+                      : flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
                   </TableCell>
                 ))}
               </TableRow>

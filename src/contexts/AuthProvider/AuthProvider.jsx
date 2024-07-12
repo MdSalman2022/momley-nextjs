@@ -18,14 +18,19 @@ import {
   reVerify,
 } from "@/components/Shared/Authentication/Login-Phone";
 
-export const AuthContext = createContext();
 const auth = getAuth(app);
+
+export const AuthContext = createContext();
+
+console.log("auth", auth);
 
 export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
 
-  const createUser = (name, email, password) => {
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  const createUserWithEmailPassword = (name, email, password) => {
     setLoading(true);
     return createUserWithEmailAndPassword(auth, name, email, password);
   };
@@ -36,7 +41,7 @@ export const AuthProvider = ({ children }) => {
     return updateProfile(auth.currentUser, userInfo);
   };
 
-  const signIn = (email, password) => {
+  const signInWithEmailPassword = (email, password) => {
     setLoading(true);
     return signInWithEmailAndPassword(auth, email, password);
   };
@@ -93,7 +98,6 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      // console.log(currentUser);
       setLoading(false);
     });
 
@@ -109,6 +113,12 @@ export const AuthProvider = ({ children }) => {
     handleMobileLogin,
     handleVerifyOTP,
     logOut,
+    isAuthModalOpen,
+    setIsAuthModalOpen,
+    providerLogin,
+    createUserWithEmailPassword,
+    updateUser,
+    signInWithEmailPassword,
   };
 
   return (

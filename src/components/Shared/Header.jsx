@@ -13,16 +13,26 @@ import CartIcon from "../../../public/images/CartIcon.svg";
 import Image from "next/image";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { FaChevronRight, FaChevronUp } from "react-icons/fa";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { usePathname } from "next/navigation";
+import GeneratedProfileImage from "./GeneratedProfileImage";
 
 const NavigationItem = ({ name }) => (
-  <div className="w-48 h-12 flex items-center justify-center font-bold hover:bg-gray-100 cursor-pointer">
+  <div className="w-44 h-12 flex items-center justify-center font-bold hover:bg-gray-100 cursor-pointer">
     {name}
   </div>
 );
 
 const Header = () => {
-  const { user, logOut } = useContext(AuthContext);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { isAuthModalOpen, setIsAuthModalOpen, user, logOut } =
+    useContext(AuthContext);
   const { cart } = useContext(StateContext);
 
   const [isMenuModalOpen, setIsMenuModalOpen] = useState(false);
@@ -35,16 +45,26 @@ const Header = () => {
     { name: "New Arrivals" },
     { name: "Weekly Offers" },
   ];
+  const pathname = usePathname();
+
+  const isDashboardPage = pathname.includes("/dashboard");
 
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
 
   return (
-    <div className="flex mx-auto container w-full justify-center">
-      <div className="bg-white flex flex-col fixed w-full z-[300]">
+    <div
+      className={`mx-auto container w-full justify-center ${
+        isDashboardPage ? "hidden" : "mb-32 flex"
+      } `}
+    >
+      <div className="bg-white flex flex-col fixed w-full z-10">
         <div className="container mx-auto py-2">
-          {isModalOpen && (
-            <ModalBox isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}>
-              <Login setIsModalOpen={setIsModalOpen} />
+          {isAuthModalOpen && (
+            <ModalBox
+              isModalOpen={isAuthModalOpen}
+              setIsModalOpen={setIsAuthModalOpen}
+            >
+              <Login setIsModalOpen={setIsAuthModalOpen} />
             </ModalBox>
           )}
           <nav className="flex items-center justify-between">
@@ -85,25 +105,64 @@ const Header = () => {
               </Link>
               {user ? (
                 <div className="flex">
-                  <img
-                    onClick={() => setIsMenuModalOpen(!isMenuModalOpen)}
-                    className="w-10"
-                    src={
-                      user.photoURL ||
-                      "https://media.istockphoto.com/id/1300845620/vector/user-icon-flat-isolated-on-white-background-user-symbol-vector-illustration.jpg?s=612x612&w=0&k=20&c=yBeyba0hUkh14_jgv1OKqIH0CCSWU_4ckRkAoy2p73o="
+                  <DropdownMenu className="" align="end">
+                    <DropdownMenuTrigger>
+                     {user?.photoURL ? <img
+                        className="w-10 h-10 rounded-full border"
+                        src={user.photoURL}
+                        alt=""
+                      />
+                    :
+                    <GeneratedProfileImage
+                      name={user?.displayName || "user"}
+                      size={40}
+                    />
                     }
-                    alt=""
-                  />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>
+                        <Link
+                          href="/dashboard/overview"
+                          className="cursor-pointer w-full"
+                        >
+                          Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Link
+                          href="/profile/edit-profile"
+                          className="cursor-pointer w-full"
+                        >
+                          Profile
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Link
+                          href="/checkout"
+                          className="cursor-pointer w-full"
+                        >
+                          Cart
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => logOut()}
+                        className="cursor-pointer w-full"
+                      >
+                        Log Out
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               ) : (
                 <button
-                  onClick={() => setIsModalOpen(!isModalOpen)}
+                  onClick={() => setIsAuthModalOpen(!isAuthModalOpen)}
                   className="primary-outline-btn px-3 py-2"
                 >
                   login/ sign up
                 </button>
               )}
-              <MenuModal
+
+              {/* <MenuModal
                 setIsMenuModalOpen={setIsMenuModalOpen}
                 isMenuModalOpen={isMenuModalOpen}
               >
@@ -127,53 +186,55 @@ const Header = () => {
                     Log Out
                   </button>
                 </div>
-              </MenuModal>
+              </MenuModal> */}
             </div>
           </nav>
         </div>
-        <div className="container mx-auto flex items-center justify-between">
-          <div className="relative">
-            <div
-              onClick={() => setIsCategoryOpen(!isCategoryOpen)}
-              className="w-[298px] h-[52px] bg-black text-white flex items-center justify-between px-6 cursor-pointer"
-            >
-              <div className="flex items-center gap-5">
-                <GiHamburgerMenu className="text-2xl" />
-                <span className="font-bold">CATEGORY</span>
-              </div>
+        {!isDashboardPage && (
+          <div className="container mx-auto flex items-center justify-between">
+            <div className="relative">
+              <div
+                onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+                className="w-[298px] h-[52px] bg-black text-white flex items-center justify-between px-6 cursor-pointer"
+              >
+                <div className="flex items-center gap-5">
+                  <GiHamburgerMenu className="text-2xl" />
+                  <span className="font-bold">CATEGORY</span>
+                </div>
 
-              <span
-                className={`
+                <span
+                  className={`
                 transition-all duration-300 select-none
                 ${
                   isCategoryOpen ? "transform rotate-180" : "transform rotate-0"
                 }`}
-              >
-                <FaChevronUp className="text-2xl" />
-              </span>
-            </div>
-            <div
-              className={`absolute flex flex-col ${
-                isCategoryOpen ? "block" : "hidden"
-              } 
+                >
+                  <FaChevronUp className="text-2xl" />
+                </span>
+              </div>
+              <div
+                className={`absolute flex flex-col ${
+                  isCategoryOpen ? "block" : "hidden"
+                } 
           }`}
-            >
+              >
+                {navItems.map((item, index) => (
+                  <Link key={index} href={`/category/${item.name}`}>
+                    <div className="w-[298px] h-[52px] border-b bg-white text-black flex items-center justify-between px-6">
+                      <span className="">{item.name}</span>
+                      <FaChevronRight />
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center">
               {navItems.map((item, index) => (
-                <Link key={index} href={`/category/${item.name}`}>
-                  <div className="w-[298px] h-[52px] border-b bg-white text-black flex items-center justify-between px-6">
-                    <span className="">{item.name}</span>
-                    <FaChevronRight />
-                  </div>
-                </Link>
+                <NavigationItem key={index} name={item.name} />
               ))}
             </div>
           </div>
-          <div className="flex items-center">
-            {navItems.map((item, index) => (
-              <NavigationItem key={index} name={item.name} />
-            ))}
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
