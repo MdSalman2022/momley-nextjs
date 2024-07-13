@@ -1,3 +1,4 @@
+"use client";
 import { RecaptchaVerifier } from "firebase/auth";
 import { toast } from "react-hot-toast";
 import { auth } from "@/config/firebase";
