@@ -4,14 +4,18 @@ import { FiPlus } from "react-icons/fi";
 
 const TopActionButtons = ({
   title,
+  subtitle,
   onExport,
   onImport,
   handleFunction,
   functionTitle,
 }) => {
   return (
-    <div className="w-full flex justify-between">
-      <p className="font-semibold">{title}</p>
+    <div className="w-full flex items-center justify-between">
+      <div className="flex items-center gap-1">
+        <p className="font-semibold">{title}</p>
+        {subtitle && <div className="text-sm text-[#BDBDBD]">{subtitle}</div>}
+      </div>
       <span className="flex items-center gap-5">
         {onExport && (
           <button

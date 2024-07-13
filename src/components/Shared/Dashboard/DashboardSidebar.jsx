@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import logout from "../../../../public/images/profile/logout.svg";
 import Image from "next/image";
@@ -14,6 +14,7 @@ import { PiPathBold } from "react-icons/pi";
 import { RxDashboard } from "react-icons/rx";
 import { TbShoppingBag } from "react-icons/tb";
 import { MdOutlineLocalOffer } from "react-icons/md";
+import { FaChevronDown } from "react-icons/fa";
 
 const navigationLinks = [
   {
@@ -96,9 +97,31 @@ const navigationLinks = [
   },
   {
     id: 12,
-    href: "/dashboard/settings",
+    href: "/dashboard/settings/users&permissions",
     label: "Settings",
     icon: <IoSettingsOutline />,
+    subLinks: [
+      {
+        id: 1,
+        href: "/dashboard/settings/users&permissions",
+        label: "Users & Permissions",
+      },
+      {
+        id: 2,
+        href: "/dashboard/settings/logo-update",
+        label: "Logo Update",
+      },
+      {
+        id: 2,
+        href: "/dashboard/settings/review-permissions",
+        label: "Review Permission ",
+      },
+      {
+        id: 2,
+        href: "/dashboard/settings/setting",
+        label: "Setting",
+      },
+    ],
   },
 ];
 
@@ -109,6 +132,8 @@ const DashboardSidebar = () => {
     console.log("Logging out...");
   };
 
+  const [activeSubLink, setActiveSubLink] = useState(null);
+
   return (
     <div className="flex flex-col gap-1 h-fit p-3">
       {navigationLinks.map(({ id, href, label, icon, subLinks }) => (
@@ -116,20 +141,37 @@ const DashboardSidebar = () => {
           <Link
             key={id}
             href={href}
+            prefetch={true}
+            onClick={() => setActiveSubLink(id)}
             className={`h-[52px] px-6 flex items-center gap-2 rounded ${
               pathname?.includes(href)
                 ? "bg-black text-white"
                 : "bg-white text-black hover:bg-gray-100"
             }`}
           >
-            {icon}
-            {label}
+            <div className="flex items-center justify-between w-full">
+              <div className="flex gap-2 items-center">
+                {icon}
+                {label}
+              </div>
+              {subLinks?.length > 0 && (
+                <span
+                  className={`${
+                    activeSubLink === id ? "transform rotate-180" : ""
+                  }`}
+                >
+                  <FaChevronDown />
+                </span>
+              )}
+            </div>
           </Link>
           {subLinks &&
+            activeSubLink === id &&
             subLinks.map(({ id, href, label }) => (
               <Link
                 key={id}
                 href={href}
+                prefetch={true}
                 className={`h-[42px] pl-12 flex items-center gap-2 rounded ${
                   pathname === href ? "" : ""
                 }`}
