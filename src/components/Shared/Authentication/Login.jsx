@@ -1,6 +1,7 @@
 "use client";
 
 import { AuthContext, useAuth } from "@/contexts/AuthProvider/AuthProvider";
+import useUser from "@/hooks/useUser";
 import { GoogleAuthProvider, sendEmailVerification } from "firebase/auth";
 import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -11,6 +12,7 @@ import { FcGoogle } from "react-icons/fc";
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [passwordShow, setPasswordShow] = useState(false);
+  const { CreateUser } = useUser();
   const {
     register,
     handleSubmit,
@@ -23,6 +25,63 @@ const Login = () => {
     setIsAuthModalOpen,
     updateUser,
   } = useContext(AuthContext);
+
+  const saveToDb = async (user) => {
+    const idToken = await user.getIdToken();
+    const payload = {
+      idToken: idToken,
+      email: user.email,
+      firstName: user.displayName,
+      role: "customer",
+    };
+    console.log("payload", payload);
+    const createUserResult = await CreateUser(payload);
+    console.log("result", createUserResult);
+  };
+
+  async function createUserWithEmailAndPassword(
+    email,
+    password,
+    username,
+    setIsAuthModalOpen
+  ) {
+    try {
+      const result = await createUserWithEmailPassword(email, password);
+      console.log("result", result);
+      const user = result.user;
+      const userInfo = { displayName: username };
+
+      await updateUser(userInfo);
+      try {
+        await sendEmailVerification(user);
+        toast.success("Verification email sent");
+        setIsAuthModalOpen(false);
+        await saveToDb(user);
+      } catch (error) {
+        console.log("Error sending verification email:", error);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    toast.success("Account created successfully");
+  }
+
+  async function loginAndSaveData(email, password, saveDataToDatabase) {
+    try {
+      const result = await signInWithEmailPassword(email, password);
+      console.log("result", result);
+      const user = result.user;
+      toast.success("Logged in successfully");
+
+      // Assuming saveDataToDatabase is a function that takes user data and saves it
+      await saveDataToDatabase(user);
+
+      setIsAuthModalOpen(false);
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to log in");
+    }
+  }
 
   const handleSignUp = async (data) => {
     console.log("sign up data", data);
@@ -37,6 +96,7 @@ const Login = () => {
             console.log("result", result);
             const user = result.user;
             toast.success("Logged in successfully");
+
             setIsAuthModalOpen(false);
           })
           .catch((error) => {
@@ -47,30 +107,13 @@ const Login = () => {
       }
     } else {
       try {
-        createUserWithEmailPassword(email, password)
-          .then((result) => {
-            console.log("result", result);
-            const user = result.user;
-            const userInfo = { displayName: username };
-            user.emailVerified && toast.success("Successfully Registered");
-            const authUid = user.uid;
-            updateUser(userInfo)
-              .then(() => {
-                sendEmailVerification(user)
-                  .then(() => {
-                    toast.success("Verification email sent");
-                    setIsAuthModalOpen(false);
-                  })
-                  .catch((error) => {
-                    console.log("Error sending verification email:", error);
-                  });
-              })
-              .catch((err) => console.log(err));
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-        toast.success("Account created successfully");
+        const result = createUserWithEmailAndPassword(
+          email,
+          password,
+          username,
+          setIsAuthModalOpen
+        );
+        console.log("result", result);
       } catch (error) {
         toast.error("Failed to create account");
       }
@@ -88,6 +131,8 @@ const Login = () => {
     if (user.metadata.creationTime === user.metadata.lastSignInTime) {
       setIsAuthModalOpen(false);
       toast.success("Account created successfully");
+
+      const result = await saveToDb(user);
     } else {
       setIsAuthModalOpen(false);
       toast.success("Logged in successfully");

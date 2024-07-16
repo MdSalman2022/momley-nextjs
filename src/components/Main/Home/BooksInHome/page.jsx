@@ -20,7 +20,7 @@ const BooksInHome = async () => {
   const Sections = [
     {
       title: "New Arrival",
-      items: allBooks.books.slice(0, 20),
+      items: allBooks?.books?.length > 0 && allBooks?.books?.slice(0, 20),
       ads: [
         {
           image: NewLatestCollectionMen,
@@ -63,7 +63,7 @@ const BooksInHome = async () => {
     },
     {
       title: "Mom & Baby",
-      items: allBooks.books.slice(0, 20),
+      items: allBooks?.books?.length > 0 && allBooks.books.slice(0, 20),
       ads: [
         {
           image: NewLatestCollection,
@@ -83,7 +83,7 @@ const BooksInHome = async () => {
     },
     {
       title: "All Products",
-      items: allBooks.books.slice(0, 20),
+      items: allBooks?.books?.length > 0 && allBooks.books.slice(0, 20),
       ads: [
         {
           image: NewLatestCollectionMen,

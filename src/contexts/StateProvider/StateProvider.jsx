@@ -35,7 +35,8 @@ const StateProvider = ({ children }) => {
       );
       const data = await response.json();
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        return [];
+        // throw new Error("Network response was not ok");
       }
       if (response.headers.get("Content-Type")?.includes("application/json")) {
         return await data;
