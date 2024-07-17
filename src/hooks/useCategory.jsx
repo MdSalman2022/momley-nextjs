@@ -11,8 +11,8 @@ const useCategory = () => {
         },
       }
     );
-    const booksList = await response.json();
-    return booksList;
+    const ProductList = await response.json();
+    return ProductList;
   };
 
   return { getBooksByCategory };

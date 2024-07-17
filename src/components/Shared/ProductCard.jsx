@@ -8,7 +8,7 @@ import { FaMinus, FaPlus, FaStar, FaStarHalf } from "react-icons/fa";
 import CartIcon from "../../../public/images/CartIcon.svg";
 import Image from "next/image";
 
-const BookCard = ({ book }) => {
+const ProductCard = ({ book }) => {
   const { cart, setCart } = useContext(StateContext);
 
   const [cartCount, setCartCount] = useState(0);
@@ -128,13 +128,18 @@ const BookCard = ({ book }) => {
   return (
     <div className="flex flex-col items-center justify-between gap-3 border border-[#EEEEEE80] p-3 rounded text-black">
       <Link href={`/book/${book?._id}`}>
-        <img className="object-cover w-[164px] h-[217px]" src={imageUrl} />
+        <img
+          className="object-cover w-[164px] h-[217px]"
+          src={
+            "https://media.wired.com/photos/64daad6b4a854832b16fd3bc/191:100/w_1280,c_limit/How-to-Choose-a-Laptop-August-2023-Gear.jpg"
+          }
+        />
       </Link>
       <Link href={`/book/${book?._id}`}>
         <p className="font-semibold text-sm text-center">{book?.name}</p>
       </Link>
-      <p className="text-sm">{book?.writer}</p>
-      <p className="font-semibold ">৳ {book?.pricing?.price}</p>
+      <p className="text-sm">{book?.writer || book?.weight}</p>
+      <p className="font-semibold ">৳ {book?.pricing?.price || book?.price}</p>
       <span className="flex items-center">
         <FaStar />
         <FaStar />
@@ -166,4 +171,4 @@ const BookCard = ({ book }) => {
   );
 };
 
-export default BookCard;
+export default ProductCard;

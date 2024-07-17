@@ -5,21 +5,6 @@ import { FcGoogle } from "react-icons/fc";
 import { useEffect } from "react";
 
 const ModalBox = ({ isModalOpen, setIsModalOpen, children }) => {
-  useEffect(() => {
-    if (isModalOpen) {
-      // lock scroll when modal is open
-      document.body.style.overflow = "hidden";
-    } else {
-      // unlock scroll when modal is closed
-      document.body.style.overflow = "auto";
-    }
-
-    // cleanup function to unlock scroll when component unmounts
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [isModalOpen]);
-
   if (isModalOpen === true) {
     return (
       <div>
@@ -30,10 +15,10 @@ const ModalBox = ({ isModalOpen, setIsModalOpen, children }) => {
               className="fixed inset-0 bg-gray-500 bg-opacity-10 transition-opacity"
               aria-hidden="true"
             ></div>
-            <div className="relative dark:bg-base-100 rounded-[20px] overflow-hidden   transform transition-all sm:w-fit  flex flex-wrap h-full p-5">
+            <div className="relative bg-primary dark:bg-base-100 rounded-[20px] overflow-hidden shadow-xl transform transition-all w-full sm:w-fit flex flex-wrap h-full">
               <CgClose
                 onClick={() => setIsModalOpen(!isModalOpen)}
-                className="cursor-pointer text-black hover:text-blue-500 absolute top-7 right-7 z-50 text-2xl"
+                className="cursor-pointer hover:text-blue-500 absolute top-3 right-3 text-2xl"
               />
               {children}
             </div>

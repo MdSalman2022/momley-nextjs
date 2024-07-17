@@ -12,8 +12,8 @@ import {
 } from "react-icons/fa";
 import { MdOutlineSecurityUpdateGood } from "react-icons/md";
 import { SiMoneygram } from "react-icons/si";
-import HorizontalBookCard from "@/components/Main/BookDetails/HorizontalBookCard/HorizontalBookCard";
-import BookCard from "@/components/Shared/BookCard";
+import HorizontalProductCard from "@/components/Main/BookDetails/HorizontalProductCard/HorizontalProductCard";
+import ProductCard from "@/components/Shared/ProductCard";
 import Link from "next/link";
 import { StateContext } from "@/contexts/StateProvider/StateProvider";
 
@@ -232,7 +232,7 @@ const BookDetailsPage = ({ bookDetails }) => {
               </p>
               <div className="flex flex-col gap-5">
                 {relatedBooks.slice(0, 3).map((book, index) => (
-                  <HorizontalBookCard key={book._id} book={book} />
+                  <HorizontalProductCard key={book._id} book={book} />
                 ))}
               </div>
             </div>
@@ -241,7 +241,7 @@ const BookDetailsPage = ({ bookDetails }) => {
           <p className="text-xl font-semibold">Related Products</p>
           <div className="col-span-4 grid grid-cols-6 gap-5 py-5">
             {allBooks.map((book, index) => (
-              <BookCard key={book._id} book={book} />
+              <ProductCard key={book._id} book={book} />
             ))}
           </div>
         </div>

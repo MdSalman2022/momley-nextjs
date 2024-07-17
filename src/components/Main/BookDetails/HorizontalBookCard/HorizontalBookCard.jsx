@@ -6,7 +6,7 @@ import { StateContext } from "../../../../contexts/StateProvider/StateProvider";
 import CartIcon from "../../../../../public/images/CartIcon.svg";
 import Image from "next/image";
 
-const HorizontalBookCard = ({ book }) => {
+const HorizontalProductCard = ({ book }) => {
   const { cart, setCart } = useContext(StateContext);
 
   const [cartCount, setCartCount] = useState(0);
@@ -121,4 +121,4 @@ const HorizontalBookCard = ({ book }) => {
   );
 };
 
-export default HorizontalBookCard;
+export default HorizontalProductCard;

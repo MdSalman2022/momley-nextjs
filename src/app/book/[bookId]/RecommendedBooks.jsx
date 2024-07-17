@@ -1,5 +1,5 @@
 "use client";
-import HorizontalBookCard from "@/components/Main/BookDetails/HorizontalBookCard/HorizontalBookCard";
+import HorizontalProductCard from "@/components/Main/BookDetails/HorizontalProductCard/HorizontalProductCard";
 import { StateContext } from "@/contexts/StateProvider/StateProvider";
 import React, { useContext } from "react";
 
@@ -14,7 +14,7 @@ export default function RecommendedBooks({ bookId }) {
       </p>
       <div className="flex flex-col gap-5">
         {relatedBooks.slice(0, 3).map((book, index) => (
-          <HorizontalBookCard key={book._id} book={book} />
+          <HorizontalProductCard key={book._id} book={book} />
         ))}
       </div>
     </div>

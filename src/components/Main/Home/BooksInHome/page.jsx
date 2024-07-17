@@ -3,7 +3,7 @@ import Link from "next/link";
 import useBook from "@/hooks/useBook";
 import { GrSearch } from "react-icons/gr";
 import ReusableItemsSection from "../ReusableItemsSection/ReusableItemsSection";
-const BookCard = lazy(() => import("@/components/Shared/BookCard"));
+const ProductCard = lazy(() => import("@/components/Shared/ProductCard"));
 import NewLatestCollectionMen from "../../../../../public/images/ads/NewLatestCollectionMen.png";
 import TrendingWomenCollection from "../../../../../public/images/ads/TrendingWomenCollection.png";
 import WatchCollection from "../../../../../public/images/ads/WatchCollection.png";
@@ -11,16 +11,23 @@ import CosmeticsCollection from "../../../../../public/images/ads/CosmeticsColle
 import BabyProducts from "../../../../../public/images/ads/BabyProducts.png";
 import NewLatestCollection from "../../../../../public/images/ads/NewLatestCollection.png";
 import TrendingManCollection from "../../../../../public/images/ads/TrendingManCollection.png";
+import useProduct from "@/hooks/useProduct";
 
 const BooksInHome = async () => {
   const { getAllBookDetails } = useBook();
   const allBooks = await getAllBookDetails(1, 20);
   console.log("allBooks", allBooks);
 
+  const { GetProduct } = useProduct();
+
+  const allProducts = await GetProduct();
+
+  console.log("allProducts", allProducts);
+
   const Sections = [
     {
       title: "New Arrival",
-      items: allBooks?.books?.length > 0 && allBooks?.books?.slice(0, 20),
+      items: allProducts?.data?.length > 0 && allProducts?.data?.slice(0, 20),
       ads: [
         {
           image: NewLatestCollectionMen,

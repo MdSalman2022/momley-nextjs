@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { DataTable } from "@/app/profile/orders/data-table";
 import { Checkbox } from "@/components/ui/checkbox";
+import CreateProductModal from "./CreateProductModal";
 
 const Products = () => {
   const [sorting, setSorting] = useState([]);
@@ -129,15 +130,23 @@ const Products = () => {
     },
   ];
 
+  const [isOpen, setIsOpen] = useState(false);
+
+  const openModal = () => setIsOpen(true);
+  const closeModal = () => setIsOpen(false);
+
+  console.log("isOpen", isOpen);
+
   return (
     <div className="flex flex-col gap-5 px-6">
       <TopActionButtons
         title="Products"
         onExport={() => console.log("Exporting...")}
         onImport={() => console.log("Importing...")}
-        handleFunction={() => console.log("Creating Order...")}
+        handleFunction={() => setIsOpen(true)}
         functionTitle="Add a New Product"
       />
+
       <div className="flex flex-col gap-5 p-6 border rounded">
         <div className="flex items-center gap-3">
           {pages.map((page, index) => (
@@ -155,6 +164,7 @@ const Products = () => {
             </button>
           ))}
         </div>
+
         <div className="flex gap-5 items-center">
           <input
             type="text"
@@ -199,6 +209,8 @@ const Products = () => {
           />
         </div>
       </div>
+
+      <CreateProductModal isOpen={isOpen} setIsOpen={setIsOpen} />
     </div>
   );
 };

@@ -1,10 +1,10 @@
 import React from "react";
 import Banner from "@/components/Main/Home/Banner/page";
-import BookCard from "@/components/Shared/BookCard";
+import ProductCard from "@/components/Shared/ProductCard";
 import useCategory from "@/hooks/useCategory";
 import CategoryPagination from "./CategoryPagination";
 import ResetButton from "./ResetButton";
-import BooksList from "./BooksList";
+import ProductList from "./ProductList";
 import CategoryPageTitle from "./CategoryPageTitle";
 import useBook from "@/hooks/useBook";
 import CategoryPageFilter from "./CategoryPageFilter";
@@ -77,7 +77,7 @@ const Category = async ({ params }) => {
               </div>
 
               <div className="flex flex-col gap-5">
-                <BooksList books={data} allBooks={allBooks?.books} />
+                <ProductList books={data} allBooks={allBooks?.books} />
                 <CategoryPagination />
               </div>
             </div>
@@ -88,7 +88,7 @@ const Category = async ({ params }) => {
           {allBooks?.books?.length > 0 &&
             allBooks?.books
               ?.slice(0, 10)
-              ?.map((book, index) => <BookCard key={index} book={book} />)}
+              ?.map((book, index) => <ProductCard key={index} book={book} />)}
         </div>
       </div>
     </div>

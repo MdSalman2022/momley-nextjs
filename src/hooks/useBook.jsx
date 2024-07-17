@@ -39,8 +39,8 @@ const useBook = () => {
         return [];
         // throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const booksList = await response.json();
-      return booksList;
+      const ProductList = await response.json();
+      return ProductList;
     } catch (error) {
       console.error("Failed to fetch book details:", error);
       // or

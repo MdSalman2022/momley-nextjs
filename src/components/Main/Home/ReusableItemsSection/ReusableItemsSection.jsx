@@ -1,7 +1,7 @@
 import React, { lazy, Suspense } from "react";
 import Link from "next/link";
 import { GrSearch } from "react-icons/gr";
-const BookCard = lazy(() => import("@/components/Shared/BookCard"));
+const ProductCard = lazy(() => import("@/components/Shared/ProductCard"));
 import NewLatestCollectionMen from "../../../../../public/images/ads/NewLatestCollectionMen.png";
 import TrendingWomenCollection from "../../../../../public/images/ads/TrendingWomenCollection.png";
 import Image from "next/image";
@@ -85,11 +85,11 @@ const ReusableItemsSection = ({ title, items, ads, bottomAds }) => {
             </div>
           }
         >
-          <div className="flex flex-col md:grid grid-cols-5 gap-5">
+          <div className="flex flex-col md:flex-row justify-start items-start w-full gap-5">
             {items &&
               items
                 ?.slice(0, 20)
-                ?.map((book, index) => <BookCard key={index} book={book} />)}
+                ?.map((book, index) => <ProductCard key={index} book={book} />)}
           </div>
         </Suspense>
 
