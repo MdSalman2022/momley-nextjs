@@ -6,6 +6,7 @@ import { useContext, useEffect, useState } from "react";
 import { BsBag, BsCartPlus, BsDash, BsPlus } from "react-icons/bs";
 import { FaMinus, FaPlus, FaStar, FaStarHalf } from "react-icons/fa";
 import CartIcon from "../../../public/images/CartIcon.svg";
+import laptop from "../../../public/images/products/laptop.webp";
 import Image from "next/image";
 
 const ProductCard = ({ book }) => {
@@ -128,11 +129,11 @@ const ProductCard = ({ book }) => {
   return (
     <div className="flex flex-col items-center justify-between gap-3 border border-[#EEEEEE80] p-3 rounded text-black">
       <Link href={`/book/${book?._id}`}>
-        <img
+        <Image
           className="object-cover w-[164px] h-[217px]"
-          src={
-            "https://media.wired.com/photos/64daad6b4a854832b16fd3bc/191:100/w_1280,c_limit/How-to-Choose-a-Laptop-August-2023-Gear.jpg"
-          }
+          src={laptop}
+          width={164}
+          height={217}
         />
       </Link>
       <Link href={`/book/${book?._id}`}>
