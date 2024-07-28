@@ -25,7 +25,7 @@ const StateProvider = ({ children }) => {
     ["allBooks", page, pageSize],
     async () => {
       const response = await fetch(
-        `${process.env.VITE_SERVER_URL}/api/get/booklist?page=${page}&pageSize=${pageSize}`,
+        `${process.env.VITE_SERVER_URL}/products/list`,
         {
           method: "GET",
           headers: {
