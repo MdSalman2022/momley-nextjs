@@ -8,134 +8,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DataTable } from "@/app/profile/orders/data-table";
-import { Checkbox } from "@/components/ui/checkbox";
 import CreateProductModal from "./CreateProductModal";
+import ProductsTable from "./ProductsTable";
 
 const Products = () => {
-  const [sorting, setSorting] = useState([]);
-  const [columnFilters, setColumnFilters] = useState([]);
-  const [columnVisibility, setColumnVisibility] = useState({});
-  const [rowSelection, setRowSelection] = useState({});
-  const [selectedStatus, setSelectedStatus] = useState("Active");
-  const actions = [
-    { value: "Active", label: "Active" },
-    { value: "Disabled", label: "Disabled" },
-  ];
-
   const pages = ["All", "Active", "Inactive", "Stock Out"];
   const [activePage, setActivePage] = useState(pages[0]);
+  const paymentOptions = ["Paid", "Due", "Partial"];
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState("Active");
 
   const handleValueChange = (value) => {
     setSelectedStatus(value);
   };
-  const paymentOptions = ["Paid", "Due", "Partial"];
-
-  const columns = [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-      accessorKey: "id", // Assuming each row has a unique 'id' field
-    },
-    {
-      id: "productName",
-      header: "Product Name",
-      accessorKey: "productName",
-    },
-    {
-      id: "Price",
-      header: "Price",
-      accessorKey: "Price",
-    },
-    {
-      id: "Stock",
-      header: "Stock",
-      accessorKey: "Stock",
-    },
-    {
-      id: "Sales",
-      header: "Sales",
-      accessorKey: "Sales",
-    },
-    {
-      id: "Vendor",
-      header: "Vendor",
-      accessorKey: "Vendor",
-    },
-    {
-      id: "Status",
-      header: "Status",
-      accessorKey: "Status", // Assuming actions are tied to the row's unique 'id'
-      cell: ({ row }) => {
-        console.log("row", row);
-        return (
-          <Select onValueChange={handleValueChange} aria-label="Select action">
-            <SelectTrigger className="w-40 h-10 mt-1 border-0">
-              <SelectValue placeholder={row?.original?.Status} />
-            </SelectTrigger>
-            <SelectContent>
-              {actions.map((option, index) => {
-                const value = option?.value || `fallback-value-${index}`;
-                if (!option?.value) return null;
-                return (
-                  <SelectItem key={index} value={value}>
-                    {option?.label}
-                  </SelectItem>
-                );
-              })}
-            </SelectContent>
-          </Select>
-        );
-      },
-      enableSorting: false, // Assuming sorting is not needed for actions
-    },
-  ];
-
-  const data = [
-    {
-      id: "1",
-      productName: "Product 1",
-      Price: "100.00",
-      Stock: "100",
-      Sales: "50",
-      Vendor: "Vendor 1",
-      Status: "Active",
-    },
-    {
-      id: "2",
-      productName: "Product 2",
-      Price: "300.00",
-      Stock: "100",
-      Sales: "50",
-      Vendor: "Vendor 2",
-      Status: "Disabled",
-    },
-  ];
-
-  const [isOpen, setIsOpen] = useState(false);
-
-  const openModal = () => setIsOpen(true);
-  const closeModal = () => setIsOpen(false);
-
-  console.log("isOpen", isOpen);
 
   return (
     <div className="flex flex-col gap-5 px-6">
@@ -195,18 +80,7 @@ const Products = () => {
         </div>
         <div className="flex flex-col gap-3">
           <p>02 Orders</p>
-          <DataTable
-            columns={columns}
-            data={data}
-            setSorting={setSorting}
-            setColumnFilters={setColumnFilters}
-            setColumnVisibility={setColumnVisibility}
-            setRowSelection={setRowSelection}
-            sorting={sorting}
-            columnFilters={columnFilters}
-            columnVisibility={columnVisibility}
-            rowSelection={rowSelection}
-          />
+          <ProductsTable />
         </div>
       </div>
 

@@ -22,7 +22,7 @@ const StateProvider = ({ children }) => {
     error,
     refetch,
   } = useQuery(
-    ["allData", page, pageSize],
+    ["allBooks", page, pageSize],
     async () => {
       const response = await fetch(
         `${process.env.VITE_SERVER_URL}/api/get/booklist?page=${page}&pageSize=${pageSize}`,

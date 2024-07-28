@@ -8,22 +8,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DataTable } from "@/app/profile/orders/data-table";
-import { Checkbox } from "@/components/ui/checkbox";
-import Image from "next/image";
-import avatar from "@/../public/images/profile/avatar.jpg";
+import CreateCustomerModal from "./CreateCustomerModal";
+import CustomersTable from "./CustomersTable";
 const Customers = () => {
-  const [sorting, setSorting] = useState([]);
-  const [columnFilters, setColumnFilters] = useState([]);
-  const [columnVisibility, setColumnVisibility] = useState({});
-  const [rowSelection, setRowSelection] = useState({});
-  const [selectedStatus, setSelectedStatus] = useState("Active");
   const pageName = "Customers";
-  const actions = [
-    { value: "Active", label: "Active" },
-    { value: "Disabled", label: "Disabled" },
-  ];
-
   const pages = [
     "All",
     "New",
@@ -38,84 +26,9 @@ const Customers = () => {
     setSelectedStatus(value);
   };
 
-  const { sortType, setSortType } = useState("Newest");
-  const handleSorting = (value) => {
-    console.log("value", value);
-    setSortType(value);
-  };
   const paymentOptions = ["Paid", "Due", "Partial"];
 
-  const columns = [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-      accessorKey: "id", // Assuming each row has a unique 'id' field
-    },
-    {
-      id: "CustomersName",
-      header: "Customers Name",
-      accessorKey: "CustomersName",
-    },
-    {
-      id: "Orders",
-      header: "Orders",
-      accessorKey: "Orders",
-    },
-    {
-      id: "BDTSpent",
-      header: "BDT Spent",
-      accessorKey: "BDTSpent",
-    },
-  ];
-
-  const data = [
-    {
-      id: "1",
-      CustomersName: (
-        <span className="flex items.center gap-1">
-          <Image src={avatar} className="w-10 h-10 rounded-lg" />
-          <div className="flex flex-col">
-            <span>Customers 1</span>
-            <span>Dhaka, Bangladesh</span>
-          </div>
-        </span>
-      ),
-      Orders: "5",
-      BDTSpent: "500",
-    },
-    {
-      id: "2",
-      CustomersName: (
-        <span className="flex items.center gap-1">
-          <Image src={avatar} className="w-10 h-10 rounded-lg" />
-          <div className="flex flex-col">
-            <span>Customers 1</span>
-            <span>Dhaka, Bangladesh</span>
-          </div>
-        </span>
-      ),
-      Orders: "10",
-      BDTSpent: "1000",
-    },
-  ];
+  const [isCustomerCreateOpen, setIsCustomerCreateOpen] = useState("");
 
   return (
     <div className="flex flex-col gap-5 px-6">
@@ -123,8 +36,8 @@ const Customers = () => {
         title={pageName}
         onExport={() => console.log("Exporting...")}
         onImport={() => console.log("Importing...")}
-        handleFunction={() => console.log("Creating Order...")}
-        functionTitle="Add a New Product"
+        handleFunction={() => setIsCustomerCreateOpen(true)}
+        functionTitle="Add New Customer"
       />
       <div className="flex flex-col gap-5 p-6 border rounded">
         <div className="flex items-center gap-3">
@@ -172,35 +85,10 @@ const Customers = () => {
           </button>
         </div>
         <div className="flex flex-col gap-3">
-          <div className="flex justify-between">
-            <p>02 Customers</p>
-            <Select onValueChange={handleSorting}>
-              <SelectTrigger className="w-40 h-10 mt-1 bg-[#F2F1F1] border-[#F2F2F2]">
-                <SelectValue placeholder={sortType || "Most"} />
-              </SelectTrigger>
-              <SelectContent>
-                {[
-                  { value: "most", label: "Most" },
-                  { value: "least", label: "Least" },
-                ].map((action, index) => (
-                  <SelectItem key={index} value={action.value}>
-                    {action.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <DataTable
-            columns={columns}
-            data={data}
-            setSorting={setSorting}
-            setColumnFilters={setColumnFilters}
-            setColumnVisibility={setColumnVisibility}
-            setRowSelection={setRowSelection}
-            sorting={sorting}
-            columnFilters={columnFilters}
-            columnVisibility={columnVisibility}
-            rowSelection={rowSelection}
+          <CustomersTable />
+          <CreateCustomerModal
+            isOpen={isCustomerCreateOpen}
+            setIsOpen={setIsCustomerCreateOpen}
           />
         </div>
       </div>

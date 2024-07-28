@@ -1,8 +1,53 @@
-const useProduct = () => {
-  const createProduct = async (payload) => {
+const useCustomer = () => {
+  const GetCustomers = async () => {
     try {
       const response = await fetch(
-        `${process.env.VITE_SERVER_URL}/products/create`,
+        `${process.env.VITE_SERVER_URL}/customer/list`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const product = await response.json();
+      return product;
+    } catch (error) {
+      console.error("Failed to fetch book details:", error);
+      throw error;
+    }
+  };
+
+  const SearchCustomer = async (name, storeId) => {
+    try {
+      const response = await fetch(
+        `${
+          process.env.VITE_SERVER_URL
+        }/customer/search?name=${name}&storeId=${"66965d022e79323150e122df"}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const customer = await response.json();
+      return customer;
+    } catch (error) {
+      console.error("Failed to fetch book details:", error);
+      throw error;
+    }
+  };
+  const CreateCustomer = async (payload) => {
+    try {
+      const response = await fetch(
+        `${process.env.VITE_SERVER_URL}/customer/create`,
         {
           method: "POST",
           headers: {
@@ -22,53 +67,7 @@ const useProduct = () => {
     }
   };
 
-  const GetProduct = async (payload) => {
-    try {
-      const response = await fetch(
-        `${process.env.VITE_SERVER_URL}/products/list`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const product = await response.json();
-      return product;
-    } catch (error) {
-      console.error("Failed to fetch book details:", error);
-      throw error;
-    }
-  };
-
-  const SearchProduct = async (name, storeId) => {
-    try {
-      const response = await fetch(
-        `${
-          process.env.VITE_SERVER_URL
-        }/products/search?name=${name}&storeId=${"66965d022e79323150e122df"}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const product = await response.json();
-      return product;
-    } catch (error) {
-      console.error("Failed to fetch book details:", error);
-      throw error;
-    }
-  };
-
-  return { createProduct, GetProduct, SearchProduct };
+  return { GetCustomers, SearchCustomer, CreateCustomer };
 };
 
-export default useProduct;
+export default useCustomer;

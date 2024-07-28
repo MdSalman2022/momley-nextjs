@@ -1,8 +1,8 @@
-const useProduct = () => {
-  const createProduct = async (payload) => {
+const useOrder = () => {
+  const createOrder = async (payload) => {
     try {
       const response = await fetch(
-        `${process.env.VITE_SERVER_URL}/products/create`,
+        `${process.env.VITE_SERVER_URL}/orders/create`,
         {
           method: "POST",
           headers: {
@@ -22,10 +22,10 @@ const useProduct = () => {
     }
   };
 
-  const GetProduct = async (payload) => {
+  const getOrders = async (payload) => {
     try {
       const response = await fetch(
-        `${process.env.VITE_SERVER_URL}/products/list`,
+        `${process.env.VITE_SERVER_URL}/orders/list`,
         {
           method: "GET",
           headers: {
@@ -44,31 +44,7 @@ const useProduct = () => {
     }
   };
 
-  const SearchProduct = async (name, storeId) => {
-    try {
-      const response = await fetch(
-        `${
-          process.env.VITE_SERVER_URL
-        }/products/search?name=${name}&storeId=${"66965d022e79323150e122df"}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const product = await response.json();
-      return product;
-    } catch (error) {
-      console.error("Failed to fetch book details:", error);
-      throw error;
-    }
-  };
-
-  return { createProduct, GetProduct, SearchProduct };
+  return { createOrder, getOrders };
 };
 
-export default useProduct;
+export default useOrder;

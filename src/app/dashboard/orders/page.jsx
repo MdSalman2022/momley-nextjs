@@ -8,20 +8,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DataTable } from "@/app/profile/orders/data-table";
-import { Checkbox } from "@/components/ui/checkbox";
+import CreateOrderModal from "./CreateOrderModal";
+import OrdersTable from "./OrdersTable";
 
 const Orders = () => {
-  const [sorting, setSorting] = useState([]);
-  const [columnFilters, setColumnFilters] = useState([]);
-  const [columnVisibility, setColumnVisibility] = useState({});
-  const [rowSelection, setRowSelection] = useState({});
-  const [selectedStatus, setSelectedStatus] = useState("Active");
-  const actions = [
-    { value: "processing", label: "Processing" },
-    { value: "delivery", label: "Delivery" },
-  ];
-
   const pages = [
     "All",
     "Unpaid",
@@ -32,119 +22,22 @@ const Orders = () => {
     "Return/Refund",
   ];
   const [activePage, setActivePage] = useState(pages[0]);
+  const paymentOptions = ["Paid", "Due", "Partial"];
+
+  const [selectedStatus, setSelectedStatus] = useState("Active");
 
   const handleValueChange = (value) => {
     setSelectedStatus(value);
   };
-  const paymentOptions = ["Paid", "Due", "Partial"];
 
-  const columns = [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-      accessorKey: "id", // Assuming each row has a unique 'id' field
-    },
-    {
-      id: "orderId",
-      header: "Order Id",
-      accessorKey: "orderId",
-    },
-    {
-      id: "date",
-      header: "Date",
-      accessorKey: "date",
-    },
-    {
-      id: "totalPrice",
-      header: "Total Price",
-      accessorKey: "totalPrice",
-    },
-    {
-      id: "partialPayment",
-      header: "Partial Payment",
-      accessorKey: "partialPayment",
-    },
-    {
-      id: "items",
-      header: "Items",
-      accessorKey: "items",
-    },
-    {
-      id: "deliveryMethod",
-      header: "Delivery Method",
-      accessorKey: "deliveryMethod",
-    },
-    {
-      id: "action",
-      header: "Action",
-      accessorKey: "id", // Assuming actions are tied to the row's unique 'id'
-      cell: ({ row }) => (
-        <Select onValueChange={handleValueChange} aria-label="Select action">
-          <SelectTrigger className="w-40 h-10 mt-1 border-0">
-            <SelectValue placeholder={actions[0]?.label} />
-          </SelectTrigger>
-          <SelectContent>
-            {actions.map((option, index) => {
-              const value = option?.value || `fallback-value-${index}`;
-              if (!option?.value) return null;
-              return (
-                <SelectItem key={index} value={value}>
-                  {option?.label}
-                </SelectItem>
-              );
-            })}
-          </SelectContent>
-        </Select>
-      ),
-      enableSorting: false, // Assuming sorting is not needed for actions
-    },
-  ];
-
-  const data = [
-    {
-      id: "1",
-      orderId: "123",
-      date: "2023-04-01",
-      totalPrice: "$100.00",
-      partialPayment: "$50.00",
-      items: 3,
-      deliveryMethod: "COD",
-    },
-    {
-      id: "2",
-      orderId: "456",
-      date: "2023-04-02",
-      totalPrice: "$200.00",
-      partialPayment: "$100.00",
-      items: 3,
-      deliveryMethod: "COD",
-    },
-  ];
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="flex flex-col gap-5 px-6">
       <TopActionButtons
         title="Orders"
         onExport={() => console.log("Exporting...")}
-        handleFunction={() => console.log("Creating Order...")}
+        handleFunction={() => setIsOpen(true)}
         functionTitle="Create Order"
       />
       <div className="flex flex-col gap-5 p-6 border rounded">
@@ -193,19 +86,8 @@ const Orders = () => {
           </button>
         </div>
         <div className="flex flex-col gap-3">
-          <p>02 Orders</p>
-          <DataTable
-            columns={columns}
-            data={data}
-            setSorting={setSorting}
-            setColumnFilters={setColumnFilters}
-            setColumnVisibility={setColumnVisibility}
-            setRowSelection={setRowSelection}
-            sorting={sorting}
-            columnFilters={columnFilters}
-            columnVisibility={columnVisibility}
-            rowSelection={rowSelection}
-          />
+          <OrdersTable />
+          <CreateOrderModal isOpen={isOpen} setIsOpen={setIsOpen} />
         </div>
       </div>
     </div>

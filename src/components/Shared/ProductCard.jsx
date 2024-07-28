@@ -138,8 +138,8 @@ const ProductCard = ({ book }) => {
       <Link href={`/book/${book?._id}`}>
         <p className="font-semibold text-sm text-center">{book?.name}</p>
       </Link>
-      <p className="text-sm">{book?.writer || book?.weight}</p>
-      <p className="font-semibold ">৳ {book?.pricing?.price || book?.price}</p>
+      <p className="text-sm">{book?.weight}</p>
+      <p className="font-semibold ">৳ {book?.price}</p>
       <span className="flex items-center">
         <FaStar />
         <FaStar />

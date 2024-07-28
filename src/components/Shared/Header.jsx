@@ -107,17 +107,18 @@ const Header = () => {
                 <div className="flex">
                   <DropdownMenu className="" align="end">
                     <DropdownMenuTrigger>
-                     {user?.photoURL ? <img
-                        className="w-10 h-10 rounded-full border"
-                        src={user.photoURL}
-                        alt=""
-                      />
-                    :
-                    <GeneratedProfileImage
-                      name={user?.displayName || "user"}
-                      size={40}
-                    />
-                    }
+                      {user?.photoURL ? (
+                        <img
+                          className="w-10 h-10 rounded-full border"
+                          src={user.photoURL}
+                          alt=""
+                        />
+                      ) : (
+                        <GeneratedProfileImage
+                          name={user?.displayName || "user"}
+                          size={40}
+                        />
+                      )}
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem>
