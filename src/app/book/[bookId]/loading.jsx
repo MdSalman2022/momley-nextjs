@@ -4,7 +4,7 @@ import React from "react";
 
 const loading = () => {
   return (
-    <div className="flex justify-center items-center h-screen bg-white">
+    <div className="flex justify-center items-center h-screen w-screen bg-white">
       <Player
         className="w-80 md:w-52 object-cover"
         autoplay

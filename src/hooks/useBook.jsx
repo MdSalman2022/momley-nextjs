@@ -2,7 +2,7 @@ const useBook = () => {
   const getBookDetails = async (bookId) => {
     try {
       const response = await fetch(
-        `${process.env.VITE_SERVER_URL}/api/get/book/${bookId}`,
+        `${process.env.VITE_SERVER_URL}/products/${bookId}`,
         {
           method: "GET",
           headers: {

@@ -18,12 +18,16 @@ import RecommendedBooks from "./RecommendedBooks";
 import useBook from "@/hooks/useBook";
 import ReviewCard from "./ReviewCard";
 import SecurityCard from "./SecurityCard";
+import laptop from "../../../../public/images/products/laptop.webp";
+import Image from "next/image";
+import useScrollToTop from "@/hooks/useScrollToTop";
 
 const BookDetails = async ({ params }) => {
   console.log("params", params);
   const bookId = params.bookId;
   const { getBookDetails } = useBook();
-  const bookDetails = await getBookDetails(params.bookId);
+  let bookDetails = await getBookDetails(params.bookId);
+  bookDetails = bookDetails?.data;
   console.log("bookDetails", bookDetails);
 
   return (
@@ -38,12 +42,12 @@ const BookDetails = async ({ params }) => {
             <div className="col-span-3 grid grid-cols-2 gap-5 h-fit">
               <div className="flex col-span-2 w-full gap-10">
                 <div className="flex flex-col gap-5">
-                  {bookDetails.images && bookDetails.images.length > 0 && (
-                    <img
-                      className="object-contain w-full md:w-fit lg:w-[360px] h-[400px]"
-                      src={bookDetails.images[0]}
-                    />
-                  )}
+                  <Image
+                    className="object-contain w-full md:w-fit lg:w-[360px] h-[400px]"
+                    src={laptop}
+                    width={360}
+                    height={400}
+                  />
                   {bookDetails.images && bookDetails.images.length > 1 && (
                     <div className="flex items-center gap-5">
                       {bookDetails.images.slice(1).map((image, index) => (
@@ -60,7 +64,7 @@ const BookDetails = async ({ params }) => {
                   <div className="flex flex-col">
                     <h2 className="text-2xl">{bookDetails?.name}</h2>
                     <div className="text-4xl text-red-500 font-bold">
-                      Tk {bookDetails?.pricing?.price}
+                      Tk {bookDetails?.price}
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
