@@ -20,7 +20,7 @@ const BooksInHome = async () => {
 
   const { GetProduct } = useProduct();
 
-  const allProducts = await GetProduct();
+  const allProducts = (await GetProduct()) || [];
 
   console.log("allProducts", allProducts);
 

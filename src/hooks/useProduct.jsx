@@ -34,13 +34,15 @@ const useProduct = () => {
         }
       );
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        return [];
+        // throw new Error(`HTTP error! status: ${response.status}`);
       }
       const product = await response.json();
       return product;
     } catch (error) {
       console.error("Failed to fetch book details:", error);
-      throw error;
+      return [];
+      // throw error;
     }
   };
 
