@@ -1,14 +1,11 @@
 import Banner from "@/components/Main/Home/Banner/page";
 import BooksInHome from "@/components/Main/Home/BooksInHome/page";
 import Categories from "@/components/Main/Home/Categories/page";
-import Image from "next/image";
 import { Suspense } from "react";
-import { Toaster } from "react-hot-toast";
 
 export default async function Home() {
   return (
     <div className="bg-white w-full">
-      <Toaster />
       <div className="container mx-auto flex flex-col gap-5">
         <Banner />
         <Categories />

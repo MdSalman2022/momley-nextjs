@@ -2,17 +2,39 @@
 
 import { Player } from "@lottiefiles/react-lottie-player";
 import { useQuery } from "@tanstack/react-query";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { AuthContext } from "../AuthProvider/AuthProvider";
+import useProfile from "@/hooks/useProfile";
 
 export const StateContext = createContext();
 
 const StateProvider = ({ children }) => {
+  const { getProfile } = useProfile();
+  const { user } = useContext(AuthContext);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [filterBooks, setFilterBooks] = useState([]);
 
   const [totalPages, setTotalPages] = useState(0);
   const [writerName, setWriterName] = useState("");
+
+  const uid = user?.uid;
+
+  console.log("user", user);
+  console.log("uid", uid);
+
+  const {
+    data: userInfo = {},
+    isLoading: isUserInfoLoading,
+    refetch: refetchUserInfo,
+  } = useQuery({
+    queryKey: ["userInfo", user, uid],
+    queryFn: () => uid && getProfile(uid),
+    cacheTime: 2 * (60 * 1000), // cache data for 10 minutes
+    staleTime: 1 * (60 * 1000), // consider data fresh for 5 minutes
+  });
+
+  console.log("userInfo", userInfo);
 
   // console.log(page);
   // console.log(pageSize);
@@ -102,23 +124,9 @@ const StateProvider = ({ children }) => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
-  // if (isLoading) {
-  //   // console.log(isLoading);
-  //   return (
-  //     <div className="flex justify-center items-center h-screen bg-white bg-opacity-30">
-  //       <Player
-  //         className="w-80 md:w-52 object-cover"
-  //         autoplay
-  //         loop
-  //         src="https://assets2.lottiefiles.com/packages/lf20_p8bfn5to.json"
-  //       ></Player>
-  //     </div>
-  //   );
-  // }
-
-  // console.log(allBooks);
-
   const stateInfo = {
+    userInfo,
+    refetchUserInfo,
     allBooks,
     isLoading,
     error,

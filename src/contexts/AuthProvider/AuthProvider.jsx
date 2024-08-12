@@ -11,7 +11,6 @@ import {
   updateProfile,
   signInWithPhoneNumber,
 } from "firebase/auth";
-import { useQuery } from "@tanstack/react-query";
 import { app } from "@/config/firebase";
 import {
   confirmOTP,

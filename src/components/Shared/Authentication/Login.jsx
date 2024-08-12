@@ -1,6 +1,7 @@
 "use client";
 
 import { AuthContext, useAuth } from "@/contexts/AuthProvider/AuthProvider";
+import { StateContext } from "@/contexts/StateProvider/StateProvider";
 import useUser from "@/hooks/useUser";
 import { GoogleAuthProvider, sendEmailVerification } from "firebase/auth";
 import { useContext, useState } from "react";
@@ -12,6 +13,7 @@ import { FcGoogle } from "react-icons/fc";
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [passwordShow, setPasswordShow] = useState(false);
+  const { refetchUserInfo } = useContext(StateContext);
   const { CreateUser } = useUser();
   const {
     register,
@@ -32,11 +34,14 @@ const Login = () => {
       idToken: idToken,
       email: user.email,
       firstName: user.displayName,
-      role: "customer",
+      role: "seller",
     };
     console.log("payload", payload);
     const createUserResult = await CreateUser(payload);
-    console.log("result", createUserResult);
+    if (createUserResult?.success) {
+      refetchUserInfo();
+    }
+    console.log("createUserResult", createUserResult);
   };
 
   async function createUserWithEmailAndPassword(

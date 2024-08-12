@@ -6,9 +6,9 @@ import DashboardSidebar from "@/components/Shared/Dashboard/DashboardSidebar";
 
 const Layout = ({ children }) => {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col container mx-auto">
       <div className="w-full flex gap-6">
-        <nav className="w-[15%] min-h-fit flex flex-col border">
+        <nav className="w-[30%] min-h-fit flex flex-col border">
           <Link href="/" className="logo py-5 px-8 border-b">
             <img
               src="https://i.ibb.co/TW8T2kc/logo-momley.png"

@@ -4,3 +4,7 @@ export const TruncateText = (text, maxLength) => {
   }
   return text;
 };
+
+export const formatTime = (time) => {
+  return new Date(time).toLocaleDateString("en-US");
+};

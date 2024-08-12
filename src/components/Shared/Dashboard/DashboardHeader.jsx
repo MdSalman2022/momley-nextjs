@@ -40,7 +40,7 @@ const DashboardHeader = () => {
 
         <div className="flex items-center gap-5">
           <div className="flex flex-col">
-            <p className="leading-6 font-semibold">Md Omar Faruk</p>
+            <p className="leading-6 font-semibold">{user?.displayName}</p>
             <p>Admin</p>
           </div>
           {user && (
