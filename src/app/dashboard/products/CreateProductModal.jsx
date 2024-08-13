@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import ModalBox from "@/components/Shared/ModalBox";
 import {
   Select,
@@ -9,13 +9,24 @@ import {
 } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import useProduct from "@/hooks/useProduct";
+import SelectCategoryModal from "./SelectCategoryModal";
+import { StateContext } from "@/contexts/StateProvider/StateProvider";
+import toast from "react-hot-toast";
 
-const CreateProductModal = ({ isOpen, setIsOpen }) => {
+const CreateProductModal = ({ isOpen, setIsOpen, refetchProducts }) => {
+  const { userInfo } = useContext(StateContext);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [selectedSubCategory, setSelectedSubCategory] = useState({
+    id: null,
+    name: null,
+  });
+
   const { createProduct } = useProduct();
   const {
     register,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors },
   } = useForm();
 
@@ -25,32 +36,49 @@ const CreateProductModal = ({ isOpen, setIsOpen }) => {
   const handleValueChange = (value) => {
     setValue("unit", value, { shouldValidate: true });
   };
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
+    if (!selectedSubCategory?.id) {
+      toast.error("Please select a category");
+      return;
+    }
     // Handle form submission with validated data
     console.log("data", data);
+    const { name, description, price, quantity, weight, unit, specifications } =
+      data;
     const payload = {
-      name: "Laptop",
-      description: "A high-end gaming laptop",
-      price: 1500,
-      quantity: 10,
-      weight: 2.5,
-      unit: "kg",
-      store: "60c72b2f9b1d8b002d35e0e8",
-      category: "66966a694bd58ec6ee1c9993",
-      specifications: {
-        processor: "Intel Core i7",
-        ram: "16GB",
-        storage: "1TB SSD",
-        graphics: "NVIDIA GTX 1650",
-      },
+      name: name,
+      description: description,
+      price: price,
+      quantity: quantity,
+      weight: weight,
+      unit: unit,
+      store: userInfo?.store?._id,
+      category: selectedSubCategory?.id,
+      specifications,
     };
-    const result = createProduct(payload);
+    console.log("payload", payload);
+    const result = await createProduct(payload);
+
+    if (result?.success) {
+      toast.success("Product created successfully");
+      refetchProducts();
+      setIsOpen(false);
+    }
 
     console.log("result", result);
   };
 
+  console.log("selectedSubCategory", selectedSubCategory);
+
   return (
     <ModalBox isModalOpen={isOpen} setIsModalOpen={setIsOpen}>
+      {isCategoryModalOpen && (
+        <SelectCategoryModal
+          isOpen={isCategoryModalOpen}
+          setIsOpen={setIsCategoryModalOpen}
+          setSelectedSubCategory={setSelectedSubCategory}
+        />
+      )}
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="w-full grid grid-cols-2 gap-5 px-10 py-6 bg-white rounded-xl"
@@ -64,7 +92,9 @@ const CreateProductModal = ({ isOpen, setIsOpen }) => {
             id="name"
             {...register("name", { required: true })}
           />
-          {errors.name && <span>This field is required</span>}
+          {errors.name && (
+            <span className="text-xs text-red-600">This field is required</span>
+          )}
         </div>
         <div className="flex flex-col gap-2">
           <label className="text-sm" htmlFor="description">
@@ -75,7 +105,9 @@ const CreateProductModal = ({ isOpen, setIsOpen }) => {
             id="description"
             {...register("description", { required: true })}
           />
-          {errors.description && <span>This field is required</span>}
+          {errors.description && (
+            <span className="text-xs text-red-600">This field is required</span>
+          )}
         </div>
         <div className="flex flex-col gap-2">
           <label className="text-sm" htmlFor="price">
@@ -87,7 +119,9 @@ const CreateProductModal = ({ isOpen, setIsOpen }) => {
             type="number"
             {...register("price", { required: true })}
           />
-          {errors.price && <span>This field is required</span>}
+          {errors.price && (
+            <span className="text-xs text-red-600">This field is required</span>
+          )}
         </div>
         <div className="flex flex-col gap-2">
           <label className="text-sm" htmlFor="quantity">
@@ -99,7 +133,9 @@ const CreateProductModal = ({ isOpen, setIsOpen }) => {
             type="number"
             {...register("quantity", { required: true })}
           />
-          {errors.quantity && <span>This field is required</span>}
+          {errors.quantity && (
+            <span className="text-xs text-red-600">This field is required</span>
+          )}
         </div>
         <div className="flex flex-col gap-2">
           <label className="text-sm" htmlFor="weight">
@@ -112,7 +148,9 @@ const CreateProductModal = ({ isOpen, setIsOpen }) => {
             step="0.1"
             {...register("weight", { required: true })}
           />
-          {errors.weight && <span>This field is required</span>}
+          {errors.weight && (
+            <span className="text-xs text-red-600">This field is required</span>
+          )}
         </div>
         <div>
           <label className="text-sm" htmlFor="unit">
@@ -133,18 +171,25 @@ const CreateProductModal = ({ isOpen, setIsOpen }) => {
               ))}
             </SelectContent>
           </Select>
-          {errors.unit && <span>This field is required</span>}
+          {errors.unit && (
+            <span className="text-xs text-red-600">This field is required</span>
+          )}
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 col-span-2">
           <label className="text-sm" htmlFor="category">
             Category
           </label>
-          <input
-            className="input-box border-[#11111170]"
-            id="category"
-            {...register("category", { required: true })}
-          />
-          {errors.category && <span>This field is required</span>}
+          <span
+            onClick={() => setIsCategoryModalOpen(true)}
+            className="input-box border-[#11111170] cursor-pointer"
+          >
+            {selectedSubCategory?.name
+              ? selectedSubCategory?.name
+              : "Select Category"}
+          </span>
+          {!selectedSubCategory?.id && (
+            <span className="text-xs text-red-600">This field is required</span>
+          )}
         </div>
         <div className="col-span-2">
           <label className="font-semibold">Specifications</label>
@@ -159,7 +204,9 @@ const CreateProductModal = ({ isOpen, setIsOpen }) => {
                 {...register("specifications.processor", { required: true })}
               />
               {errors.specifications?.processor && (
-                <span>This field is required</span>
+                <span className="text-xs text-red-600">
+                  This field is required
+                </span>
               )}
             </div>
             <div className="flex flex-col gap-2">
@@ -172,7 +219,9 @@ const CreateProductModal = ({ isOpen, setIsOpen }) => {
                 {...register("specifications.ram", { required: true })}
               />
               {errors.specifications?.ram && (
-                <span>This field is required</span>
+                <span className="text-xs text-red-600">
+                  This field is required
+                </span>
               )}
             </div>
             <div className="flex flex-col gap-2">
@@ -185,7 +234,9 @@ const CreateProductModal = ({ isOpen, setIsOpen }) => {
                 {...register("specifications.storage", { required: true })}
               />
               {errors.specifications?.storage && (
-                <span>This field is required</span>
+                <span className="text-xs text-red-600">
+                  This field is required
+                </span>
               )}
             </div>
             <div className="flex flex-col gap-2">
@@ -198,7 +249,9 @@ const CreateProductModal = ({ isOpen, setIsOpen }) => {
                 {...register("specifications.graphics", { required: true })}
               />
               {errors.specifications?.graphics && (
-                <span>This field is required</span>
+                <span className="text-xs text-red-600">
+                  This field is required
+                </span>
               )}
             </div>
           </div>
@@ -206,7 +259,10 @@ const CreateProductModal = ({ isOpen, setIsOpen }) => {
         <div className="flex justify-start col-span-2 gap-2">
           <button
             className="primary-outline-btn"
-            onClick={() => setIsOpen(false)}
+            onClick={() => {
+              reset();
+              setIsOpen(false);
+            }}
           >
             Cancel
           </button>

@@ -26,28 +26,6 @@ const headers = [
   { label: "Date", className: "w-[200px]" },
   { label: "Action", className: "w-[200px]" },
 ];
-const getSubcategoriesByLevel = (categories, level) => {
-  let subcategories = categories.data;
-
-  for (let i = 1; i < level; i++) {
-    let nextLevelSubcategories = [];
-    subcategories?.forEach((category) => {
-      if (category.subcategories && category.subcategories.length > 0) {
-        nextLevelSubcategories = nextLevelSubcategories.concat(
-          category.subcategories
-        );
-      }
-    });
-
-    if (nextLevelSubcategories.length === 0) {
-      return []; // Return an empty array if no subcategories found at the next level
-    }
-
-    subcategories = nextLevelSubcategories;
-  }
-
-  return subcategories;
-};
 const generateLabelText = (index) => {
   return `${"-".repeat(index)}Sub Category`;
 };
@@ -88,7 +66,7 @@ const AddSubCategory = ({ params }) => {
     isLoading: isAllCategoryLoading,
     refetch: refetchAllCategory,
   } = useQuery({
-    queryKey: ["allCategories", storeId, level],
+    queryKey: ["allCategories", storeId],
     queryFn: () => storeId && getAllCategories(storeId),
     cacheTime: 10 * (60 * 1000),
     staleTime: 5 * (60 * 1000),

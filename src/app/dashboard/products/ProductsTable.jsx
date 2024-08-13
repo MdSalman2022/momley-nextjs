@@ -10,7 +10,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import useProduct from "@/hooks/useProduct";
-const ProductsTable = () => {
+import LoadingAnimation from "@/libs/utils/LoadingAnimation";
+const ProductsTable = ({ allProducts, isProductLoading }) => {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -20,23 +21,6 @@ const ProductsTable = () => {
     { value: "In Stock", label: "In Stock" },
     { value: "Out of Stock", label: "Out of Stock" },
   ];
-
-  const [allProducts, setAllProducts] = useState(null);
-  const { GetProduct } = useProduct();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const allProducts = await GetProduct();
-      console.log("allProducts", allProducts);
-
-      if (allProducts.success) {
-        setAllProducts(allProducts?.data);
-      }
-      console.log("allProducts", allProducts);
-    };
-
-    fetchData();
-  }, []);
 
   console.log("allProducts", allProducts);
 
@@ -156,6 +140,10 @@ const ProductsTable = () => {
   //     Status: "Disabled",
   //   },
   // ];
+
+  if (isProductLoading) {
+    return <LoadingAnimation />;
+  }
 
   return (
     <div>

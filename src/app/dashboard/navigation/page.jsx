@@ -1,6 +1,6 @@
 "use client";
 import TopActionButtons from "@/components/Dashboard/TopActionButtons";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import moveIcon from "@/../public/images/icons/moveIcon.svg";
 import Image from "next/image";
 import TableComponent from "@/components/Shared/TableComponent";
@@ -10,7 +10,6 @@ import { useQuery } from "react-query";
 import { StateContext } from "@/contexts/StateProvider/StateProvider";
 import LoadingAnimation from "@/libs/utils/LoadingAnimation";
 import toast from "react-hot-toast";
-import HeadlessModalBox from "@/components/Shared/HeadlessModalBox";
 import { useForm } from "react-hook-form";
 import {
   Select,
@@ -24,7 +23,7 @@ import {
 import { usePathname } from "next/navigation";
 
 const Navigation = () => {
-  const { userInfo } = useContext(StateContext);
+  const { userInfo, isUserInfoLoading } = useContext(StateContext);
   const { getAllCategoriesLevel, CreateCategoryLevel, CreateMenu, GetMenus } =
     useCategory();
   const router = useRouter();
@@ -56,6 +55,12 @@ const Navigation = () => {
     enabled: !!storeId, // Ensure the query only runs if storeId is available
   });
 
+  useEffect(() => {
+    if (!isLoading && !isMenuLoading && !isUserInfoLoading) {
+      setIsAnyLoading(false);
+    }
+  }, [isLoading, isMenuLoading, isUserInfoLoading]);
+
   console.log("getMenus", getMenus);
 
   const allMenus = !isMenuLoading && getMenus?.data;
@@ -73,12 +78,28 @@ const Navigation = () => {
     { label: "Action", className: "w-[100px]" },
   ];
 
-  const menurows = allMenus.map((menu) => [
-    { value: menu.name, className: "text-[#2F80ED]" },
-    { value: menu.categories.join(", ") || "No categories" },
-    { value: "Add item", className: "text-[#2F80ED]" },
-  ]);
-
+  const menurows = !isMenuLoading
+    ? allMenus?.map((menu) => [
+        { value: menu.name, className: "text-[#2F80ED]" },
+        {
+          value:
+            menu.categories.map((category) => category.name).join(", ") ||
+            "No categories",
+        },
+        {
+          value: "Add item",
+          className: "text-[#2F80ED] cursor-pointer",
+          onClick: () =>
+            router.push(
+              `/dashboard/navigation/add_menu/add_category/${menu?._id}`
+            ),
+        },
+      ])
+    : [
+        { value: "", className: "" },
+        { value: "No data found", className: "" },
+        { value: "" },
+      ];
   const rows =
     categoriesLevel?.data?.length > 0
       ? categoriesLevel?.data?.map((item, index) => [
@@ -111,55 +132,63 @@ const Navigation = () => {
       refetch();
     }
   };
-  if (!userInfo || isLoading) {
+  const [isAnyLoading, setIsAnyLoading] = useState(true);
+
+  if (isAnyLoading) {
     return <LoadingAnimation />;
-  }
-  return (
-    <div className="flex flex-col gap-5">
-      <TopActionButtons
-        title="Navigation"
-        handleFunction={() => router.push(`${pathname}/add_menu`)}
-        functionTitle="Add Menu "
-      />{" "}
-      <div className="flex flex-col gap-5 w-full">
-        <TableComponent headers={menuheaders} rows={menurows} />
+  } else
+    return (
+      <div className="flex flex-col gap-5 pb-10">
         <TopActionButtons
-          title="Category"
-          handleFunction={() => handleCreateCategoryLevel()}
-          functionTitle="Add Category"
-        />
-        <div className="border px-6 py-6 rounded">
-          <TableComponent headers={headers} rows={rows} />
-        </div>
-        <div className="border px-6 py-6 rounded flex flex-col gap-3">
-          <div className="flex items-center justify-between h-10 border-b">
-            <p className="font-semibold">Filter</p>
-            <p className="w-[10%] flex justify-start text-[#2F80ED]">
-              Add Filter
-            </p>
+          title="Navigation"
+          handleFunction={() => router.push(`${pathname}/add_menu`)}
+          functionTitle="Add Menu "
+        />{" "}
+        <div className="flex flex-col gap-5 w-full">
+          {!isMenuLoading && (
+            <TableComponent headers={menuheaders} rows={menurows} />
+          )}
+          <TopActionButtons
+            title="Category"
+            handleFunction={() => handleCreateCategoryLevel()}
+            functionTitle="Add Category"
+          />
+          <div className="border px-6 py-6 rounded">
+            {!isLoading && <TableComponent headers={headers} rows={rows} />}
           </div>
-          <div className="flex items-center justify-between h-10">
-            <div className="flex items-center gap-5">
-              <span>
-                <Image src={moveIcon} alt="moveIcon" />
-              </span>
-              <p className="font-semibold">Price</p>
+          <div className="border px-6 py-6 rounded flex flex-col gap-3">
+            <div className="flex items-center justify-between h-10 border-b">
+              <p className="font-semibold">Filter</p>
+              <p className="w-[10%] flex justify-start text-[#2F80ED]">
+                Add Filter
+              </p>
             </div>
-            <p className="w-[10%] flex justify-start text-[#EB5757]">Delete</p>
-          </div>
-          <div className="flex items-center justify-between h-10">
-            <div className="flex items-center gap-5">
-              <span>
-                <Image src={moveIcon} alt="moveIcon" />
-              </span>
-              <p className="font-semibold">Availability</p>
+            <div className="flex items-center justify-between h-10">
+              <div className="flex items-center gap-5">
+                <span>
+                  <Image src={moveIcon} alt="moveIcon" />
+                </span>
+                <p className="font-semibold">Price</p>
+              </div>
+              <p className="w-[10%] flex justify-start text-[#EB5757]">
+                Delete
+              </p>
             </div>
-            <p className="w-[10%] flex justify-start text-[#EB5757]">Delete</p>
+            <div className="flex items-center justify-between h-10">
+              <div className="flex items-center gap-5">
+                <span>
+                  <Image src={moveIcon} alt="moveIcon" />
+                </span>
+                <p className="font-semibold">Availability</p>
+              </div>
+              <p className="w-[10%] flex justify-start text-[#EB5757]">
+                Delete
+              </p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
 };
 
 export default Navigation;

@@ -20,9 +20,9 @@ const HeadlessModalBox = ({ isOpen, setIsOpen, title, children }) => {
         <div className="flex min-h-full items-center justify-center p-4">
           <DialogPanel
             transition
-            className="w-full max-w-md rounded-xl bg-white/55 px-6 py-4 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
+            className="flex flex-col gap-5 w-full max-w-md rounded-xl backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0 bg-white/80"
           >
-            <div className="flex justify-between">
+            <div className="flex justify-between border-b border-gray-300 px-6 py-4">
               <DialogTitle
                 as="h3"
                 className="text-base/7 font-medium text-black"
@@ -33,7 +33,7 @@ const HeadlessModalBox = ({ isOpen, setIsOpen, title, children }) => {
                 <RxCross2 />
               </span>
             </div>
-            {children}
+            <div className=" px-6 pb-4">{children}</div>
           </DialogPanel>
         </div>
       </div>

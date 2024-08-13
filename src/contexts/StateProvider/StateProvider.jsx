@@ -126,6 +126,7 @@ const StateProvider = ({ children }) => {
 
   const stateInfo = {
     userInfo,
+    isUserInfoLoading,
     refetchUserInfo,
     allBooks,
     isLoading,

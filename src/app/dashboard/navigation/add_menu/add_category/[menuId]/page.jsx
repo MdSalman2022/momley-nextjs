@@ -1,6 +1,6 @@
 "use client";
 import TopActionButtons from "@/components/Dashboard/TopActionButtons";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -20,21 +20,35 @@ import LoadingAnimation from "@/libs/utils/LoadingAnimation";
 import { MdEdit } from "react-icons/md";
 import Link from "next/link";
 
-const AddMenu = () => {
+const AddCategoryToMenu = ({ params }) => {
   const { userInfo } = useContext(StateContext);
-  const { getAllMenus, CreateMenu } = useCategory();
+  const { getMenuById, AddCategoryToMenu, getAllCategories } = useCategory();
   const storeId = userInfo?.store?._id;
+  const depth = 5;
+  const menuId = params.menuId;
 
   const {
     data: menus = {},
     isLoading: isMenuLoading,
     refetch: refetchMenu,
   } = useQuery({
-    queryKey: ["menus", storeId],
-    queryFn: () => storeId && getAllMenus(storeId),
+    queryKey: ["menus", storeId, depth, menuId],
+    queryFn: () => storeId && getMenuById(storeId, depth, menuId),
     cacheTime: 10 * (60 * 1000),
     staleTime: 5 * (60 * 1000),
   });
+  const {
+    data: allCategories = {},
+    isLoading: isCategoryLoading,
+    refetch: refetchCategories,
+  } = useQuery({
+    queryKey: ["allCategories", storeId],
+    queryFn: () => storeId && getAllCategories(storeId),
+    cacheTime: 10 * (60 * 1000),
+    staleTime: 5 * (60 * 1000),
+  });
+
+  console.log("allCategories", allCategories);
 
   console.log("menus", menus);
 
@@ -49,22 +63,32 @@ const AddMenu = () => {
     console.log(`Cell clicked at row ${rowIndex}, column ${cellIndex}`);
   };
 
-  const createRows = (categories) => {
-    return categories.map((category, index) => [
-      {
-        value: `#${index + 1}`,
-        className: "text-[#2F80ED]",
-        onClick: handleCellClick,
-      },
-      { value: category.name },
-      {
-        value: new Date(category.createdAt).toLocaleDateString(),
-        className: "",
-      },
-      { value: "Edit / Delete", className: "", onClick: handleCellClick },
-    ]);
-  };
+  const [rows, setRows] = useState([]);
 
+  useEffect(() => {
+    if (menus?.data?.categories?.length > 0) {
+      const newRows = [];
+      menus?.data?.categories?.forEach((subcategory, subIndex) => {
+        const row = [
+          {
+            value: `#${subIndex + 1}`,
+            className: "text-[#2F80ED]",
+            onClick: handleCellClick,
+          },
+          { value: subcategory.name },
+          {
+            value: new Date(subcategory.createdAt).toLocaleDateString(),
+            className: "",
+          },
+          { value: "Edit / Delete", className: "", onClick: handleCellClick },
+        ];
+        newRows.push(row);
+      });
+      setRows(newRows);
+    }
+  }, [menus]);
+
+  console.log("rows", rows);
   const {
     register,
     handleSubmit,
@@ -75,17 +99,21 @@ const AddMenu = () => {
 
   const formRef = useRef(null);
 
+  const handleSelectChange = (value) => {
+    setValue("category", value);
+  };
+
   const handleSubmitForm = async (data) => {
-    if (!data.name || !data.type) {
+    if (!data.category) {
       return toast.error("Please fill all the fields");
     }
 
-    console.log(data);
     const payload = {
-      ...data,
-      storeId: userInfo?.store?._id,
+      categoryId: data.category,
+      id: menuId,
     };
-    const response = await CreateMenu(payload);
+    console.log("payload", payload);
+    const response = await AddCategoryToMenu(payload);
     if (response?.success) {
       refetchMenu();
       toast.success("Menu created successfully");
@@ -106,11 +134,10 @@ const AddMenu = () => {
   if (isMenuLoading) {
     return <LoadingAnimation />;
   }
-
   return (
     <div className="flex flex-col gap-5">
       <TopActionButtons
-        title="Add Menu"
+        title="Add Category"
         handleFunction={() => handleSaveChanges()}
         functionTitle="Save Changes"
       />
@@ -120,66 +147,40 @@ const AddMenu = () => {
         onSubmit={handleSubmit(handleSubmitForm)}
         className="flex flex-col gap-2"
       >
-        <div className="flex flex-col">
-          <label className="text-sm font-semibold">Name</label>
-          <input
-            type="text"
-            placeholder="Name"
-            {...register("name", { required: "Name is required" })}
-            className="input-box"
-          />
-          {errors.name && (
-            <span className="text-red-500 text-sm">{errors.name.message}</span>
-          )}
-        </div>
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-semibold">Type</label>
+          <label className="text-sm font-semibold">Select Category</label>
           <Select
-            onValueChange={(value) => setValue("type", value)}
-            {...register("type", { required: "Type is required" })}
-            className="bg-white"
+            onValueChange={handleSelectChange}
+            {...register("category", { required: "category is required" })}
           >
-            <SelectTrigger className="w-full bg-white">
-              <SelectValue placeholder="Select a Menu" />
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select A Category" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                {menuType.map((item) => (
-                  <SelectItem value={item} className="cursor-pointer">
-                    {item}
-                  </SelectItem>
+                {allCategories?.data?.map((category) => (
+                  <SelectItem value={category._id}>{category.name}</SelectItem>
                 ))}
               </SelectGroup>
             </SelectContent>
           </Select>
-          {errors.type && (
-            <span className="text-red-500 text-sm">{errors.type.message}</span>
+          {errors.category && (
+            <span className="text-red-500 text-sm">
+              {errors.category.message}
+            </span>
           )}
         </div>
       </form>
       <div className="flex flex-col gap-5">
-        {menus?.data?.map((menu) => (
-          <div key={menu?._id} className="flex flex-col">
-            <div className="flex items-center gap-3">
-              <p className="font-medium">{menu?.name} list</p>
-              <Link
-                href={`/dashboard/navigation/add_menu/add_category/${menu?._id}`}
-                className="cursor-pointer"
-              >
-                <MdEdit />
-              </Link>
-            </div>
-            {menu?.categories?.length > 0 && (
-              <TableComponent
-                headers={headers}
-                rows={createRows(menu.categories)}
-              />
-            )}
+        <div className="flex flex-col">
+          <div className="flex items-center gap-3">
+            <p className="font-medium">{menus?.data?.name} list</p>
           </div>
-        ))}
+          {rows?.length > 0 && <TableComponent headers={headers} rows={rows} />}
+        </div>
       </div>
     </div>
   );
 };
 
-export default AddMenu;
+export default AddCategoryToMenu;

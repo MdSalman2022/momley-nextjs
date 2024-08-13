@@ -41,12 +41,12 @@ const navigationLinks = [
       },
     ],
   },
-  {
-    id: 3,
-    href: "/dashboard/categories",
-    label: "Categories",
-    icon: <FiBox />,
-  },
+  // {
+  //   id: 3,
+  //   href: "/dashboard/categories",
+  //   label: "Categories",
+  //   icon: <FiBox />,
+  // },
   {
     id: 3,
     href: "/dashboard/products",

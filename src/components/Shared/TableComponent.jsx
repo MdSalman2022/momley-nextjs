@@ -24,9 +24,9 @@ const TableHeaderComponent = ({ headers }) => (
 
 const TableBodyComponent = ({ rows }) => (
   <TableBody>
-    {rows.map((row, rowIndex) => (
+    {rows?.map((row, rowIndex) => (
       <TableRow key={rowIndex}>
-        {row.map((cell, cellIndex) => (
+        {row?.map((cell, cellIndex) => (
           <TableCell
             key={cellIndex}
             className={cell.className}

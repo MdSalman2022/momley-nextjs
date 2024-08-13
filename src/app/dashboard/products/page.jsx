@@ -10,8 +10,23 @@ import {
 } from "@/components/ui/select";
 import CreateProductModal from "./CreateProductModal";
 import ProductsTable from "./ProductsTable";
+import useProduct from "@/hooks/useProduct";
+import { useQuery } from "react-query";
 
 const Products = () => {
+  const { GetProduct } = useProduct();
+  const {
+    data: allProducts = {},
+    isLoading: isProductLoading,
+    refetch: refetchProducts,
+  } = useQuery({
+    queryKey: ["allProducts"],
+    queryFn: () => GetProduct(),
+    cacheTime: 10 * (60 * 1000),
+    staleTime: 5 * (60 * 1000),
+  });
+
+  console.log("allProducts", allProducts);
   const pages = ["All", "Active", "Inactive", "Stock Out"];
   const [activePage, setActivePage] = useState(pages[0]);
   const paymentOptions = ["Paid", "Due", "Partial"];
@@ -80,11 +95,18 @@ const Products = () => {
         </div>
         <div className="flex flex-col gap-3">
           <p>02 Orders</p>
-          <ProductsTable />
+          <ProductsTable
+            allProducts={allProducts.data}
+            isProductLoading={isProductLoading}
+          />
         </div>
       </div>
 
-      <CreateProductModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      <CreateProductModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        refetchProducts={refetchProducts}
+      />
     </div>
   );
 };

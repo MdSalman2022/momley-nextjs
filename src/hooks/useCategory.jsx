@@ -44,7 +44,9 @@ const useCategory = () => {
     return CategoryList;
   };
   const getAllCategories = async (id, level) => {
-    let url = `${process.env.VITE_SERVER_URL}/category/get?storeId=${id}`;
+    let url = `${
+      process.env.VITE_SERVER_URL
+    }/category/get?storeId=${id}&depth=${level || 3}`;
 
     const response = await fetch(url, {
       method: "GET",
@@ -101,6 +103,20 @@ const useCategory = () => {
     const CategoryData = await response.json();
     return CategoryData;
   };
+  const AddCategoryToMenu = async (payload) => {
+    const response = await fetch(
+      `${process.env.VITE_SERVER_URL}/category/add-category-to-menu`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+    const CategoryData = await response.json();
+    return CategoryData;
+  };
 
   const GetMenus = async (id) => {
     const response = await fetch(
@@ -145,6 +161,33 @@ const useCategory = () => {
     return SubData;
   };
 
+  const getAllMenus = async (id, level) => {
+    let url = `${process.env.VITE_SERVER_URL}/category/get-menu?storeId=${id}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const CategoryList = await response.json();
+    return CategoryList;
+  };
+  const getMenuById = async (storeId, depth, id) => {
+    let url = `${process.env.VITE_SERVER_URL}/category/get-menu-by-id?storeId=${storeId}&depth=${depth}&id=${id}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const CategoryList = await response.json();
+    return CategoryList;
+  };
+
   return {
     getBooksByCategory,
     getAllCategories,
@@ -155,6 +198,9 @@ const useCategory = () => {
     CreateCategoryLevel,
     CreateMenu,
     GetMenus,
+    getAllMenus,
+    getMenuById,
+    AddCategoryToMenu,
   };
 };
 

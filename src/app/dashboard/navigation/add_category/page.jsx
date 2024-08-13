@@ -15,18 +15,20 @@ import { StateContext } from "@/contexts/StateProvider/StateProvider";
 import useCategory from "@/hooks/useCategory";
 import { useQuery } from "react-query";
 import { formatTime } from "@/libs/utils/common";
+import toast from "react-hot-toast";
 
 const AddCategory = () => {
   const { userInfo } = useContext(StateContext);
-  const { getAllCategories, CreateCategory } = useCategory();
+  const { getAllCategoriesLevel, CreateCategory } = useCategory();
+  const storeId = userInfo?.store?._id;
 
   const {
     data: categories = {},
     isLoading: isCategoryLoading,
     refetch: refetchCategory,
   } = useQuery({
-    queryKey: ["catagories"],
-    queryFn: () => getAllCategories(),
+    queryKey: ["categories", storeId],
+    queryFn: () => storeId && getAllCategoriesLevel(storeId),
     cacheTime: 10 * (60 * 1000),
     staleTime: 5 * (60 * 1000),
   });
@@ -34,9 +36,8 @@ const AddCategory = () => {
   console.log("categories", categories);
 
   const headers = [
-    { label: "", className: "w-[50px]" },
-    { label: "Serial", className: "w-[200px]" },
-    { label: "Menu" },
+    { label: "Serial", className: "w-[50px]" },
+    { label: "Category", className: "w-[200px]" },
     { label: "Date", className: "w-[200px]" },
     { label: "Action", className: "w-[200px]" },
   ];
@@ -45,43 +46,45 @@ const AddCategory = () => {
     console.log(`Cell clicked at row ${rowIndex}, column ${cellIndex}`);
   };
 
-  const rows = (Array.isArray(categories) ? categories : []).map(
-    (category, index) => [
-      { value: "", className: "" },
-      {
-        value: `#${index + 1}`,
-        className: "text-[#2F80ED]",
-        onClick: handleCellClick,
-      },
-      { value: category.name },
-      { value: formatTime(category?.createdAt), className: "" },
-      { value: "Edit / Delete", className: "", onClick: handleCellClick },
-    ]
-  );
+  const listCategories =
+    (categories?.data?.length > 0 && categories?.data[0]) || [];
+  const rows = [];
 
-  /* const rows = [
-    [
-      { value: "", className: "" },
-      { value: "#001", className: "text-[#2F80ED]", onClick: handleCellClick },
-      { value: "Home" },
-      { value: "07/11/2021", className: "" },
-      { value: "Edit / Delete", className: "", onClick: handleCellClick },
-    ],
-    [
-      { value: "", className: "" },
-      { value: "#002", className: "text-[#2F80ED]", onClick: handleCellClick },
-      { value: "Mom & Baby" },
-      { value: "07/11/2021", className: "" },
-      { value: "Edit / Delete", className: "", onClick: handleCellClick },
-    ],
-    [
-      { value: "", className: "" },
-      { value: "#003", className: "text-[#2F80ED]", onClick: handleCellClick },
-      { value: "Bath & Shower" },
-      { value: "07/11/2021", className: "" },
-      { value: "Edit / Delete", className: "", onClick: handleCellClick },
-    ],
-  ]; */
+  console.log("listCategories?.categories", listCategories?.categories);
+
+  if (listCategories?.categories) {
+    listCategories.categories.forEach((category, index) => {
+      const categoryName = category.name;
+      const categoryCreatedAt = formatTime(category?.createdAt);
+      const parentCategoryName = category.parentCategory?.name || "";
+
+      if (Array.isArray(category.subcategories)) {
+        category.subcategories.forEach((sub, subIndex) => {
+          rows.push([
+            {
+              value: `#${index + 1}.${subIndex + 1}`,
+              className: "text-[#2F80ED]",
+              onClick: handleCellClick,
+            },
+            { value: categoryName },
+            { value: categoryCreatedAt, className: "" },
+            { value: "Edit / Delete", className: "", onClick: handleCellClick },
+          ]);
+        });
+      } else {
+        rows.push([
+          {
+            value: `#${index + 1}`,
+            className: "text-[#2F80ED]",
+            onClick: handleCellClick,
+          },
+          { value: categoryName },
+          { value: categoryCreatedAt, className: "" },
+          { value: "Edit / Delete", className: "", onClick: handleCellClick },
+        ]);
+      }
+    });
+  }
 
   const [selectedValue, setSelectedValue] = useState("");
   const [categoryName, setCategoryName] = useState("");
@@ -92,12 +95,17 @@ const AddCategory = () => {
 
   const handleAddCategory = async () => {
     if (categoryName.trim()) {
-      const payload = { name: categoryName, storeId: userInfo?.store?._id };
+      const payload = {
+        name: categoryName,
+        storeId: userInfo?.store?._id,
+        categoryLevel: categories?.data[0]._id,
+      };
       try {
         const response = await CreateCategory(payload);
         if (response?.success) {
           setCategoryName("");
           refetchCategory();
+          toast.success("Category added successfully");
         }
       } catch (error) {
         console.error("Error adding category:", error);
@@ -137,6 +145,7 @@ const AddCategory = () => {
             type="text"
             className="input-box"
             placeholder="Enter Name"
+            value={categoryName}
             onChange={(e) => setCategoryName(e.target.value)}
           />
         </span>
