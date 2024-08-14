@@ -187,9 +187,9 @@ const CreateProductModal = ({ isOpen, setIsOpen, refetchProducts }) => {
               ? selectedSubCategory?.name
               : "Select Category"}
           </span>
-          {!selectedSubCategory?.id && (
+          {/* {!selectedSubCategory?.id && (
             <span className="text-xs text-red-600">This field is required</span>
-          )}
+          )} */}
         </div>
         <div className="col-span-2">
           <label className="font-semibold">Specifications</label>

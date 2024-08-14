@@ -12,8 +12,10 @@ import CreateProductModal from "./CreateProductModal";
 import ProductsTable from "./ProductsTable";
 import useProduct from "@/hooks/useProduct";
 import { useQuery } from "react-query";
+import { useRouter } from "next/navigation";
 
 const Products = () => {
+  const router = useRouter();
   const { GetProduct } = useProduct();
   const {
     data: allProducts = {},
@@ -43,7 +45,7 @@ const Products = () => {
         title="Products"
         onExport={() => console.log("Exporting...")}
         onImport={() => console.log("Importing...")}
-        handleFunction={() => setIsOpen(true)}
+        handleFunction={() => router.push("/dashboard/products/create_product")}
         functionTitle="Add a New Product"
       />
 

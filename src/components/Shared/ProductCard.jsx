@@ -8,6 +8,7 @@ import { FaMinus, FaPlus, FaStar, FaStarHalf } from "react-icons/fa";
 import CartIcon from "../../../public/images/CartIcon.svg";
 import laptop from "../../../public/images/products/laptop.webp";
 import Image from "next/image";
+import { TruncateText } from "@/libs/utils/common";
 
 const ProductCard = ({ book }) => {
   const { cart, setCart } = useContext(StateContext);
@@ -125,9 +126,9 @@ const ProductCard = ({ book }) => {
   // console.log(imageUrl);
 
   console.log("book", book);
-
+  const truncatedText = TruncateText(book?.name, 10);
   return (
-    <div className="flex flex-col items-center justify-between gap-3 border border-[#EEEEEE80] p-3 rounded text-black">
+    <div className="flex flex-col items-center justify-between gap-3 border border-[#EEEEEE80] p-3 rounded text-black max-w-[180px]">
       <Link href={`/book/${book?._id}`}>
         <Image
           className="object-cover w-[164px] h-[217px]"
@@ -137,7 +138,7 @@ const ProductCard = ({ book }) => {
         />
       </Link>
       <Link href={`/book/${book?._id}`}>
-        <p className="font-semibold text-sm text-center">{book?.name}</p>
+        <p className="font-semibold text-sm text-center">{truncatedText}</p>
       </Link>
       <p className="text-sm">{book?.weight}</p>
       <p className="font-semibold ">৳ {book?.price}</p>

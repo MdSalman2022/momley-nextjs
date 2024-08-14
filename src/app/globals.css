@@ -10,7 +10,7 @@
     @apply transition-all duration-300 h-10 flex items-center px-4 border border-[#000000]  text-[#000000] hover:text-white font-semibold rounded hover:bg-[#111111] focus:outline-none;
   }
   .input-box {
-    @apply mt-1 px-3 h-10 flex items-center bg-[#FFFFFF] rounded-md text-sm shadow-sm placeholder-slate-400 border border-[#F2F2F2]
+    @apply mt-1 px-3 h-10 flex items-center bg-[#FFFFFF] rounded-md text-sm shadow-sm placeholder-slate-400 border border-[#11111170]
       focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500
       disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none
       invalid:border-pink-500 invalid:text-pink-600
