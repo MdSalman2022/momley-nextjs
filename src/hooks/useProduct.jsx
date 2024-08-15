@@ -22,7 +22,29 @@ const useProduct = () => {
     }
   };
 
-  const GetProduct = async (payload) => {
+  const updateProduct = async (payload) => {
+    try {
+      const response = await fetch(
+        `${process.env.VITE_SERVER_URL}/products/update`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const product = await response.json();
+      return product;
+    } catch (error) {
+      console.error("Failed to fetch book details:", error);
+      throw error;
+    }
+  };
+  const GetProduct = async () => {
     try {
       const response = await fetch(
         `${process.env.VITE_SERVER_URL}/products/list`,
@@ -43,6 +65,28 @@ const useProduct = () => {
       console.error("Failed to fetch book details:", error);
       return [];
       // throw error;
+    }
+  };
+
+  const GetProductById = async (productId) => {
+    try {
+      const response = await fetch(
+        `${process.env.VITE_SERVER_URL}/products/get?productId=${productId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const product = await response.json();
+      return product;
+    } catch (error) {
+      console.error("Failed to fetch book details:", error);
+      throw error;
     }
   };
 
@@ -70,7 +114,13 @@ const useProduct = () => {
     }
   };
 
-  return { createProduct, GetProduct, SearchProduct };
+  return {
+    createProduct,
+    updateProduct,
+    GetProduct,
+    SearchProduct,
+    GetProductById,
+  };
 };
 
 export default useProduct;

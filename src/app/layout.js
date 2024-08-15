@@ -25,16 +25,16 @@ export default function RootLayout({ children }) {
     <ReactQueryClientProvider>
       <html lang="en">
         <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <StateProvider>
-              <body className={inter.className}>
+          <body className={inter.className}>
+            <AuthProvider>
+              <StateProvider>
                 <Toaster />
                 <Header />
                 <div>{children}</div>
                 <Footer />
-              </body>
-            </StateProvider>
-          </AuthProvider>
+              </StateProvider>
+            </AuthProvider>
+          </body>
         </QueryClientProvider>
       </html>
     </ReactQueryClientProvider>

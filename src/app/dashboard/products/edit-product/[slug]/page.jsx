@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -13,11 +13,15 @@ import { StateContext } from "@/contexts/StateProvider/StateProvider";
 import toast from "react-hot-toast";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { FiPlusCircle } from "react-icons/fi";
-import { quantityType, units } from "@/libs/utils/common";
-import TagsInput from "@/libs/utils/tagsInput";
+import { getUnitsByType, quantityType, units } from "@/libs/utils/common";
 import SelectCategoryModal from "@/libs/utils/SelectCategoryModal";
+import TagsInput from "@/libs/utils/tagsInput";
+import { useQuery } from "react-query";
+import LoadingAnimation from "@/libs/utils/LoadingAnimation";
+import { useRouter } from "next/navigation";
 
-const CreateProductModal = () => {
+const EditProduct = ({ params }) => {
+  const router = useRouter();
   const { userInfo } = useContext(StateContext);
   const formRef = useRef(null);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
@@ -28,22 +32,98 @@ const CreateProductModal = () => {
   });
 
   const [tags, setTags] = useState([]);
-
-  const { createProduct } = useProduct();
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    reset,
-    formState: { errors },
-  } = useForm();
-
   const [specifications, setSpecifications] = useState([]);
   const [newSpecName, setNewSpecName] = useState("");
   const [newSpecValue, setNewSpecValue] = useState("");
   const [showNewSpecFields, setShowNewSpecFields] = useState(
     specifications.length === 0
   );
+
+  const { updateProduct, GetProductById } = useProduct();
+
+  const {
+    data: productDetails = {},
+    isLoading: isProductLoading,
+    refetch: refetchProducts,
+  } = useQuery({
+    queryKey: ["productDetails", params?.slug],
+    queryFn: () => GetProductById(params?.slug),
+    cacheTime: 10 * (60 * 1000),
+    staleTime: 5 * (60 * 1000),
+  });
+
+  console.log("productDetails", productDetails);
+
+  const thisProduct = productDetails?.data || {};
+
+  useEffect(() => {
+    if (thisProduct?.tags) {
+      setTags(thisProduct.tags);
+    }
+  }, [thisProduct]);
+  useEffect(() => {
+    if (thisProduct?.category) {
+      setSelectedSubCategory({
+        id: thisProduct.category?._id,
+        name: thisProduct.category?.name,
+        ancestors: thisProduct.category?.ancestors,
+      });
+    }
+  }, [thisProduct]);
+
+  useEffect(() => {
+    if (
+      thisProduct?.specifications &&
+      typeof thisProduct.specifications === "object"
+    ) {
+      setSpecifications(
+        Object.entries(thisProduct.specifications).map(([name, value]) => ({
+          name,
+          value,
+        }))
+      );
+    }
+  }, [thisProduct]);
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    getValues,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      name: "",
+      description: "",
+      price: "",
+      salePrice: "",
+      quantity: "",
+      quantityType: "",
+      weight: "",
+      color: "",
+      unit: "",
+      brand: "",
+      category: "",
+      tags: [],
+    },
+  });
+
+  useEffect(() => {
+    if (thisProduct) {
+      reset({
+        name: thisProduct.name || "",
+        description: thisProduct.description || "",
+        price: thisProduct.price || "",
+        salePrice: thisProduct.salePrice || "",
+        quantity: thisProduct.stock?.quantity || "",
+        quantityType: thisProduct.stock?.quantityType || "",
+        weight: thisProduct.weight || "",
+        color: thisProduct.color || "",
+        unit: thisProduct.unit || "",
+      });
+    }
+  }, [thisProduct, reset]);
 
   const addSpecification = () => {
     if (newSpecName && newSpecValue) {
@@ -54,24 +134,45 @@ const CreateProductModal = () => {
       setNewSpecName("");
       setNewSpecValue("");
       setShowNewSpecFields(false);
+    } else {
+      toast.error("Please fill the fields");
     }
   };
 
   console.log("specifications", specifications);
 
+  console.log("thisProduct", thisProduct, thisProduct?.stock?.quantityType);
+  const [typeUnit, setTypeUnit] = useState([]);
+
   const handleQuantityTypeValue = (value) => {
     setValue("quantityType", value, { shouldValidate: true });
+
+    const updatedUnits = getUnitsByType(value);
+    setTypeUnit(updatedUnits);
   };
 
-  const handleValueChange = (value) => {
+  useEffect(() => {
+    if (thisProduct?.stock?.quantityType) {
+      const updatedUnits = getUnitsByType(thisProduct?.stock?.quantityType);
+      setTypeUnit(updatedUnits);
+    }
+  }, [thisProduct]);
+
+  const handleUnitValue = (value) => {
     setValue("unit", value, { shouldValidate: true });
   };
+
+  useEffect(() => {
+    if (selectedSubCategory?.id) {
+      setValue("category", selectedSubCategory?.id, { shouldValidate: true });
+    }
+  }, [selectedSubCategory]);
+
   const onSubmit = async (data) => {
     if (!selectedSubCategory?.id) {
       toast.error("Please select a category");
       return;
     }
-    // Handle form submission with validated data
     console.log("data", data);
     const {
       name,
@@ -87,6 +188,7 @@ const CreateProductModal = () => {
       specifications,
     } = data;
     const payload = {
+      slug: thisProduct?.slug,
       name: name,
       description: description,
       price: price,
@@ -108,10 +210,11 @@ const CreateProductModal = () => {
       brand,
     };
     console.log("payload", payload);
-    const result = await createProduct(payload);
+    const result = await updateProduct(payload);
 
     if (result?.success) {
       toast.success("Product created successfully");
+      router.push("/dashboard/products");
     }
 
     console.log("result", result);
@@ -127,6 +230,10 @@ const CreateProductModal = () => {
     }
   };
 
+  if (isProductLoading) {
+    return <LoadingAnimation />;
+  }
+
   return (
     <div>
       {isCategoryModalOpen && (
@@ -138,13 +245,13 @@ const CreateProductModal = () => {
       )}
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-medium">Create Product</h2>
+          <h2 className="text-xl font-medium">Edit Product</h2>
           <button
             onClick={() => handleSaveChanges()}
             type="button"
             className="primary-btn"
           >
-            Create Product
+            Update Product
           </button>
         </div>
         <form
@@ -246,24 +353,6 @@ const CreateProductModal = () => {
                 )}
               </div>
               <div className="flex flex-col">
-                <label className="text-sm" htmlFor="quantity">
-                  Quantity
-                </label>
-                <input
-                  className="input-box border-[#11111170]"
-                  id="quantity"
-                  type="number"
-                  placeholder="e.g. 10"
-                  {...register("quantity", { required: true })}
-                />
-                {errors.quantity && (
-                  <span className="text-xs text-red-600">
-                    This field is required
-                  </span>
-                )}
-              </div>
-
-              <div className="flex flex-col">
                 <label className="text-sm" htmlFor="weight">
                   Weight
                 </label>
@@ -283,9 +372,31 @@ const CreateProductModal = () => {
               </div>
               <div className="flex flex-col">
                 <label className="text-sm" htmlFor="quantity">
+                  Quantity
+                </label>
+                <input
+                  className="input-box border-[#11111170]"
+                  id="quantity"
+                  type="number"
+                  placeholder="e.g. 10"
+                  {...register("quantity", { required: true })}
+                />
+                {errors.quantity && (
+                  <span className="text-xs text-red-600">
+                    This field is required
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-sm" htmlFor="quantity">
                   Quantity Type
                 </label>
-                <Select onValueChange={handleQuantityTypeValue} filterable>
+                <Select
+                  onValueChange={handleQuantityTypeValue}
+                  filterable
+                  defaultValue={thisProduct?.stock?.quantityType || ""}
+                >
                   <SelectTrigger className="w-full h-10 mt-1 border-[#11111170]">
                     <SelectValue
                       placeholder="Select Quantity Type"
@@ -300,17 +411,22 @@ const CreateProductModal = () => {
                     ))}
                   </SelectContent>
                 </Select>
-                {errors.quantity && (
+                {errors.quantityType && (
                   <span className="text-xs text-red-600">
                     This field is required
                   </span>
                 )}
               </div>
+
               <div className="flex flex-col">
                 <label className="text-sm" htmlFor="unit">
                   Unit
                 </label>
-                <Select onValueChange={handleValueChange} filterable>
+                <Select
+                  onValueChange={handleUnitValue}
+                  filterable
+                  defaultValue={thisProduct?.unit}
+                >
                   <SelectTrigger className="w-full h-10 mt-1 border-[#11111170]">
                     <SelectValue
                       placeholder="Select Unit"
@@ -318,7 +434,7 @@ const CreateProductModal = () => {
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    {units.map((option, index) => (
+                    {typeUnit.map((option, index) => (
                       <SelectItem key={index} value={option}>
                         {option}
                       </SelectItem>
@@ -350,9 +466,6 @@ const CreateProductModal = () => {
                     ? selectedSubCategory?.name
                     : "Select Category"}
                 </span>
-                {/* {!selectedSubCategory?.id && (
-            <span className="text-xs text-red-600">This field is required</span>
-          )} */}
               </div>
 
               <div className="flex flex-col">
@@ -383,16 +496,6 @@ const CreateProductModal = () => {
                   </span>
                 )}
               </div>
-              {/* <div className="flex flex-col">
-                <label className="text-sm" htmlFor="tags">
-                  Tags
-                </label>
-                <input
-                  type="text"
-                  className="input-box"
-                  {...register("tags", { required: false })}
-                />
-              </div> */}
               <TagsInput tags={tags} setTags={setTags} />
             </div>
             <div className="flex flex-col gap-3 border rounded-lg pt-3 pb-5 px-4">
@@ -479,4 +582,4 @@ const CreateProductModal = () => {
   );
 };
 
-export default CreateProductModal;
+export default EditProduct;

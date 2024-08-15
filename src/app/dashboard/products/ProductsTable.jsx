@@ -11,7 +11,23 @@ import {
 } from "@/components/ui/select";
 import useProduct from "@/hooks/useProduct";
 import LoadingAnimation from "@/libs/utils/LoadingAnimation";
+import { BsThreeDots } from "react-icons/bs";
+
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
+
 const ProductsTable = ({ allProducts, isProductLoading }) => {
+  const router = useRouter();
+
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -26,6 +42,10 @@ const ProductsTable = ({ allProducts, isProductLoading }) => {
 
   const handleValueChange = (value) => {
     setSelectedStatus(value);
+  };
+
+  const handleEdit = (slug) => {
+    router.push(`/dashboard/products/edit-product/${slug}`);
   };
 
   const columns = [
@@ -85,7 +105,7 @@ const ProductsTable = ({ allProducts, isProductLoading }) => {
         console.log("row", row);
         return (
           <Select onValueChange={handleValueChange} aria-label="Select action">
-            <SelectTrigger className="w-40 h-10 mt-1 border-0">
+            <SelectTrigger className="w-24 h-8 border text-xs">
               <SelectValue placeholder={row?.original?.status} />
             </SelectTrigger>
             <SelectContent>
@@ -104,13 +124,53 @@ const ProductsTable = ({ allProducts, isProductLoading }) => {
       },
       enableSorting: false, // Assuming sorting is not needed for actions
     },
+    {
+      id: "actions",
+      header: "Actions",
+      accessorKey: "id", // Assuming actions are tied to the row's unique 'id'
+      cell: ({ row }) => {
+        return (
+          <div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="flex justify-center items-center text-black bg-primary hover:bg-gray-100 w-8 h-8 rounded-full"
+                >
+                  <BsThreeDots />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-32" align="end">
+                <DropdownMenuRadioGroup>
+                  <DropdownMenuRadioItem
+                    value="Edit"
+                    className="cursor-pointer"
+                    onSelect={() => handleEdit(row?.original?.slug)}
+                  >
+                    Edit
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem
+                    value="Delete"
+                    className="cursor-pointer"
+                  >
+                    Delete
+                  </DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        );
+      },
+    },
   ];
 
   const products =
     allProducts?.length > 0
       ? allProducts?.map((product, index) => ({
+          id: product?._id,
           name: product?.name,
-          price: product?.price,
+          slug: product?.slug,
+          price: product?.salePrice || product?.price,
           stock: product?.stock?.quantity,
           weight: product?.weight,
           vendor: product?.vendor,
@@ -119,27 +179,6 @@ const ProductsTable = ({ allProducts, isProductLoading }) => {
       : [];
 
   console.log("products", products);
-
-  // const data = [
-  //   {
-  //     id: "1",
-  //     productName: "Product 1",
-  //     Price: "100.00",
-  //     Stock: "100",
-  //     Sales: "50",
-  //     Vendor: "Vendor 1",
-  //     Status: "Active",
-  //   },
-  //   {
-  //     id: "2",
-  //     productName: "Product 2",
-  //     Price: "300.00",
-  //     Stock: "100",
-  //     Sales: "50",
-  //     Vendor: "Vendor 2",
-  //     Status: "Disabled",
-  //   },
-  // ];
 
   if (isProductLoading) {
     return <LoadingAnimation />;

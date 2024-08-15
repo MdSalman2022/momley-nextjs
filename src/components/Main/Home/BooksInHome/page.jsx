@@ -70,7 +70,7 @@ const BooksInHome = async () => {
     },
     {
       title: "Mom & Baby",
-      items: allBooks?.books?.length > 0 && allBooks.books.slice(0, 20),
+      items: allProducts?.data?.length > 0 && allProducts?.data?.slice(0, 20),
       ads: [
         {
           image: NewLatestCollection,
@@ -90,7 +90,7 @@ const BooksInHome = async () => {
     },
     {
       title: "All Products",
-      items: allBooks?.books?.length > 0 && allBooks.books.slice(0, 20),
+      items: allProducts?.data?.length > 0 && allProducts?.data?.slice(0, 20),
       ads: [
         {
           image: NewLatestCollectionMen,
@@ -107,81 +107,6 @@ const BooksInHome = async () => {
           TextColor: "#ffffff",
         },
       ],
-    },
-  ];
-
-  const SectionOneAds = [
-    {
-      image: NewLatestCollectionMen,
-      firstLine: "New  arrivals",
-      secondLine: "New Latest Collection",
-      thirdLine: "All Special Products, Up To 45% Off",
-      TextColor: "#333333",
-    },
-    {
-      image: TrendingWomenCollection,
-      firstLine: "New  arrivals",
-      secondLine: "New Latest Collection",
-      thirdLine: "All Special Products, Up To 45% Off",
-      TextColor: "#ffffff",
-    },
-  ];
-
-  const SectionOneBottomAds = [
-    {
-      image: WatchCollection,
-      firstLine: "New  arrivals",
-      secondLine: "WATCH collection",
-      thirdLine: "All Special Products, Up To 45% Off",
-      TextColor: "#333333",
-    },
-    {
-      image: CosmeticsCollection,
-      firstLine: "New  arrivals",
-      secondLine: "COSMETICS COLLECTION ",
-      thirdLine: "All Special Products, Up To 45% Off",
-      TextColor: "#333333",
-    },
-    {
-      image: BabyProducts,
-      firstLine: "New  arrivals",
-      secondLine: "BABY PRODUCTS ",
-      thirdLine: "All Special Products, Up To 45% Off",
-      TextColor: "#333333",
-    },
-  ];
-
-  const SectionTwoAds = [
-    {
-      image: NewLatestCollection,
-      firstLine: "New  arrivals",
-      secondLine: "NEW LATEST COLLECTION",
-      thirdLine: "All Special Products, Up To 45% Off",
-      TextColor: "#333333",
-    },
-    {
-      image: TrendingManCollection,
-      firstLine: "New  arrivals",
-      secondLine: "TENDING MAN’S COLLECTION",
-      thirdLine: "All Special Products, Up To 45% Off",
-      TextColor: "#ffffff",
-    },
-  ];
-
-  const SectionThreeAds = [
-    {
-      image: NewLatestCollectionMen,
-      firstLine: "New  arrivals",
-      secondLine: "NEW LATEST COLLECTION",
-      thirdLine: "All Special Products, Up To 45% Off",
-      TextColor: "#333333",
-    },
-    {
-      image: TrendingWomenCollection,
-      firstLine: "New  arrivals",
-      secondLine: "TENDING WOMAN’S COLLECTION",
-      thirdLine: "All Special Products, Up To 45% Off",
-      TextColor: "#ffffff",
     },
   ];
 

@@ -23,7 +23,7 @@ const Layout = ({ children }) => {
           <div className="py-2">
             <DashboardHeader />
           </div>
-          {children}
+          <div className="py-1">{children}</div>
         </main>
       </div>
     </div>

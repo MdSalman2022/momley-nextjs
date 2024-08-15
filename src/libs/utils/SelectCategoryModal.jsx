@@ -44,6 +44,7 @@ const SelectCategoryModal = ({ isOpen, setIsOpen, setSelectedSubCategory }) => {
   const [finalSelectedCategory, setFinalSelectedCategory] = useState({
     id: null,
     name: null,
+    ancestors: [],
   });
   const [previousCategories, setPreviousCategories] = useState(
     Array(totalLevel).fill({ _id: null })
@@ -112,6 +113,7 @@ const SelectCategoryModal = ({ isOpen, setIsOpen, setSelectedSubCategory }) => {
               setFinalSelectedCategory({
                 id: category._id,
                 name: category.name,
+                ancestors: category?.ancestors,
               });
             }
           }}

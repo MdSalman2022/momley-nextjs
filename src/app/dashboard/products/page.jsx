@@ -32,7 +32,6 @@ const Products = () => {
   const pages = ["All", "Active", "Inactive", "Stock Out"];
   const [activePage, setActivePage] = useState(pages[0]);
   const paymentOptions = ["Paid", "Due", "Partial"];
-  const [isOpen, setIsOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("Active");
 
   const handleValueChange = (value) => {
@@ -103,12 +102,6 @@ const Products = () => {
           />
         </div>
       </div>
-
-      <CreateProductModal
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        refetchProducts={refetchProducts}
-      />
     </div>
   );
 };

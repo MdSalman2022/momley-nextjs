@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import useProduct from "@/hooks/useProduct";
-import SelectCategoryModal from "./SelectCategoryModal";
+import SelectCategoryModal from "../../../libs/utils/SelectCategoryModal";
 import { StateContext } from "@/contexts/StateProvider/StateProvider";
 import toast from "react-hot-toast";
 

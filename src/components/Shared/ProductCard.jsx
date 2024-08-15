@@ -129,7 +129,7 @@ const ProductCard = ({ book }) => {
   const truncatedText = TruncateText(book?.name, 10);
   return (
     <div className="flex flex-col items-center justify-between gap-3 border border-[#EEEEEE80] p-3 rounded text-black max-w-[180px]">
-      <Link href={`/book/${book?._id}`}>
+      <Link href={`/product/${book?._id}`}>
         <Image
           className="object-cover w-[164px] h-[217px]"
           src={laptop}
@@ -137,7 +137,7 @@ const ProductCard = ({ book }) => {
           height={217}
         />
       </Link>
-      <Link href={`/book/${book?._id}`}>
+      <Link href={`/product/${book?._id}`}>
         <p className="font-semibold text-sm text-center">{truncatedText}</p>
       </Link>
       <p className="text-sm">{book?.weight}</p>

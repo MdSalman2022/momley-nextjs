@@ -5,11 +5,14 @@ import { useQuery } from "@tanstack/react-query";
 import { createContext, useContext, useEffect, useState } from "react";
 import { AuthContext } from "../AuthProvider/AuthProvider";
 import useProfile from "@/hooks/useProfile";
+import useStore from "@/hooks/useStore";
 
 export const StateContext = createContext();
 
 const StateProvider = ({ children }) => {
   const { getProfile } = useProfile();
+  const { getStore } = useStore();
+
   const { user } = useContext(AuthContext);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -20,8 +23,29 @@ const StateProvider = ({ children }) => {
 
   const uid = user?.uid;
 
-  console.log("user", user);
-  console.log("uid", uid);
+  // console.log("user", user);
+  // console.log("uid", uid);
+
+  const storeId = process.env.VITE_STORE_ID;
+
+  console.log("storeId", storeId);
+
+  const {
+    data: storeInfo = {},
+    isLoading: isStoreInfoLoading,
+    refetch: refetchStoreInfo,
+  } = useQuery({
+    queryKey: ["storeInfo", storeId],
+    queryFn: async () => {
+      if (!storeId) return {};
+      const response = await getStore(storeId);
+      return response.data; // Return the data property directly
+    },
+    cacheTime: 10 * (60 * 1000), // cache data for 10 minutes
+    staleTime: 5 * (60 * 1000), // consider data fresh for 5 minutes
+  });
+
+  console.log("storeInfo", storeInfo);
 
   const {
     data: userInfo = {},
@@ -125,6 +149,8 @@ const StateProvider = ({ children }) => {
   }, [cart]);
 
   const stateInfo = {
+    storeInfo,
+    storeId,
     userInfo,
     isUserInfoLoading,
     refetchUserInfo,

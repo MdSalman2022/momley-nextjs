@@ -13,7 +13,7 @@ import Image from "next/image";
 import { useQuery } from "react-query";
 
 const BookDetails = ({ params }) => {
-  const bookId = params.bookId;
+  const productId = params.productId;
   const { getBookDetails } = useBook();
   const [activeTab, setActiveTab] = useState("description");
 
@@ -22,8 +22,8 @@ const BookDetails = ({ params }) => {
     isLoading: isBookDetailsLoading,
     refetch: refetchBookDetails,
   } = useQuery({
-    queryKey: ["productDetails", bookId],
-    queryFn: () => bookId && getBookDetails(bookId),
+    queryKey: ["productDetails", productId],
+    queryFn: () => productId && getBookDetails(productId),
     cacheTime: 10 * (60 * 1000),
     staleTime: 5 * (60 * 1000),
   });
@@ -162,10 +162,10 @@ const BookDetails = ({ params }) => {
           <div className="col-span-1 flex flex-col gap-5">
             <SecurityCard />
             <ReviewCard />
-            <RecommendedBooks bookId={bookId} />
+            <RecommendedBooks productId={productId} />
           </div>
           <div className="col-span-4">
-            <RelatedBooks bookId={bookId} />
+            <RelatedBooks productId={productId} />
           </div>
         </div>
       </div>

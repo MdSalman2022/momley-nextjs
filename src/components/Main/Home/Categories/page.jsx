@@ -1,4 +1,3 @@
-import useBook from "@/hooks/useBook";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -10,30 +9,32 @@ import brandImage4 from "../../../../../public/images/brands/4.png";
 import brandImage5 from "../../../../../public/images/brands/5.png";
 import brandImage6 from "../../../../../public/images/brands/6.png";
 import brandImage7 from "../../../../../public/images/brands/7.png";
-import { TruncateText } from "@/libs/utils/common";
+import { storeId, TruncateText } from "@/libs/utils/common";
+import useCategory from "@/hooks/useCategory";
 
 const CategoryLink = ({ categories, productImage, truncateText }) => (
   <>
     {categories.map((category, index) => (
       <Link
-        href={`/category/${category}`}
+        href={`/category/${category?.name}`}
         key={index}
         className="flex justify-between items-center gap-10 h-24 w-60 p-5 hover:bg-gray-100"
       >
         <Image src={productImage} alt={"product"} className="w-16 h-16" />
-        {TruncateText(category, 18)}
+        {TruncateText(category?.name, 18)}
       </Link>
     ))}
   </>
 );
 
 const Categories = async () => {
-  const { getAllAuthors, getAllCategories } = useBook();
+  const { getAllCategories } = useCategory();
 
-  const authors = await getAllAuthors();
-  const categories = await getAllCategories();
+  // const categories = await getAllCategories();
+  const categoryData = await getAllCategories(storeId);
 
-  console.log("authors", authors);
+  console.log("categoryData", categoryData);
+  const categories = categoryData?.data || [];
   console.log("categories", categories);
 
   const brandImages = [
@@ -111,14 +112,6 @@ const Categories = async () => {
         }
       >
         <div className="flex items-center gap-10">
-          {/* {authors.map((writer, index) => (
-            <div
-              key={index}
-              className="flex primary-outline-btn justify-center"
-            >
-              {writer}
-            </div>
-          ))} */}
           {brandImages.map((brandImage, index) => (
             <div key={index} className="flex justify-center">
               <Image src={brandImage} alt="brand" />

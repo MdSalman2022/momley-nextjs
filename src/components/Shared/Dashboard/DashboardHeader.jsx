@@ -18,7 +18,7 @@ import Link from "next/link";
 const DashboardHeader = () => {
   const { user } = useAuth();
   return (
-    <div className="flex justify-between p-6 border py-3 px-9 w-full rounded mb-6">
+    <div className="flex justify-between p-6 border py-3 px-9 w-full rounded mb-1">
       <div className="flex items-center gap-3 relative">
         <input
           type="text"

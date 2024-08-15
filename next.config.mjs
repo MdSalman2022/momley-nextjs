@@ -2,6 +2,7 @@
 const nextConfig = {
   env: {
     VITE_SERVER_URL: process.env.VITE_SERVER_URL,
+    VITE_STORE_ID: process.env.VITE_STORE_ID,
     VITE_IMGBB_KEY: process.env.VITE_IMGBB_KEY,
     VITE_FIREBASE_API_KEY: process.env.VITE_FIREBASE_API_KEY,
     VITE_FIREBASE_AUTH_DOMAIN: process.env.VITE_FIREBASE_AUTH_DOMAIN,
