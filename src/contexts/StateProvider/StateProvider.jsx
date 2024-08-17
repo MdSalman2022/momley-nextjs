@@ -40,9 +40,6 @@ const StateProvider = ({ children }) => {
     }
   }, [cart]);
 
-  // console.log("user", user);
-  // console.log("uid", uid);
-
   const {
     data: storeInfo = {},
     isLoading: isStoreInfoLoading,
