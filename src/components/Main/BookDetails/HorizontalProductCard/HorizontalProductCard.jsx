@@ -12,9 +12,8 @@ const HorizontalProductCard = ({ book }) => {
   const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
-    const cartData = JSON.parse(localStorage.getItem("cart")) || [];
     let count = 0;
-    cartData.forEach((item) => {
+    cart.forEach((item) => {
       if (item._id === book._id) {
         count += item.quantity;
       }
@@ -32,7 +31,7 @@ const HorizontalProductCard = ({ book }) => {
             ...item,
             quantity: cartCount ? cartCount : item.quantity + 1,
             totalPrice:
-              item.price * (cartCount ? cartCount : item.quantity + 1),
+              item.salePrice * (cartCount ? cartCount : item.quantity + 1),
           };
           return updatedItem;
         } else {
@@ -46,22 +45,53 @@ const HorizontalProductCard = ({ book }) => {
       const newCartItem = {
         ...book,
         quantity: cartCount ? cartCount : 1,
-        totalPrice: book.price * (cartCount ? cartCount : 1),
+        totalPrice: book.salePrice * (cartCount ? cartCount : 1),
       };
       setCart([...cart, newCartItem]);
       localStorage.setItem("cart", JSON.stringify([...cart, newCartItem]));
       setCartCount(cartCount ? cartCount : 1);
     }
   };
-
   const handleMinusClick = () => {
     if (cartCount === 0) {
       return; // do not update cartCount if it's already 0
     }
+
+    const updatedCart = cart.map((item) => {
+      if (item._id === book._id) {
+        const newQuantity = item.quantity - 1;
+        const newTotalPrice =
+          item.salePrice * (newQuantity < 1 ? 1 : newQuantity);
+        return {
+          ...item,
+          quantity: newQuantity < 1 ? 1 : newQuantity,
+          totalPrice: newTotalPrice,
+        };
+      }
+      return item;
+    });
+
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
     setCartCount(cartCount - 1);
   };
 
   const handlePlusClick = () => {
+    const updatedCart = cart.map((item) => {
+      if (item._id === book._id) {
+        const newQuantity = item.quantity + 1;
+        const newTotalPrice = item.salePrice * newQuantity;
+        return {
+          ...item,
+          quantity: newQuantity,
+          totalPrice: newTotalPrice,
+        };
+      }
+      return item;
+    });
+
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
     setCartCount(cartCount + 1);
   };
 

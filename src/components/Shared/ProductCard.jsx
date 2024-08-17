@@ -141,7 +141,7 @@ const ProductCard = ({ book }) => {
         <p className="font-semibold text-sm text-center">{truncatedText}</p>
       </Link>
       <p className="text-sm">{book?.weight}</p>
-      <p className="font-semibold ">৳ {book?.price}</p>
+      <p className="font-semibold ">৳ {book?.salePrice}</p>
       <span className="flex items-center">
         <FaStar />
         <FaStar />

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+/* import React, { useContext, useEffect, useState } from "react";
 import { FaMinus, FaPlus } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import { StateContext } from "../../../contexts/StateProvider/StateProvider";
@@ -124,3 +124,4 @@ const CheckoutBookList = ({ book }) => {
 };
 
 export default CheckoutBookList;
+ */

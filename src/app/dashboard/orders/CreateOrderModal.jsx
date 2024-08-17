@@ -183,7 +183,7 @@ const CreateOrderModal = ({ isOpen, setIsOpen }) => {
                           )}
                         </span>
                         <span>{item?.stock?.quantity}</span>
-                        <span>{item?.price}</span>
+                        <span>{item?.salePrice}</span>
                         <span
                           onClick={() => {
                             const itemQuantity = {

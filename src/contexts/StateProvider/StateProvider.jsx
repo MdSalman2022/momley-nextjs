@@ -1,6 +1,4 @@
 "use client";
-
-import { Player } from "@lottiefiles/react-lottie-player";
 import { useQuery } from "@tanstack/react-query";
 import { createContext, useContext, useEffect, useState } from "react";
 import { AuthContext } from "../AuthProvider/AuthProvider";
@@ -25,6 +23,22 @@ const StateProvider = ({ children }) => {
   const [writerName, setWriterName] = useState("");
 
   const uid = user?.uid;
+  const [cart, setCart] = useState([]);
+  const [cartLoaded, setCartLoaded] = useState(false);
+
+  useEffect(() => {
+    const savedCart = localStorage.getItem("cart");
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
+    setCartLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (cartLoaded) {
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+  }, [cart]);
 
   // console.log("user", user);
   // console.log("uid", uid);
@@ -110,15 +124,6 @@ const StateProvider = ({ children }) => {
   );
   // console.log("allBooks", allBooks);
 
-  const [cart, setCart] = useState(() => {
-    const savedCart = localStorage.getItem("cart");
-    return savedCart ? JSON.parse(savedCart) : [];
-  });
-
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
-
   const stateInfo = {
     storeInfo,
     storeId,
@@ -143,6 +148,7 @@ const StateProvider = ({ children }) => {
     setWriterName,
     categoriesLevel,
     totalLevel,
+    cartLoaded,
   };
 
   return (

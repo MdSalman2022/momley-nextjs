@@ -51,7 +51,7 @@ const CartItem = ({
         </div>
       </div>
       <div className="flex items-center justify-center h-20 w-[150px]">
-        <span className="text-sm font-semibold">৳ {item?.price}</span>
+        <span className="text-sm font-semibold">৳ {item?.salePrice}</span>
       </div>
       <div className="flex items-center justify-center h-20 w-[150px]">
         <div className="flex items-center rounded-sm justify-between border border-[#E0E0E0]">
@@ -181,18 +181,16 @@ const CheckoutPage = () => {
   const [subTotal, setSubTotal] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
   const router = useRouter();
+
   useEffect(() => {
     const total = cart.reduce((acc, item) => acc + item.totalPrice, 0);
     setSubTotal(total);
     setTotalAmount(total + deliveryCost);
   }, [cart, deliveryCost]);
 
-  useEffect(() => {
-    // Update local storage whenever the cart state changes
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
-
   console.log("deliveryCost", deliveryCost);
+  console.log("totalAmount", totalAmount);
+  console.log("cart", cart);
   const {
     control,
     register,
@@ -231,18 +229,29 @@ const CheckoutPage = () => {
     const updatedCart = cart.map((item) => {
       if (item._id === itemId) {
         const newQuantity = item.quantity - 1;
-        return { ...item, quantity: newQuantity < 1 ? 1 : newQuantity };
+        const newTotalPrice =
+          item.salePrice * (newQuantity < 1 ? 1 : newQuantity);
+        return {
+          ...item,
+          quantity: newQuantity < 1 ? 1 : newQuantity,
+          totalPrice: newTotalPrice,
+        };
       }
       return item;
     });
     setCart(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart)); // Update local storage
   };
 
   const handlePlusClick = (itemId) => {
     const updatedCart = cart.map((item) => {
       if (item._id === itemId) {
-        return { ...item, quantity: item.quantity + 1 };
+        const newQuantity = item.quantity + 1;
+        const newTotalPrice = item.salePrice * newQuantity;
+        return {
+          ...item,
+          quantity: newQuantity,
+          totalPrice: newTotalPrice,
+        };
       }
       return item;
     });
