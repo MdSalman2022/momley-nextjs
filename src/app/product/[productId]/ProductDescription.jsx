@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import ReactQuill from "react-quill";
 
 const ProductDescription = ({ bookDetails }) => {
   const [activeTab, setActiveTab] = useState("description");
@@ -44,14 +45,11 @@ const ProductDescription = ({ bookDetails }) => {
 
         <div className="flex flex-col gap-5 mr-2">
           {activeTab === "description" && (
-            <p>
-              {bookDetails.description.split("\n").map((line, index) => (
-                <React.Fragment key={index}>
-                  {line}
-                  <br />
-                </React.Fragment>
-              ))}
-            </p>
+            <ReactQuill
+              value={bookDetails?.description}
+              readOnly={true}
+              modules={{ toolbar: false }}
+            />
           )}
           {activeTab === "specification" && (
             <div className="flex flex-col gap-1">

@@ -16,9 +16,12 @@ import { FiPlusCircle } from "react-icons/fi";
 import { quantityType, units } from "@/libs/utils/common";
 import TagsInput from "@/libs/utils/tagsInput";
 import SelectCategoryModal from "@/libs/utils/SelectCategoryModal";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const CreateProductModal = () => {
   const { userInfo } = useContext(StateContext);
+  const [descriptionValue, setDescriptionValue] = useState("");
   const formRef = useRef(null);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [selectedSubCategory, setSelectedSubCategory] = useState({
@@ -27,6 +30,7 @@ const CreateProductModal = () => {
     ancestors: [],
   });
 
+  console.log("descriptionValue", descriptionValue);
   const [tags, setTags] = useState([]);
 
   const { createProduct } = useProduct();
@@ -58,6 +62,14 @@ const CreateProductModal = () => {
   };
 
   console.log("specifications", specifications);
+
+  const handleDescriptionChange = (value) => {
+    console.log("value", value);
+    setDescriptionValue(value);
+    setValue("description", value, { shouldValidate: true });
+  };
+
+  console.log("descriptionValue", descriptionValue);
 
   const handleQuantityTypeValue = (value) => {
     setValue("quantityType", value, { shouldValidate: true });
@@ -173,15 +185,21 @@ const CreateProductModal = () => {
                   </span>
                 )}
               </div>
-              <div className="flex flex-col">
+              <div className="flex flex-col mb-5">
                 <label className="text-sm" htmlFor="description">
                   Description
                 </label>
-                <textarea
+                <ReactQuill
+                  theme="snow"
+                  value={descriptionValue}
+                  onChange={handleDescriptionChange}
+                  placeholder="e.g. This is a product description"
+                />
+                {/* <textarea
                   className="input-box border-[#11111170] h-20 py-1"
                   {...register("description", { required: true })}
                   placeholder="e.g. This is a product description"
-                />
+                /> */}
                 {errors.description && (
                   <span className="text-xs text-red-600">
                     This field is required
