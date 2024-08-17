@@ -16,7 +16,8 @@ import { FiPlusCircle } from "react-icons/fi";
 import { quantityType, units } from "@/libs/utils/common";
 import TagsInput from "@/libs/utils/tagsInput";
 import SelectCategoryModal from "@/libs/utils/SelectCategoryModal";
-import ReactQuill from "react-quill";
+import dynamic from "next/dynamic";
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
 
 const CreateProductModal = () => {
@@ -185,7 +186,7 @@ const CreateProductModal = () => {
                   </span>
                 )}
               </div>
-              <div className="flex flex-col mb-5">
+              <div className="flex flex-col gap-1 mb-10">
                 <label className="text-sm" htmlFor="description">
                   Description
                 </label>

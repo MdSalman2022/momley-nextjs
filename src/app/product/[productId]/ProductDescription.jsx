@@ -44,7 +44,7 @@ const ProductDescription = ({ bookDetails }) => {
         </div>
 
         <div className="flex flex-col gap-5 mr-2">
-          {activeTab === "description" && (
+          {activeTab === "description" && bookDetails?.description && (
             <ReactQuill
               value={bookDetails?.description}
               readOnly={true}
