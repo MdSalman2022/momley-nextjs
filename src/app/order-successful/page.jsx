@@ -1,7 +1,15 @@
+"use client";
 import React from "react";
 import { IoCheckmarkCircleOutline } from "react-icons/io5";
+import { useRouter } from "next/navigation";
 
 const OrderSuccessful = () => {
+  const router = useRouter();
+
+  const handleGoHome = () => {
+    router.push("/");
+  };
+
   return (
     <div className="h-[70vh] flex flex-col justify-center items-center">
       <span className="text-9xl text-[#00954D]">
@@ -13,7 +21,9 @@ const OrderSuccessful = () => {
         </h1>
         <p className="">Your order has been Successfully placed</p>
       </div>
-      <div className="primary-btn cursor-pointer">Go to Home</div>
+      <div className="primary-btn cursor-pointer" onClick={handleGoHome}>
+        Go to Home
+      </div>
     </div>
   );
 };

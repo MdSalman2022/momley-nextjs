@@ -1,5 +1,5 @@
-import { GiHamburgerMenu } from "react-icons/gi";
 import { FaChevronDown } from "react-icons/fa";
+import { IoReorderThree } from "react-icons/io5";
 
 const CategoryNav = () => {
   return (
@@ -7,7 +7,7 @@ const CategoryNav = () => {
       <div className="grid grid-cols-6 gap-20 justify-items-stretch">
         <span className="col-span-2 flex items-center justify-between p-3 bg-black text-white py-3  w-60">
           <div className="flex items-center gap-3">
-            <GiHamburgerMenu className="text-xl" /> Categories{" "}
+            <IoReorderThree className="text-xl" /> Categories{" "}
           </div>
           <FaChevronDown />
         </span>

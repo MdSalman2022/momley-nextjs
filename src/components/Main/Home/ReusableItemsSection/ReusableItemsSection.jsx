@@ -10,8 +10,8 @@ import { FaArrowRightLong } from "react-icons/fa6";
 const ReusableItemsSection = ({ title, items, ads, bottomAds }) => {
   console.log("items", items);
   return (
-    <div className="py-5 flex flex-col items-start">
-      <div className="flex justify-between w-full">
+    <div className="flex flex-col items-start">
+      <div className="flex items-center justify-between w-full">
         <p className="font-bold">{title}</p>
 
         <div className="flex items-center gap-4">
@@ -88,7 +88,7 @@ const ReusableItemsSection = ({ title, items, ads, bottomAds }) => {
           <div className="flex flex-col md:flex-row justify-start items-start w-full gap-5">
             {items &&
               items
-                ?.slice(0, 20)
+                ?.slice(0, 7)
                 ?.map((book, index) => <ProductCard key={index} book={book} />)}
           </div>
         </Suspense>

@@ -2,7 +2,7 @@
 import { FiPhoneCall } from "react-icons/fi";
 import { HiOutlineShoppingBag } from "react-icons/hi";
 import { GrSearch } from "react-icons/gr";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ModalBox from "./ModalBox";
 import Login from "./Authentication/Login";
 import { StateContext } from "../../contexts/StateProvider/StateProvider";
@@ -11,7 +11,6 @@ import MenuModal from "./MenuModal";
 import Link from "next/link";
 import CartIcon from "../../../public/images/CartIcon.svg";
 import Image from "next/image";
-import { GiHamburgerMenu } from "react-icons/gi";
 import { FaChevronRight, FaChevronUp } from "react-icons/fa";
 import {
   DropdownMenu,
@@ -23,20 +22,64 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { usePathname } from "next/navigation";
 import GeneratedProfileImage from "./GeneratedProfileImage";
+import useCategory from "@/hooks/useCategory";
+import { useQuery } from "react-query";
+import { storeId } from "@/libs/utils/common";
+import Menus from "./Menus";
+import { IoReorderThree } from "react-icons/io5";
 
-const NavigationItem = ({ name }) => (
-  <div className="w-44 h-12 flex items-center justify-center font-bold hover:bg-gray-100 cursor-pointer">
+const NavigationItem = ({ name, item }) => (
+  <Link
+    href={`/category/${item?.slug}`}
+    className="w-44 h-12 flex items-center justify-center font-bold hover:bg-gray-100 cursor-pointer"
+  >
     {name}
-  </div>
+  </Link>
 );
 
 const Header = () => {
   const { isAuthModalOpen, setIsAuthModalOpen, user, logOut } =
     useContext(AuthContext);
-  const { cart } = useContext(StateContext);
+  const { cart, totalLevel } = useContext(StateContext);
 
-  const [isMenuModalOpen, setIsMenuModalOpen] = useState(false);
+  console.log("totalLevel", totalLevel);
 
+  const { GetMenuByPosition } = useCategory();
+
+  const {
+    data: menus = {},
+    isLoading: isMenuLoading,
+    refetch: refetchMenus,
+  } = useQuery({
+    queryKey: ["menus", storeId, totalLevel],
+    queryFn: () =>
+      storeId &&
+      totalLevel !== undefined &&
+      GetMenuByPosition(storeId, "header", totalLevel),
+    cacheTime: 10 * (60 * 1000),
+    staleTime: 5 * (60 * 1000),
+  });
+
+  console.log("menus", menus);
+
+  let allMenus = menus?.data?.categories || [];
+
+  const processMenu = (menu, level, totalLevel) => {
+    if (level > totalLevel) return null;
+
+    return {
+      name: menu?.name || "",
+      slug: menu?.slug || "",
+      subcategories:
+        menu?.subcategories?.map((sub) =>
+          processMenu(sub, level + 1, totalLevel)
+        ) || [],
+    };
+  };
+
+  allMenus = allMenus.map((menu) => processMenu(menu, 1, totalLevel));
+
+  console.log("allMenus", allMenus);
   const navItems = [
     { name: "Mom & Baby" },
     { name: "Bath & Shower" },
@@ -51,14 +94,31 @@ const Header = () => {
 
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
 
+  const [isScrolled, setIsScrolled] = useState(false);
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
     <div
-      className={`mx-auto container w-full justify-center ${
-        isDashboardPage ? "hidden" : "mb-32 flex"
+      className={`container mx-auto w-full justify-center ${
+        isDashboardPage ? "hidden" : "mb-10 flex"
       } `}
     >
-      <div className="bg-white flex flex-col fixed w-full z-10">
-        <div className="container mx-auto py-2">
+      <div className="flex flex-col  w-full z-10">
+        <div
+          name="general-header"
+          className={` w-full py-2 transition-all duration-300 z-50 ${
+            isScrolled ? "hidden" : "flex justify-start"
+          }`}
+        >
           {isAuthModalOpen && (
             <ModalBox
               isModalOpen={isAuthModalOpen}
@@ -67,7 +127,7 @@ const Header = () => {
               <Login setIsModalOpen={setIsAuthModalOpen} />
             </ModalBox>
           )}
-          <nav className="flex items-center justify-between">
+          <nav className="flex items-center justify-between w-full ">
             <Link href="/" className="logo">
               <img
                 src="https://i.ibb.co/TW8T2kc/logo-momley.png"
@@ -162,53 +222,36 @@ const Header = () => {
                   login/ sign up
                 </button>
               )}
-
-              {/* <MenuModal
-                setIsMenuModalOpen={setIsMenuModalOpen}
-                isMenuModalOpen={isMenuModalOpen}
-              >
-                <div className="w-32 flex flex-col  bg-white  items-end relative">
-                  <Link
-                    className="font-medium text-sm hover:font-semibold hover:bg-gray-200 w-full px-5 py-3 flex justify-end"
-                    href="/profile"
-                  >
-                    Profile
-                  </Link>
-                  <Link
-                    className="font-medium text-sm hover:font-semibold hover:bg-gray-200 w-full px-5 py-3 flex justify-end"
-                    href="/checkout"
-                  >
-                    Cart
-                  </Link>
-                  <button
-                    onClick={() => logOut()}
-                    className="font-medium text-sm hover:font-semibold hover:bg-gray-200 w-full px-5 py-3 flex justify-end"
-                  >
-                    Log Out
-                  </button>
-                </div>
-              </MenuModal> */}
             </div>
           </nav>
         </div>
         {!isDashboardPage && (
-          <div className="container mx-auto flex items-center justify-between">
+          <div
+            name="navigation-header"
+            className={`transition-all duration-300 ${
+              isScrolled ? " bg-white" : "pt-[70px]"
+            } w-full fixed top-0 flex items-center justify-start`}
+          >
             <div className="relative">
               <div
-                onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+                onMouseEnter={() => setIsCategoryOpen(true)}
+                onMouseLeave={() => setIsCategoryOpen(false)}
                 className="w-[298px] h-[52px] bg-black text-white flex items-center justify-between px-6 cursor-pointer"
               >
                 <div className="flex items-center gap-5">
-                  <GiHamburgerMenu className="text-2xl" />
+                  <IoReorderThree className="text-4xl" />
                   <span className="font-bold">CATEGORY</span>
                 </div>
 
                 <span
                   className={`
-                transition-all duration-300 select-none
-                ${
-                  isCategoryOpen ? "transform rotate-180" : "transform rotate-0"
-                }`}
+                    transition-all duration-300 select-none
+                    ${
+                      isCategoryOpen
+                        ? "transform rotate-180"
+                        : "transform rotate-0"
+                    }
+                  `}
                 >
                   <FaChevronUp className="text-2xl" />
                 </span>
@@ -216,22 +259,17 @@ const Header = () => {
               <div
                 className={`absolute flex flex-col ${
                   isCategoryOpen ? "block" : "hidden"
-                } 
-          }`}
+                }`}
               >
-                {navItems.map((item, index) => (
-                  <Link key={index} href={`/category/${item.name}`}>
-                    <div className="w-[298px] h-[52px] border-b bg-white text-black flex items-center justify-between px-6">
-                      <span className="">{item.name}</span>
-                      <FaChevronRight />
-                    </div>
-                  </Link>
-                ))}
+                <Menus
+                  allMenus={allMenus}
+                  setIsCategoryOpen={setIsCategoryOpen}
+                />
               </div>
             </div>
             <div className="flex items-center">
-              {navItems.map((item, index) => (
-                <NavigationItem key={index} name={item.name} />
+              {allMenus.map((item, index) => (
+                <NavigationItem key={index} name={item.name} item={item} />
               ))}
             </div>
           </div>

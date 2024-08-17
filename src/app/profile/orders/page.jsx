@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -10,8 +10,14 @@ import {
 import { DataTable } from "./data-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useReactTable } from "@tanstack/react-table";
+import useOrder from "@/hooks/useOrder";
+import { StateContext } from "@/contexts/StateProvider/StateProvider";
+import { useQuery } from "react-query";
+import LoadingAnimation from "@/libs/utils/LoadingAnimation";
 
 const MyOrders = () => {
+  const { userInfo } = useContext(StateContext);
+  const { getAllOrderByUser } = useOrder();
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -30,6 +36,22 @@ const MyOrders = () => {
     { value: "processing", label: "Processing" },
     { value: "delivery", label: "Delivery" },
   ];
+
+  const customerId = userInfo?.customer?._id;
+  console.log("customerId", customerId);
+
+  const {
+    data: orders = {},
+    isLoading: isOrdersLoading,
+    refetch: refetchOrders,
+  } = useQuery({
+    queryKey: ["orders", customerId],
+    queryFn: () => customerId && getAllOrderByUser(customerId),
+    cacheTime: 10 * (60 * 1000),
+    staleTime: 5 * (60 * 1000),
+  });
+
+  console.log("orders", orders);
 
   const handleActionChange = (value) => {
     console.log(value);
@@ -105,22 +127,18 @@ const MyOrders = () => {
     },
   ];
 
-  const data = [
-    {
-      id: "1",
-      orderId: "123",
-      date: "2023-04-01",
-      totalPrice: "$100.00",
-      partialPayment: "$50.00",
-    },
-    {
-      id: "2",
-      orderId: "456",
-      date: "2023-04-02",
-      totalPrice: "$200.00",
-      partialPayment: "$100.00",
-    },
-  ];
+  const ordersArray =
+    !isOrdersLoading && orders?.data?.length
+      ? orders.data.map((order, index) => ({
+          id: index + 1,
+          orderId: order._id,
+          date: new Date(order.createdAt).toLocaleDateString(),
+          totalPrice: `$${order.totalAmount.toFixed(2)}`,
+          partialPayment: `$${order.paymentDetails.partialPayment.toFixed(2)}`,
+        }))
+      : [];
+
+  const data = ordersArray;
   const handleValueChange = (value) => {
     setSelectedStatus(value);
   };
@@ -128,6 +146,9 @@ const MyOrders = () => {
 
   const [activePage, setActivePage] = useState(pages[0]);
 
+  if (isOrdersLoading) {
+    return <LoadingAnimation />;
+  }
   return (
     <form className="flex flex-col gap-10">
       <div className="flex justify-between items-center w-full">

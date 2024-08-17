@@ -6,12 +6,15 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { AuthContext } from "../AuthProvider/AuthProvider";
 import useProfile from "@/hooks/useProfile";
 import useStore from "@/hooks/useStore";
+import { storeId } from "@/libs/utils/common";
+import useCategory from "@/hooks/useCategory";
 
 export const StateContext = createContext();
 
 const StateProvider = ({ children }) => {
   const { getProfile } = useProfile();
   const { getStore } = useStore();
+  const { getAllCategoriesLevel } = useCategory();
 
   const { user } = useContext(AuthContext);
   const [page, setPage] = useState(1);
@@ -26,24 +29,30 @@ const StateProvider = ({ children }) => {
   // console.log("user", user);
   // console.log("uid", uid);
 
-  const storeId = process.env.VITE_STORE_ID;
-
-  console.log("storeId", storeId);
-
   const {
     data: storeInfo = {},
     isLoading: isStoreInfoLoading,
     refetch: refetchStoreInfo,
   } = useQuery({
     queryKey: ["storeInfo", storeId],
-    queryFn: async () => {
-      if (!storeId) return {};
-      const response = await getStore(storeId);
-      return response.data; // Return the data property directly
-    },
+    queryFn: () => storeId && getStore(storeId),
     cacheTime: 10 * (60 * 1000), // cache data for 10 minutes
     staleTime: 5 * (60 * 1000), // consider data fresh for 5 minutes
   });
+
+  const {
+    data: categoriesLevel = {},
+    isLoading: isCategoriesLevelLoading,
+    refetch: refetchCategoriesLevel,
+  } = useQuery({
+    queryKey: ["categoriesLevel", storeId],
+    queryFn: () => storeId && getAllCategoriesLevel(storeId),
+    cacheTime: 10 * (60 * 1000),
+    staleTime: 5 * (60 * 1000),
+    enabled: !!storeId, // Ensure the query only runs if storeId is available
+  });
+
+  const totalLevel = categoriesLevel?.data?.length;
 
   console.log("storeInfo", storeInfo);
 
@@ -71,7 +80,7 @@ const StateProvider = ({ children }) => {
     ["allBooks", page, pageSize],
     async () => {
       const response = await fetch(
-        `${process.env.VITE_SERVER_URL}/products/list`,
+        `${process.env.VITE_SERVER_URL}/products/get-all?storeId=${storeId}`,
         {
           method: "GET",
           headers: {
@@ -79,13 +88,13 @@ const StateProvider = ({ children }) => {
           },
         }
       );
-      const data = await response.json();
+      const result = await response.json();
       if (!response.ok) {
         return [];
         // throw new Error("Network response was not ok");
       }
       if (response.headers.get("Content-Type")?.includes("application/json")) {
-        return await data;
+        return await result.data;
       } else {
         throw new Error("Expected JSON response");
       }
@@ -101,49 +110,11 @@ const StateProvider = ({ children }) => {
   );
   // console.log("allBooks", allBooks);
 
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(() => {
+    const savedCart = localStorage.getItem("cart");
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
 
-  useEffect(() => {
-    const savedCart = JSON.parse(localStorage.getItem("cart"));
-    if (savedCart) {
-      setCart(savedCart);
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart.length]);
-
-  useEffect(() => {
-    const cartFromLocalStorage = JSON.parse(localStorage.getItem("cart"));
-    if (
-      cartFromLocalStorage &&
-      JSON.stringify(cartFromLocalStorage) !== JSON.stringify(cart)
-    ) {
-      setCart(cartFromLocalStorage);
-    }
-  }, [cart]);
-
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart.length]);
-
-  useEffect(() => {
-    const cartFromLocalStorage = JSON.parse(localStorage.getItem("cart"));
-    if (
-      cartFromLocalStorage &&
-      JSON.stringify(cartFromLocalStorage) !== JSON.stringify(cart)
-    ) {
-      setCart(cartFromLocalStorage);
-    }
-  }, [cart]);
-
-  useEffect(() => {
-    const cartData = JSON.parse(localStorage.getItem("cart")) || [];
-    setCart(cartData);
-  }, []);
-
-  // Save the cart to local storage
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
@@ -170,6 +141,8 @@ const StateProvider = ({ children }) => {
     setFilterBooks,
     writerName,
     setWriterName,
+    categoriesLevel,
+    totalLevel,
   };
 
   return (

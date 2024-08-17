@@ -1,3 +1,4 @@
+import { storeId } from "@/libs/utils/common";
 import React from "react";
 
 const useCategory = () => {
@@ -47,6 +48,38 @@ const useCategory = () => {
     let url = `${
       process.env.VITE_SERVER_URL
     }/category/get?storeId=${id}&depth=${level || 3}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const CategoryList = await response.json();
+    return CategoryList;
+  };
+
+  const getCategoryBySlug = async (id, level, slug) => {
+    let url = `${
+      process.env.VITE_SERVER_URL
+    }/category/get-category-by-slug?storeId=${id}&depth=${level || 3}&slug=${
+      slug || ""
+    }`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const CategoryList = await response.json();
+    return CategoryList;
+  };
+
+  const getProductsByCategory = async (id, categoryName) => {
+    let url = `${process.env.VITE_SERVER_URL}/category/get-products-by-category?storeId=${id}&slug=${categoryName}`;
 
     const response = await fetch(url, {
       method: "GET",
@@ -131,6 +164,19 @@ const useCategory = () => {
     const CategoryData = await response.json();
     return CategoryData;
   };
+  const GetMenuByPosition = async (id, position, level) => {
+    const response = await fetch(
+      `${process.env.VITE_SERVER_URL}/category/get-menu-by-position?storeId=${id}&position=${position}&depth=${level}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const CategoryData = await response.json();
+    return CategoryData;
+  };
 
   const UpdateCategory = async (payload, id) => {
     const response = await fetch(
@@ -188,6 +234,29 @@ const useCategory = () => {
     return CategoryList;
   };
 
+  const GetProductsByFeaturedCategory = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.VITE_SERVER_URL}/category/get-product-by-featured-category?storeId=${storeId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        return [];
+        // throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const product = await response.json();
+      return product?.data;
+    } catch (error) {
+      console.error("Failed to fetch book details:", error);
+      return [];
+    }
+  };
+
   return {
     getBooksByCategory,
     getAllCategories,
@@ -201,6 +270,10 @@ const useCategory = () => {
     getAllMenus,
     getMenuById,
     AddCategoryToMenu,
+    GetProductsByFeaturedCategory,
+    GetMenuByPosition,
+    getProductsByCategory,
+    getCategoryBySlug,
   };
 };
 

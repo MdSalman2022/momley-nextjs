@@ -36,7 +36,7 @@ const ProductCard = ({ book }) => {
             ...item,
             quantity: cartCount ? cartCount : item.quantity + 1,
             totalPrice:
-              item.price * (cartCount ? cartCount : item.quantity + 1),
+              item.salePrice * (cartCount ? cartCount : item.quantity + 1),
           };
           return updatedItem;
         } else {
@@ -50,7 +50,7 @@ const ProductCard = ({ book }) => {
       const newCartItem = {
         ...book,
         quantity: cartCount ? cartCount : 1,
-        totalPrice: book.pricing.price * (cartCount ? cartCount : 1),
+        totalPrice: book.salePrice * (cartCount ? cartCount : 1),
       };
       setCart([...cart, newCartItem]);
       localStorage.setItem("cart", JSON.stringify([...cart, newCartItem]));
@@ -69,7 +69,7 @@ const ProductCard = ({ book }) => {
           const updatedItem = {
             ...item,
             quantity: item.quantity - 1,
-            totalPrice: item.pricing.price * (item.quantity - 1),
+            totalPrice: item.salePrice * (item.quantity - 1),
           };
           return updatedItem;
         } else {
@@ -90,7 +90,7 @@ const ProductCard = ({ book }) => {
           const updatedItem = {
             ...item,
             quantity: item.quantity + 1,
-            totalPrice: item.pricing.price * (item.quantity + 1),
+            totalPrice: item.salePrice * (item.quantity + 1),
           };
           return updatedItem;
         } else {
@@ -129,7 +129,7 @@ const ProductCard = ({ book }) => {
   const truncatedText = TruncateText(book?.name, 10);
   return (
     <div className="flex flex-col items-center justify-between gap-3 border border-[#EEEEEE80] p-3 rounded text-black max-w-[180px]">
-      <Link href={`/product/${book?._id}`}>
+      <Link href={`/product/${book?.slug}`}>
         <Image
           className="object-cover w-[164px] h-[217px]"
           src={laptop}
@@ -137,7 +137,7 @@ const ProductCard = ({ book }) => {
           height={217}
         />
       </Link>
-      <Link href={`/product/${book?._id}`}>
+      <Link href={`/product/${book?.slug}`}>
         <p className="font-semibold text-sm text-center">{truncatedText}</p>
       </Link>
       <p className="text-sm">{book?.weight}</p>

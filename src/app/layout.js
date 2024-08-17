@@ -10,11 +10,6 @@ import Favicon from "./favicon.ico";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Toaster } from "react-hot-toast";
 
-// export const metadata = {
-//   title: "Momley",
-//   icons: [{ rel: "icon", url: Favicon.src }],
-// };
-
 const inter = Inter({ subsets: ["latin"] });
 
 const queryClient = new QueryClient();

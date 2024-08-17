@@ -39,7 +39,7 @@ const EditProduct = ({ params }) => {
     specifications.length === 0
   );
 
-  const { updateProduct, GetProductById } = useProduct();
+  const { updateProduct, GetProductsById } = useProduct();
 
   const {
     data: productDetails = {},
@@ -47,7 +47,7 @@ const EditProduct = ({ params }) => {
     refetch: refetchProducts,
   } = useQuery({
     queryKey: ["productDetails", params?.slug],
-    queryFn: () => GetProductById(params?.slug),
+    queryFn: () => GetProductsById(params?.slug),
     cacheTime: 10 * (60 * 1000),
     staleTime: 5 * (60 * 1000),
   });

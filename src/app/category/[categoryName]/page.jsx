@@ -8,31 +8,57 @@ import ProductList from "./ProductList";
 import CategoryPageTitle from "./CategoryPageTitle";
 import useBook from "@/hooks/useBook";
 import CategoryPageFilter from "./CategoryPageFilter";
+import { storeId, totalLevel } from "@/libs/utils/common";
+import useProduct from "@/hooks/useProduct";
 
 const Category = async ({ params }) => {
-  const { getBooksByCategory } = useCategory();
-  const data = await getBooksByCategory(params.categoryName);
+  const { getProductsByCategory, getCategoryBySlug, getAllCategoriesLevel } =
+    useCategory();
+  const { GetProducts } = useProduct();
+  const totalLevel = await getAllCategoriesLevel(storeId).then(
+    (res) => res?.data?.length
+  );
 
-  const { getAllCategories, getAllAuthors, getAllBookDetails } = useBook();
+  const products = await getProductsByCategory(
+    storeId,
+    params.categoryName
+  ).then((res) => res.data);
 
-  const categories = await getAllCategories();
+  const allProducts = await GetProducts().then((res) => res.products);
 
-  const authors = await getAllAuthors();
+  console.log("totalLevel", totalLevel);
 
-  const allBooks = await getAllBookDetails(1, 20);
+  const allSubcategories = await getCategoryBySlug(
+    storeId,
+    totalLevel,
+    params.categoryName
+  ).then((res) => res.data);
 
-  console.log("category categories", categories);
+  console.log("products", products);
+  console.log("allSubcategories", allSubcategories);
+
+  const allSubcategoriesName = allSubcategories?.subcategories?.map(
+    (category) => category.name
+  );
+
+  console.log("allSubcategoriesName", allSubcategoriesName);
 
   return (
     <div className="pb-10">
       <div className="container mx-auto ">
         <Banner />
         <div className="grid grid-cols-4 gap-10 py-5">
-          <CategoryPageFilter authors={authors} categories={categories} />
+          <CategoryPageFilter
+            authors={allSubcategoriesName}
+            categories={allSubcategoriesName}
+          />
           <div className="col-span-3 flex flex-col gap-5">
-            <div className="flex flex-col gap-5">
-              <div className="flex justify-between">
-                <CategoryPageTitle />
+            <div className="flex flex-col gap-5 w-full">
+              <div className="flex justify-between min-w-full">
+                <p className="capitalize font-semibold">
+                  {params?.categoryName || "All Books"}{" "}
+                </p>
+
                 <div className="flex items-center gap-5">
                   <div className="flex items-center gap-3">
                     <span>Sort By:</span>
@@ -77,7 +103,13 @@ const Category = async ({ params }) => {
               </div>
 
               <div className="flex flex-col gap-5">
-                <ProductList books={data} allBooks={allBooks?.books} />
+                {products?.length > 0 ? (
+                  <ProductList books={products} allBooks={products} />
+                ) : (
+                  <div className="flex justify-center items-center">
+                    <p>No Products found</p>
+                  </div>
+                )}
                 <CategoryPagination />
               </div>
             </div>
@@ -85,8 +117,8 @@ const Category = async ({ params }) => {
         </div>
         <strong>You may also like</strong>
         <div className="grid grid-cols-6 gap-5">
-          {allBooks?.books?.length > 0 &&
-            allBooks?.books
+          {allProducts?.length > 0 &&
+            allProducts
               ?.slice(0, 10)
               ?.map((book, index) => <ProductCard key={index} book={book} />)}
         </div>

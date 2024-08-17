@@ -1,3 +1,5 @@
+import { storeId } from "@/libs/utils/common";
+
 const useProduct = () => {
   const createProduct = async (payload) => {
     try {
@@ -44,10 +46,10 @@ const useProduct = () => {
       throw error;
     }
   };
-  const GetProduct = async () => {
+  const GetProducts = async () => {
     try {
       const response = await fetch(
-        `${process.env.VITE_SERVER_URL}/products/list`,
+        `${process.env.VITE_SERVER_URL}/products/get-all?storeId=${storeId}`,
         {
           method: "GET",
           headers: {
@@ -60,7 +62,30 @@ const useProduct = () => {
         // throw new Error(`HTTP error! status: ${response.status}`);
       }
       const product = await response.json();
-      return product;
+      return product?.data;
+    } catch (error) {
+      console.error("Failed to fetch book details:", error);
+      return [];
+      // throw error;
+    }
+  };
+  const GetNewArrivalProducts = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.VITE_SERVER_URL}/products/get-new-arrival?storeId=${storeId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        return [];
+        // throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const product = await response.json();
+      return product?.data;
     } catch (error) {
       console.error("Failed to fetch book details:", error);
       return [];
@@ -68,10 +93,10 @@ const useProduct = () => {
     }
   };
 
-  const GetProductById = async (productId) => {
+  const GetProductsById = async (slug) => {
     try {
       const response = await fetch(
-        `${process.env.VITE_SERVER_URL}/products/get?productId=${productId}`,
+        `${process.env.VITE_SERVER_URL}/products/get?slug=${slug}`,
         {
           method: "GET",
           headers: {
@@ -117,9 +142,10 @@ const useProduct = () => {
   return {
     createProduct,
     updateProduct,
-    GetProduct,
+    GetProducts,
     SearchProduct,
-    GetProductById,
+    GetProductsById,
+    GetNewArrivalProducts,
   };
 };
 

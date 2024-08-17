@@ -1,3 +1,5 @@
+import useCategory from "@/hooks/useCategory";
+
 export const TruncateText = (text, maxLength) => {
   if (text.length > maxLength) {
     return text.substring(0, maxLength) + "...";
@@ -10,7 +12,6 @@ export const formatTime = (time) => {
 };
 
 export const storeId = process.env.VITE_STORE_ID;
-
 export const units = [
   "KG", // Kilograms
   "G", // Grams

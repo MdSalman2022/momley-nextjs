@@ -4,20 +4,18 @@ import Link from "next/link";
 import React, { useContext, useEffect, useState } from "react";
 import { FaMinus, FaPlus } from "react-icons/fa";
 
-export default function BookCartControl() {
+export default function BookCartControl({ bookDetails }) {
   const { cart, setCart } = useContext(StateContext);
   const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
-    const cartData = JSON.parse(localStorage.getItem("cart")) || [];
-    let count = 0;
-    cartData.forEach((item) => {
-      if (item._id === bookDetails._id) {
-        count += item.quantity;
-      }
-    });
-    setCartCount(count);
-  }, [cart]);
+    const cartItem = cart.find((item) => item._id === bookDetails._id);
+    if (cartItem) {
+      setCartCount(cartItem.quantity);
+    } else {
+      setCartCount(0);
+    }
+  }, [cart, bookDetails._id]);
 
   const handleAddToCart = () => {
     const cartItem = cart.find((item) => item._id === bookDetails._id);
@@ -29,7 +27,7 @@ export default function BookCartControl() {
             ...item,
             quantity: cartCount ? cartCount : item.quantity + 1,
             totalPrice:
-              item.pricing.price * (cartCount ? cartCount : item.quantity + 1),
+              item.salePrice * (cartCount ? cartCount : item.quantity + 1),
           };
           return updatedItem;
         } else {
@@ -37,23 +35,20 @@ export default function BookCartControl() {
         }
       });
       setCart(updatedCart);
-      localStorage.setItem("cart", JSON.stringify(updatedCart));
-      setCartCount(cartCount ? cartCount : cartItem.quantity + 1);
     } else {
       const newCartItem = {
         ...bookDetails,
         quantity: cartCount ? cartCount : 1,
-        totalPrice: bookDetails.price * (cartCount ? cartCount : 1),
+        totalPrice: bookDetails.salePrice * (cartCount ? cartCount : 1),
       };
       setCart([...cart, newCartItem]);
-      localStorage.setItem("cart", JSON.stringify([...cart, newCartItem]));
-      setCartCount(cartCount ? cartCount : 1);
     }
+    setCartCount(0);
   };
 
   const handleMinusClick = () => {
     if (cartCount === 0) {
-      return; // do not update cartCount if it's already 0
+      return;
     }
     setCartCount(cartCount - 1);
   };
@@ -64,7 +59,6 @@ export default function BookCartControl() {
 
   return (
     <div className="flex flex-col gap-3">
-      {" "}
       <p>Quantity</p>
       <div className="flex items-center gap-3 border w-fit h-9">
         <button
@@ -84,11 +78,16 @@ export default function BookCartControl() {
       <div className="flex gap-5">
         <div
           onClick={handleAddToCart}
-          className="primary-outline-btn w-40 flex justify-center"
+          className="primary-outline-btn w-40 flex justify-center cursor-pointer"
         >
-          Add to cart
+          {cart?.find((item) => item._id === bookDetails._id)
+            ? "Update Cart"
+            : "Add to Cart"}
         </div>
-        <Link href="/checkout" className="primary-btn w-40 flex justify-center">
+        <Link
+          href="/checkout"
+          className="primary-btn w-40 flex justify-center cursor-pointer"
+        >
           Buy Now
         </Link>
       </div>

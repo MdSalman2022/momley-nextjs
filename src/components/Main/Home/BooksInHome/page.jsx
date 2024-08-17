@@ -12,22 +12,31 @@ import BabyProducts from "../../../../../public/images/ads/BabyProducts.png";
 import NewLatestCollection from "../../../../../public/images/ads/NewLatestCollection.png";
 import TrendingManCollection from "../../../../../public/images/ads/TrendingManCollection.png";
 import useProduct from "@/hooks/useProduct";
+import useCategory from "@/hooks/useCategory";
 
 const BooksInHome = async () => {
   const { getAllBookDetails } = useBook();
   const allBooks = await getAllBookDetails(1, 20);
   console.log("allBooks", allBooks);
 
-  const { GetProduct } = useProduct();
+  const { GetProducts, GetNewArrivalProducts } = useProduct();
+  const { GetProductsByFeaturedCategory } = useCategory();
 
-  const allProducts = (await GetProduct()) || [];
+  const allProducts = await GetProducts();
+
+  const newArrivalProducts = await GetNewArrivalProducts();
+
+  const featuredCategoryProducts = await GetProductsByFeaturedCategory();
 
   console.log("allProducts", allProducts);
+  console.log("featuredCategoryProducts", featuredCategoryProducts);
 
   const Sections = [
     {
       title: "New Arrival",
-      items: allProducts?.data?.length > 0 && allProducts?.data?.slice(0, 20),
+      items:
+        newArrivalProducts?.products?.length > 0 &&
+        newArrivalProducts?.products?.slice(0, 10),
       ads: [
         {
           image: NewLatestCollectionMen,
@@ -68,29 +77,55 @@ const BooksInHome = async () => {
         },
       ],
     },
-    {
-      title: "Mom & Baby",
-      items: allProducts?.data?.length > 0 && allProducts?.data?.slice(0, 20),
-      ads: [
-        {
-          image: NewLatestCollection,
-          firstLine: "New  arrivals",
-          secondLine: "NEW LATEST COLLECTION",
-          thirdLine: "All Special Products, Up To 45% Off",
-          TextColor: "#333333",
-        },
-        {
-          image: TrendingManCollection,
-          firstLine: "New  arrivals",
-          secondLine: "TENDING MAN’S COLLECTION",
-          thirdLine: "All Special Products, Up To 45% Off",
-          TextColor: "#ffffff",
-        },
-      ],
-    },
+    ...featuredCategoryProducts?.map((category) => {
+      return {
+        title: category?.name,
+        items: category?.products?.slice(0, 10),
+        ads: [
+          {
+            image: NewLatestCollection,
+            firstLine: "New  arrivals",
+            secondLine: "NEW LATEST COLLECTION",
+            thirdLine: "All Special Products, Up To 45% Off",
+            TextColor: "#333333",
+          },
+          {
+            image: TrendingManCollection,
+            firstLine: "New  arrivals",
+            secondLine: "TENDING MAN’S COLLECTION",
+            thirdLine: "All Special Products, Up To 45% Off",
+            TextColor: "#ffffff",
+          },
+        ],
+      };
+    }),
+    // {
+    //   title: "Mom & Baby",
+    //   items:
+    //     allProducts?.products?.length > 0 &&
+    //     allProducts?.products?.slice(0, 10),
+    //   ads: [
+    //     {
+    //       image: NewLatestCollection,
+    //       firstLine: "New  arrivals",
+    //       secondLine: "NEW LATEST COLLECTION",
+    //       thirdLine: "All Special Products, Up To 45% Off",
+    //       TextColor: "#333333",
+    //     },
+    //     {
+    //       image: TrendingManCollection,
+    //       firstLine: "New  arrivals",
+    //       secondLine: "TENDING MAN’S COLLECTION",
+    //       thirdLine: "All Special Products, Up To 45% Off",
+    //       TextColor: "#ffffff",
+    //     },
+    //   ],
+    // },
     {
       title: "All Products",
-      items: allProducts?.data?.length > 0 && allProducts?.data?.slice(0, 20),
+      items:
+        allProducts?.products?.length > 0 &&
+        allProducts?.products?.slice(0, 20),
       ads: [
         {
           image: NewLatestCollectionMen,
@@ -111,7 +146,7 @@ const BooksInHome = async () => {
   ];
 
   return (
-    <div className="py-5 flex flex-col gap-5 items-start">
+    <div className="flex flex-col gap-5 items-start">
       {Sections.map((section, index) => {
         return (
           <ReusableItemsSection

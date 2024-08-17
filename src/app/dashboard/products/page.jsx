@@ -16,14 +16,14 @@ import { useRouter } from "next/navigation";
 
 const Products = () => {
   const router = useRouter();
-  const { GetProduct } = useProduct();
+  const { GetProducts } = useProduct();
   const {
     data: allProducts = {},
     isLoading: isProductLoading,
     refetch: refetchProducts,
   } = useQuery({
     queryKey: ["allProducts"],
-    queryFn: () => GetProduct(),
+    queryFn: () => GetProducts(),
     cacheTime: 10 * (60 * 1000),
     staleTime: 5 * (60 * 1000),
   });
@@ -97,7 +97,7 @@ const Products = () => {
         <div className="flex flex-col gap-3">
           <p>02 Orders</p>
           <ProductsTable
-            allProducts={allProducts.data}
+            allProducts={allProducts.products}
             isProductLoading={isProductLoading}
           />
         </div>

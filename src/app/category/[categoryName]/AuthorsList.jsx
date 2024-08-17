@@ -7,24 +7,24 @@ export default function AuthorsList({ authors }) {
     useContext(StateContext);
 
   const handleFilterWriter = (writer) => {
-    setWriterName(writer);
-    fetch(
-      `http://localhost:5000/api/get/books/byauthor?writer=${writer}&&page=${page}&&pageSize=${pageSize}`,
-      {
-        method: "GET",
-        headers: {
-          "content-type": "application/json",
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(writer);
-        console.log(data);
-        setFilterBooks(data.books);
-        const pages = Math.ceil(data.totalDataLength / pageSize);
-        setTotalPages(pages);
-      });
+    // setWriterName(writer);
+    // fetch(
+    //   `http://localhost:5000/api/get/books/byauthor?writer=${writer}&&page=${page}&&pageSize=${pageSize}`,
+    //   {
+    //     method: "GET",
+    //     headers: {
+    //       "content-type": "application/json",
+    //     },
+    //   }
+    // )
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     console.log(writer);
+    //     console.log(data);
+    //     setFilterBooks(data.books);
+    //     const pages = Math.ceil(data.totalDataLength / pageSize);
+    //     setTotalPages(pages);
+    //   });
   };
 
   return (

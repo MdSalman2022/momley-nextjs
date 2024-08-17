@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import profile from "../../../../public/images/profile/profile.png";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
@@ -10,15 +10,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { StateContext } from "@/contexts/StateProvider/StateProvider";
+import useCustomer from "@/hooks/useCustomer";
+import toast from "react-hot-toast";
 
 const EditProfile = () => {
+  const { userInfo } = useContext(StateContext);
+  const { UpdateCustomer } = useCustomer();
   const personalInfo = [
     {
       name: "fname",
-      label: "Full Name",
-      placeholder: "Enter your full name",
+      label: "First Name",
+      placeholder: "Enter your first name",
       type: "text",
       required: true,
+    },
+    {
+      name: "lname",
+      label: "Last Name",
+      placeholder: "Enter your last name",
+      type: "text",
+      required: false,
     },
     {
       name: "phone",
@@ -44,15 +56,15 @@ const EditProfile = () => {
       label: "Gender",
       type: "text",
       required: true,
-      options: ["Men", "Women"],
+      options: ["male", "female"],
     },
   ];
 
   const additionalInfo = [
     {
-      name: "region",
-      label: "Region",
-      placeholder: "Enter your region",
+      name: "state",
+      label: "State",
+      placeholder: "Enter your state",
       type: "text",
       required: true,
     },
@@ -80,7 +92,11 @@ const EditProfile = () => {
   ];
 
   const [selectedGender, setSelectedGender] = useState("");
- 
+
+  useEffect(() => {
+    setSelectedGender(userInfo?.customer?.gender);
+  }, [userInfo]);
+
   const handleValueChange = (value) => {
     setSelectedGender(value);
   };
@@ -88,27 +104,68 @@ const EditProfile = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      fname: "",
+      lname: "",
+      phone: "",
+      email: "",
+      birthday: "",
+      gender: "",
+      state: "",
+      city: "",
+      area: "",
+      address: "",
+    },
+  });
+
+  useEffect(() => {
+    if (userInfo?._id) {
+      reset({
+        fname: userInfo?.customer?.firstName,
+        lname: userInfo?.customer?.lastName,
+        phone: userInfo?.customer?.phoneNumber,
+        gender: userInfo?.customer?.gender || "",
+        email: userInfo?.email || "",
+        state: userInfo?.customer?.shippingAddress[0]?.state || "",
+        city: userInfo?.customer?.shippingAddress[0]?.city || "",
+        area: userInfo?.customer?.shippingAddress[0]?.street || "",
+        address: userInfo?.customer?.shippingAddress[0]?.street || "",
+      });
+    }
+  }, [userInfo, reset]);
 
   console.log("errors", errors);
 
   const onSubmit = async (data) => {
     console.log("formdata", data, selectedGender);
-    // try {
-    //   const response = await fetch("YOUR_BACKEND_ENDPOINT", {
-    //     method: "PUT",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(data),
-    //   });
-    //   if (!response.ok) throw new Error("Network response was not ok");
-    //   console.log("Form submitted successfully:", data);
-    // } catch (error) {
-    //   console.error("Error submitting form:", error);
-    // }
+    const payload = {
+      id: userInfo.customer?._id,
+      firstName: data.fname,
+      lastName: data.lname,
+      phoneNumber: data.phone,
+      email: data.email,
+      birthday: data.birthday,
+      gender: selectedGender,
+      shippingAddress: {
+        state: data.state,
+        city: data.city,
+        street: data.area,
+        address: data.address,
+      },
+    };
+    console.log("payload", payload);
+
+    const response = await UpdateCustomer(payload);
+    console.log("response", response);
+    if (response?.success) {
+      toast.success("Profile updated successfully");
+    }
   };
+
+  console.log("selectedGender", selectedGender);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-10">
@@ -139,13 +196,21 @@ const EditProfile = () => {
                   {required && "*"}
                 </p>
                 {name === "gender" ? (
-                  <Select onValueChange={handleValueChange}>
-                    <SelectTrigger className="w-full h-10 mt-1 bg-[#F2F2F2] border-[#E0E0E0]">
-                      <SelectValue placeholder={options[0]} />
+                  <Select
+                    onValueChange={handleValueChange}
+                    className="capitalize"
+                  >
+                    <SelectTrigger className="w-full h-10 mt-1 bg-[#F2F2F2] border-[#E0E0E0] capitalize">
+                      <SelectValue
+                        placeholder={options[0]}
+                        className="capitalize"
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {options.map((option) => (
-                        <SelectItem value={option}>{option}</SelectItem>
+                        <SelectItem value={option} className="capitalize">
+                          {option}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>

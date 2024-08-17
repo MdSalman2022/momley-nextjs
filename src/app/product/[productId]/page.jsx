@@ -1,7 +1,5 @@
-"use client";
-import React, { Suspense, useState, useEffect } from "react";
+import React from "react";
 import { FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa";
-import Loading from "@/components/Shared/Loading";
 import BookCartControl from "./BookCartControl";
 import RelatedBooks from "./RelatedBooks";
 import RecommendedBooks from "./RecommendedBooks";
@@ -10,37 +8,17 @@ import ReviewCard from "./ReviewCard";
 import SecurityCard from "./SecurityCard";
 import laptop from "../../../../public/images/products/laptop.webp";
 import Image from "next/image";
-import { useQuery } from "react-query";
+import useProduct from "@/hooks/useProduct";
+import LoadingAnimation from "@/libs/utils/LoadingAnimation";
+import ProductDescription from "./ProductDescription";
 
-const BookDetails = ({ params }) => {
+const BookDetails = async ({ params }) => {
   const productId = params.productId;
-  const { getBookDetails } = useBook();
-  const [activeTab, setActiveTab] = useState("description");
+  const { GetProductsById } = useProduct();
 
-  const {
-    data: productDetails = {},
-    isLoading: isBookDetailsLoading,
-    refetch: refetchBookDetails,
-  } = useQuery({
-    queryKey: ["productDetails", productId],
-    queryFn: () => productId && getBookDetails(productId),
-    cacheTime: 10 * (60 * 1000),
-    staleTime: 5 * (60 * 1000),
-  });
+  const productDetails = await GetProductsById(productId);
+
   const bookDetails = productDetails?.data;
-
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-  };
-  console.log(
-    "bookDetails?.specification",
-    bookDetails,
-    bookDetails?.specifications
-  );
-
-  if (!bookDetails) {
-    return <Loading />;
-  }
 
   return (
     <div className="bg-white">
@@ -80,7 +58,7 @@ const BookDetails = ({ params }) => {
                 <div className="primary-btn w-fit">
                   Offer Ends in: 2 days 09:20:30
                 </div>
-                <BookCartControl />
+                <BookCartControl bookDetails={bookDetails} />
                 <p className="flex items-center gap-5">
                   Share:
                   <FaFacebookF className="bg-blue-500 p-1 text-3xl rounded-full text-white" />
@@ -90,73 +68,7 @@ const BookDetails = ({ params }) => {
               </div>
             </div>
             <div className="flex col-span-2 items-start h-fit">
-              <div className="flex flex-col py-10">
-                <div className="flex gap-10 py-5">
-                  <span
-                    className={`cursor-pointer border-b-2 ${
-                      activeTab === "description"
-                        ? "border-black"
-                        : "border-transparent"
-                    }`}
-                    onClick={() => handleTabClick("description")}
-                  >
-                    Description
-                  </span>
-                  <span
-                    className={`cursor-pointer border-b-2 ${
-                      activeTab === "specification"
-                        ? "border-black"
-                        : "border-transparent"
-                    }`}
-                    onClick={() => handleTabClick("specification")}
-                  >
-                    Specification
-                  </span>
-                  <span
-                    className={`cursor-pointer border-b-2 ${
-                      activeTab === "review"
-                        ? "border-black"
-                        : "border-transparent"
-                    }`}
-                    onClick={() => handleTabClick("review")}
-                  >
-                    Review
-                  </span>
-                </div>
-
-                <div className="flex flex-col gap-5 mr-2">
-                  {activeTab === "description" && (
-                    <p>
-                      {bookDetails.description
-                        .split("\n")
-                        .map((line, index) => (
-                          <React.Fragment key={index}>
-                            {line}
-                            <br />
-                          </React.Fragment>
-                        ))}
-                    </p>
-                  )}
-                  {activeTab === "specification" && (
-                    <div className="flex flex-col gap-1">
-                      {bookDetails?.specifications ? (
-                        <span className="flex flex-col gap-1">
-                          {Object.entries(bookDetails.specifications).map(
-                            ([label, value]) => (
-                              <span key={label}>
-                                <strong>{label}:</strong> {value}
-                              </span>
-                            )
-                          )}
-                        </span>
-                      ) : (
-                        <div>No specifications available.</div>
-                      )}
-                    </div>
-                  )}
-                  {activeTab === "review" && <div>Review Content</div>}
-                </div>
-              </div>
+              <ProductDescription bookDetails={bookDetails} />
             </div>
           </div>
           <div className="col-span-1 flex flex-col gap-5">
@@ -165,7 +77,7 @@ const BookDetails = ({ params }) => {
             <RecommendedBooks productId={productId} />
           </div>
           <div className="col-span-4">
-            <RelatedBooks productId={productId} />
+            <RelatedBooks />
           </div>
         </div>
       </div>
