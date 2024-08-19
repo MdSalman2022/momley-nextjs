@@ -12,7 +12,7 @@ const MyReview = () => {
 
       <div className="border bg-white p-5 space-y-5">
         <p className="font-semibold py-2 border-b-2 border-black w-fit">
-          Your product rating & review:
+          Your orders rating & review:
         </p>
 
         <div>

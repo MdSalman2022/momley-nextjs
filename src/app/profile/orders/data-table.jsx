@@ -98,7 +98,7 @@ export function DataTable({
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
+                No items.
               </TableCell>
             </TableRow>
           )}

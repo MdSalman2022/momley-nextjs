@@ -16,7 +16,7 @@ const useProfile = () => {
 
   const updateProfile = async (data) => {
     const response = await fetch(
-      `${process.env.VITE_SERVER_URL}/api/profile/updateProfile`,
+      `${process.env.VITE_SERVER_URL}/profile/updateProfile`,
       {
         method: "PUT",
         headers: {

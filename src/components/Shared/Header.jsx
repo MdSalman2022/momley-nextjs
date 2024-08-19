@@ -20,7 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import GeneratedProfileImage from "./GeneratedProfileImage";
 import useCategory from "@/hooks/useCategory";
 import { useQuery } from "react-query";
@@ -38,11 +38,13 @@ const NavigationItem = ({ name, item }) => (
 );
 
 const Header = () => {
+  const router = useRouter();
+  const [searchTerm, setSearchTerm] = useState("");
   const { isAuthModalOpen, setIsAuthModalOpen, user, logOut } =
     useContext(AuthContext);
-  const { cart, totalLevel } = useContext(StateContext);
+  const { cart, totalLevel, userInfo, storeInfo } = useContext(StateContext);
 
-  console.log("totalLevel", totalLevel);
+  console.log("userInfo", userInfo, storeInfo);
 
   const { GetMenuByPosition } = useCategory();
 
@@ -80,14 +82,6 @@ const Header = () => {
   allMenus = allMenus.map((menu) => processMenu(menu, 1, totalLevel));
 
   console.log("allMenus", allMenus);
-  const navItems = [
-    { name: "Mom & Baby" },
-    { name: "Bath & Shower" },
-    { name: "Fragrance" },
-    { name: "Makeup" },
-    { name: "New Arrivals" },
-    { name: "Weekly Offers" },
-  ];
   const pathname = usePathname();
 
   const isDashboardPage = pathname.includes("/dashboard");
@@ -106,10 +100,22 @@ const Header = () => {
     };
   }, []);
 
+  const handleSearch = () => {
+    if (searchTerm.trim()) {
+      router.push(`/search-product/${searchTerm.replace(/\s+/g, "-")}`);
+    }
+  };
+
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   return (
     <div
       className={`container mx-auto w-full justify-center ${
-        isDashboardPage ? "hidden" : "mb-10 flex"
+        isDashboardPage ? "hidden" : "mb-14 flex"
       } `}
     >
       <div className="flex flex-col  w-full z-10">
@@ -136,13 +142,19 @@ const Header = () => {
                 height={120}
               />
             </Link>
-            <div className="flex items-center gap-3 relative ">
+            <div className="flex items-center gap-3 relative">
               <input
                 type="text"
                 className="input-box w-[540px] h-[52px] pl-3 rounded-lg border-2 border-[#333333]"
                 placeholder="Search for Products, Brands & Categories"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyPress={handleKeyPress}
               />
-              <button className="absolute right-1 top-2 rounded bg-black text-white flex items-center justify-center w-[87px] h-11">
+              <button
+                className="absolute right-1 top-2 rounded bg-black text-white flex items-center justify-center w-[87px] h-11"
+                onClick={handleSearch}
+              >
                 <GrSearch className="text-2xl" />
               </button>
             </div>
@@ -181,22 +193,27 @@ const Header = () => {
                       )}
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        <Link
-                          href="/dashboard/overview"
-                          className="cursor-pointer w-full"
-                        >
-                          Dashboard
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Link
-                          href="/profile/edit-profile"
-                          className="cursor-pointer w-full"
-                        >
-                          Profile
-                        </Link>
-                      </DropdownMenuItem>
+                      {storeInfo?._id === userInfo?.storeId &&
+                        userInfo?.role === "seller" && (
+                          <DropdownMenuItem>
+                            <Link
+                              href="/dashboard/overview"
+                              className="cursor-pointer w-full"
+                            >
+                              Dashboard
+                            </Link>
+                          </DropdownMenuItem>
+                        )}
+                      {userInfo?.role === "customer" && (
+                        <DropdownMenuItem>
+                          <Link
+                            href="/profile/edit-profile"
+                            className="cursor-pointer w-full"
+                          >
+                            Profile
+                          </Link>
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuItem>
                         <Link
                           href="/checkout"

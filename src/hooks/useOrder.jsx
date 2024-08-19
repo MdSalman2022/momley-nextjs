@@ -22,10 +22,10 @@ const useOrder = () => {
     }
   };
 
-  const getOrders = async (payload) => {
+  const getOrders = async (id) => {
     try {
       const response = await fetch(
-        `${process.env.VITE_SERVER_URL}/orders/get`,
+        `${process.env.VITE_SERVER_URL}/orders/get?storeId=${id}`,
         {
           method: "GET",
           headers: {

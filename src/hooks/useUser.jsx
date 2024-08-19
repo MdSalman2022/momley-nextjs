@@ -15,7 +15,23 @@ const useUser = () => {
     return user;
   };
 
-  return { CreateUser };
+  const updateCustomer = async (data) => {
+    const response = await fetch(
+      `${process.env.VITE_SERVER_URL}/users/update-customer`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    const user = await response.json();
+
+    return user;
+  };
+
+  return { CreateUser, updateCustomer };
 };
 
 export default useUser;

@@ -102,28 +102,9 @@ const MyOrders = () => {
       accessorKey: "partialPayment",
     },
     {
-      id: "action",
-      header: "Action",
-      accessorKey: "id", // Assuming actions are tied to the row's unique 'id'
-      cell: ({ row }) => (
-        <Select onValueChange={handleValueChange} aria-label="Select action">
-          <SelectTrigger className="w-40 h-10 mt-1 border-0">
-            <SelectValue placeholder={actions[0]?.label} />
-          </SelectTrigger>
-          <SelectContent>
-            {actions.map((option, index) => {
-              const value = option?.value || `fallback-value-${index}`;
-              if (!option?.value) return null;
-              return (
-                <SelectItem key={index} value={value}>
-                  {option?.label}
-                </SelectItem>
-              );
-            })}
-          </SelectContent>
-        </Select>
-      ),
-      enableSorting: false, // Assuming sorting is not needed for actions
+      id: "status",
+      header: "status",
+      accessorKey: "status", // Assuming actions are tied to the row's unique 'id'
     },
   ];
 
@@ -135,6 +116,7 @@ const MyOrders = () => {
           date: new Date(order.createdAt).toLocaleDateString(),
           totalPrice: `$${order.totalAmount.toFixed(2)}`,
           partialPayment: `$${order.paymentDetails.partialPayment.toFixed(2)}`,
+          status: order.status,
         }))
       : [];
 

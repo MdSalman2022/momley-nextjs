@@ -69,6 +69,7 @@ const useProduct = () => {
       // throw error;
     }
   };
+
   const GetNewArrivalProducts = async () => {
     try {
       const response = await fetch(
@@ -115,12 +116,10 @@ const useProduct = () => {
     }
   };
 
-  const SearchProduct = async (name, storeId) => {
+  const SearchProduct = async (name) => {
     try {
       const response = await fetch(
-        `${
-          process.env.VITE_SERVER_URL
-        }/products/search?name=${name}&storeId=${"66965d022e79323150e122df"}`,
+        `${process.env.VITE_SERVER_URL}/products/search?name=${name}&storeId=${storeId}`,
         {
           method: "GET",
           headers: {

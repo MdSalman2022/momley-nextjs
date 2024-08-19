@@ -11,26 +11,25 @@ import {
 
 import { Checkbox } from "@/components/ui/checkbox";
 import useOrder from "@/hooks/useOrder";
+import { storeId } from "@/libs/utils/common";
+import { useQuery } from "react-query";
 
 const OrdersTable = () => {
   const [allOrders, setAllOrders] = useState(null);
   const { getOrders } = useOrder();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const allOrders = await getOrders();
-      console.log("allOrders", allOrders);
+  const {
+    data: myorders = {},
+    isLoading: isOrdersLoading,
+    refetch: refetchOrders,
+  } = useQuery({
+    queryKey: ["myorders", storeId],
+    queryFn: () => storeId && getOrders(storeId),
+    cacheTime: 10 * (60 * 1000),
+    staleTime: 5 * (60 * 1000),
+  });
 
-      if (allOrders.success) {
-        setAllOrders(allOrders?.data);
-      }
-      console.log("allOrders", allOrders);
-    };
-
-    fetchData();
-  }, []);
-
-  console.log("allOrders", allOrders);
+  console.log("myorders", myorders);
 
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -132,50 +131,28 @@ const OrdersTable = () => {
     },
   ];
 
-  const orders =
-    allOrders?.length > 0
-      ? allOrders?.map((order, index) => ({
-          orderId: order?.orderNumber,
-          date: order?.createdAt,
-          totalPrice: order?.totalAmount,
-          partialPayment: order?.paymentDetails?.partialPayment
-            ? order?.paymentDetails?.partialPayment
-            : "Paid",
-          items: order?.items?.length,
-          paymentMethod: order?.paymentDetails?.paymentMethod,
-          status: order?.status,
+  const ordersArray =
+    !isOrdersLoading && myorders?.data?.length
+      ? myorders.data.map((order, index) => ({
+          id: index + 1,
+          orderId: order._id,
+          date: new Date(order.createdAt).toLocaleDateString(),
+          totalPrice: `$${order.totalAmount.toFixed(2)}`,
+          partialPayment: `$${order.paymentDetails.partialPayment.toFixed(2)}`,
+          items: order.items.length,
+          paymentMethod: order.paymentDetails.paymentMethod,
+          status: order.status,
         }))
       : [];
 
-  console.log("orders", orders);
-
-  // const data = [
-  //   {
-  //     id: "1",
-  //     orderId: "123",
-  //     date: "2023-04-01",
-  //     totalPrice: "$100.00",
-  //     partialPayment: "$50.00",
-  //     items: 3,
-  //     paymentMethod: "COD",
-  //   },
-  //   {
-  //     id: "2",
-  //     orderId: "456",
-  //     date: "2023-04-02",
-  //     totalPrice: "$200.00",
-  //     partialPayment: "$100.00",
-  //     items: 3,
-  //     paymentMethod: "COD",
-  //   },
-  // ];
+  console.log("ordersArray", ordersArray);
 
   return (
     <div className="flex flex-col gap-3">
       <p>02 Orders</p>
       <DataTable
         columns={columns}
-        data={orders}
+        data={ordersArray}
         setSorting={setSorting}
         setColumnFilters={setColumnFilters}
         setColumnVisibility={setColumnVisibility}

@@ -126,9 +126,9 @@ const ProductCard = ({ book }) => {
   // console.log(imageUrl);
 
   console.log("book", book);
-  const truncatedText = TruncateText(book?.name, 10);
+  const truncatedText = TruncateText(book?.name, 15);
   return (
-    <div className="flex flex-col items-center justify-between gap-3 border border-[#EEEEEE80] p-3 rounded text-black max-w-[180px]">
+    <div className="flex flex-col items-center justify-between gap-3 border border-[#EEEEEE80] p-3 rounded text-black max-w-[180px] h-fit">
       <Link href={`/product/${book?.slug}`}>
         <Image
           className="object-cover w-[164px] h-[217px]"
