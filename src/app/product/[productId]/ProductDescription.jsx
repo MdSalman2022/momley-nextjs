@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import ReactQuill from "react-quill";
+import dynamic from "next/dynamic";
+
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 const ProductDescription = ({ bookDetails }) => {
   const [activeTab, setActiveTab] = useState("description");
@@ -8,9 +10,9 @@ const ProductDescription = ({ bookDetails }) => {
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
+
   return (
     <div>
-      {" "}
       <div className="flex flex-col py-10">
         <div className="flex gap-10 py-5">
           <span

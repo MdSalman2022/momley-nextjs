@@ -116,10 +116,33 @@ const useProduct = () => {
     }
   };
 
-  const SearchProduct = async (name) => {
+  const SearchProduct = async (name, filter) => {
     try {
       const response = await fetch(
-        `${process.env.VITE_SERVER_URL}/products/search?name=${name}&storeId=${storeId}`,
+        `${process.env.VITE_SERVER_URL}/products/search`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ storeId, name, filter }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const product = await response.json();
+      return product;
+    } catch (error) {
+      console.error("Failed to fetch book details:", error);
+      throw error;
+    }
+  };
+
+  const GetFilterMetrics = async (level) => {
+    try {
+      const response = await fetch(
+        `${process.env.VITE_SERVER_URL}/products/get-filter-metrics?storeId=${storeId}&level=${level}`,
         {
           method: "GET",
           headers: {
@@ -145,6 +168,7 @@ const useProduct = () => {
     SearchProduct,
     GetProductsById,
     GetNewArrivalProducts,
+    GetFilterMetrics,
   };
 };
 

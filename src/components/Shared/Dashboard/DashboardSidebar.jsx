@@ -103,6 +103,12 @@ const navigationLinks = [
   },
   {
     id: 12,
+    href: "/dashboard/reviews",
+    label: "Reviews",
+    icon: <GoPeople />,
+  },
+  {
+    id: 13,
     href: "/dashboard/settings/users&permissions",
     label: "Settings",
     icon: <IoSettingsOutline />,

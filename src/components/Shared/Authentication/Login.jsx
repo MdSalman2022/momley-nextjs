@@ -3,6 +3,7 @@
 import { AuthContext, useAuth } from "@/contexts/AuthProvider/AuthProvider";
 import { StateContext } from "@/contexts/StateProvider/StateProvider";
 import useUser from "@/hooks/useUser";
+import { storeId } from "@/libs/utils/common";
 import { GoogleAuthProvider, sendEmailVerification } from "firebase/auth";
 import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -34,7 +35,8 @@ const Login = () => {
       idToken: idToken,
       email: user.email,
       firstName: user.displayName,
-      role: "seller",
+      role: "customer",
+      storeId: storeId,
     };
     console.log("payload", payload);
     const createUserResult = await CreateUser(payload);

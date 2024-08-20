@@ -1,8 +1,10 @@
+import { storeId } from "@/libs/utils/common";
+
 const useCustomer = () => {
   const GetCustomers = async () => {
     try {
       const response = await fetch(
-        `${process.env.VITE_SERVER_URL}/customer/list`,
+        `${process.env.VITE_SERVER_URL}/customer/get-customer?storeId=${storeId}`,
         {
           method: "GET",
           headers: {

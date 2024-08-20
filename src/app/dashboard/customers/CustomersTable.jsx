@@ -82,37 +82,25 @@ const CustomersTable = () => {
       accessorKey: "BDTSpent",
     },
   ];
-
-  const data = [
-    {
-      id: "1",
+  const data = allCustomers.map((c, index) => {
+    const shippingAddress = c.customer?.shippingAddress;
+    return {
+      id: (index + 1).toString(),
       CustomersName: (
-        <span className="flex items.center gap-1">
+        <span className="flex items-center gap-1">
           <Image src={avatar} className="w-10 h-10 rounded-lg" />
           <div className="flex flex-col">
-            <span>Customers 1</span>
-            <span>Dhaka, Bangladesh</span>
+            <span>{c.customer?.firstName}</span>
+            <span>
+              {shippingAddress?.[shippingAddress.length - 1]?.city || ""}
+            </span>
           </div>
         </span>
       ),
-      Orders: "5",
-      BDTSpent: "500",
-    },
-    {
-      id: "2",
-      CustomersName: (
-        <span className="flex items.center gap-1">
-          <Image src={avatar} className="w-10 h-10 rounded-lg" />
-          <div className="flex flex-col">
-            <span>Customers 1</span>
-            <span>Dhaka, Bangladesh</span>
-          </div>
-        </span>
-      ),
-      Orders: "10",
-      BDTSpent: "1000",
-    },
-  ];
+      Orders: c.customer?.orders?.length || 0,
+      BDTSpent: c.customer?.totalSpent || 0,
+    };
+  });
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-between">

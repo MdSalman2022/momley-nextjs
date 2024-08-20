@@ -4,7 +4,8 @@ import React, { useState } from "react";
 
 const SearchSection = ({ search }) => {
   const router = useRouter();
-  const formattedSearch = search.replace(/-/g, " ");
+  const formattedSearch =
+    typeof search === "string" ? search.replace(/-/g, " ") : "";
 
   const [searchTerm, setSearchTerm] = useState(formattedSearch || "");
 

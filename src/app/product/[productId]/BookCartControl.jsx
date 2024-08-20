@@ -57,6 +57,8 @@ export default function BookCartControl({ bookDetails }) {
     setCartCount(cartCount + 1);
   };
 
+  const alreadyInCart = cart?.find((item) => item._id === bookDetails._id);
+
   return (
     <div className="flex flex-col gap-3">
       <p>Quantity</p>
@@ -77,11 +79,15 @@ export default function BookCartControl({ bookDetails }) {
       </div>
       <div className="flex gap-5">
         <div
-          onClick={handleAddToCart}
-          className="primary-outline-btn w-40 flex justify-center cursor-pointer"
+          onClick={() => !alreadyInCart && handleAddToCart}
+          className={`w-40 flex items-center justify-center font-semibold ${
+            alreadyInCart
+              ? "text-gray-400 border-0 cursor-not-allowed"
+              : "primary-outline-btn cursor-pointer"
+          }`}
         >
           {cart?.find((item) => item._id === bookDetails._id)
-            ? "Update Cart"
+            ? "In Cart"
             : "Add to Cart"}
         </div>
         <Link

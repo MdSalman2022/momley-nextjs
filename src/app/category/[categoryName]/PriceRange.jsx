@@ -1,54 +1,67 @@
-"use client";
-import { StateContext } from "@/contexts/StateProvider/StateProvider";
-import React, { useContext } from "react";
+import React, { useState } from "react";
 
-const PriceRange = () => {
-  const {
-    pageSize,
-    page,
-    setTotalPages,
-    filterBooks,
-    setFilterBooks,
-    writerName,
-    setWriterName,
-  } = useContext(StateContext);
+const PriceRange = ({
+  priceRange,
+  setPriceRange,
+  handleSearch,
+  query,
+  params,
+}) => {
+  const handleFilterPrice = () => {
+    // Implement the logic to filter items based on the price range
+    console.log(
+      `Filtering items with price between ${priceRange.min} and ${priceRange.max}`
+    );
+    // Example: setFilterItems(filteredItems);
 
-  const underPrice = [250, 350, 450, 550, 1000];
+    handleSearch("price", priceRange);
+  };
 
-  const handleFilterPrice = (price) => {
-    fetch(
-      `http://localhost:5000/api/get/books/byprice?amount=${price}&&page=${page}&&pageSize=${pageSize}`,
-      {
-        method: "GET",
-        headers: {
-          "content-type": "application/json",
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setWriterName("");
-        setFilterBooks(data.books);
-        const pages = Math.ceil(data.totalDataLength / pageSize);
-        setTotalPages(pages);
-      });
+  const handleMinPriceChange = (e) => {
+    setPriceRange((prevRange) => ({
+      ...prevRange,
+      min: e.target.value,
+    }));
+  };
+
+  const handleMaxPriceChange = (e) => {
+    setPriceRange((prevRange) => ({
+      ...prevRange,
+      max: e.target.value,
+    }));
   };
 
   return (
-    <div>
-      {" "}
-      {underPrice.map((price, index) => (
-        <div
-          onClick={() => handleFilterPrice(price)}
-          key={index}
-          className="form-control border-b py-3 last:border-0"
-        >
-          <label className="flex justify-start gap-6 cursor-pointer">
-            <input type="radio" name="priceRange" className="radio radio-sm" />
-            <span className="">Under {price}</span>
-          </label>
-        </div>
-      ))}
+    <div className="price-range-filter flex flex-col items-center gap-1">
+      <div className="form-control w-full mt-1">
+        <label className="flex flex-col">
+          <span className="label-text text-xs">Min Price:</span>
+          <input
+            type="number"
+            value={priceRange.min}
+            onChange={handleMinPriceChange}
+            className="input-box w-full text-xs"
+            placeholder="Min Price"
+          />
+        </label>
+      </div>
+      <div className="form-control w-full">
+        <label className="flex flex-col">
+          <span className="label-text text-xs">Max Price:</span>
+          <input
+            type="number"
+            value={priceRange.max}
+            onChange={handleMaxPriceChange}
+            className="input-box w-full text-xs"
+            placeholder="Max Price"
+          />
+        </label>
+      </div>
+      <div className="form-control py-3">
+        <button onClick={handleFilterPrice} className="primary-btn text-xs">
+          Apply
+        </button>
+      </div>
     </div>
   );
 };

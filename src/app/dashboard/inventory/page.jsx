@@ -10,8 +10,26 @@ import {
 } from "@/components/ui/select";
 import { DataTable } from "@/app/profile/orders/data-table";
 import { Checkbox } from "@/components/ui/checkbox";
+import ProductsInventoryTable from "./ProductsInventoryTable";
+import useProduct from "@/hooks/useProduct";
+import { useQuery } from "react-query";
+import LoadingAnimation from "@/libs/utils/LoadingAnimation";
 
 const Inventory = () => {
+  const { GetProducts } = useProduct();
+  const {
+    data: allProducts = {},
+    isLoading: isProductLoading,
+    refetch: refetchProducts,
+  } = useQuery({
+    queryKey: ["allProducts"],
+    queryFn: () => GetProducts(),
+    cacheTime: 10 * (60 * 1000),
+    staleTime: 5 * (60 * 1000),
+  });
+
+  console.log("allProducts", allProducts);
+
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -19,8 +37,8 @@ const Inventory = () => {
   const [selectedStatus, setSelectedStatus] = useState("Active");
 
   const actions = [
-    { value: "Active", label: "Active" },
-    { value: "Disabled", label: "Disabled" },
+    { value: "In Stock", label: "In Stock" },
+    { value: "Out of Stock", label: "Out of Stock" },
   ];
 
   const pages = ["All", "Active", "Inactive", "Stock Out"];
@@ -66,6 +84,11 @@ const Inventory = () => {
       accessorKey: "Price",
     },
     {
+      id: "SalePrice",
+      header: "Sale Price",
+      accessorKey: "SalePrice",
+    },
+    {
       id: "Stock",
       header: "Stock",
       accessorKey: "Stock",
@@ -75,21 +98,25 @@ const Inventory = () => {
       header: "Sales",
       accessorKey: "Sales",
     },
-    {
+    /*   {
       id: "Vendor",
       header: "Vendor",
       accessorKey: "Vendor",
-    },
+    }, */
     {
-      id: "Status",
-      header: "Status",
-      accessorKey: "Status", // Assuming actions are tied to the row's unique 'id'
+      id: "Stock",
+      header: "Stock",
+      accessorKey: "Stock", // Assuming actions are tied to the row's unique 'id'
       cell: ({ row }) => {
         console.log("row", row);
         return (
           <Select onValueChange={handleValueChange} aria-label="Select action">
             <SelectTrigger className="w-40 h-10 mt-1 border-0">
-              <SelectValue placeholder={row?.original?.Status} />
+              <SelectValue
+                placeholder={
+                  row?.original.stock?.inStock ? "In Stock" : "Out of Stock"
+                }
+              />
             </SelectTrigger>
             <SelectContent>
               {actions.map((option, index) => {
@@ -108,6 +135,20 @@ const Inventory = () => {
       enableSorting: false, // Assuming sorting is not needed for actions
     },
   ];
+
+  const productList =
+    !isProductLoading &&
+    allProducts?.products?.map((product) => ({
+      productName: product.name,
+      Price: product.price,
+      SalePrice: product.salePrice,
+      Stock: product.stock?.quantity,
+      Sales: product.sales?.total,
+      vendor: product.vendor,
+      Stock: product.stock?.inStock ? "Active" : "Disabled",
+    }));
+
+  console.log("productList", productList);
 
   const data = [
     {
@@ -129,6 +170,10 @@ const Inventory = () => {
       Status: "Disabled",
     },
   ];
+
+  if (isProductLoading) {
+    return <LoadingAnimation />;
+  }
 
   return (
     <div className="flex flex-col gap-5 px-6">
@@ -188,7 +233,7 @@ const Inventory = () => {
           <p>02 Orders</p>
           <DataTable
             columns={columns}
-            data={data}
+            data={productList}
             setSorting={setSorting}
             setColumnFilters={setColumnFilters}
             setColumnVisibility={setColumnVisibility}

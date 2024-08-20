@@ -13,6 +13,7 @@ import LoadingAnimation from "@/libs/utils/LoadingAnimation";
 import ProductDescription from "./ProductDescription";
 
 const BookDetails = async ({ params }) => {
+  console.log("params", params);
   const productId = params.productId;
   const { GetProductsById } = useProduct();
 
