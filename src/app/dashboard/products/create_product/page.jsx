@@ -13,14 +13,16 @@ import { StateContext } from "@/contexts/StateProvider/StateProvider";
 import toast from "react-hot-toast";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { FiPlusCircle } from "react-icons/fi";
-import { quantityType, units } from "@/libs/utils/common";
+import { getUnitsByType, quantityType, units } from "@/libs/utils/common";
 import TagsInput from "@/libs/utils/tagsInput";
 import SelectCategoryModal from "@/libs/utils/SelectCategoryModal";
 import dynamic from "next/dynamic";
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
+import { useRouter } from "next/navigation";
 
 const CreateProductModal = () => {
+  const router = useRouter();
   const { userInfo } = useContext(StateContext);
   const [descriptionValue, setDescriptionValue] = useState("");
   const formRef = useRef(null);
@@ -71,9 +73,13 @@ const CreateProductModal = () => {
   };
 
   console.log("descriptionValue", descriptionValue);
+  const [typeUnit, setTypeUnit] = useState(units);
 
   const handleQuantityTypeValue = (value) => {
     setValue("quantityType", value, { shouldValidate: true });
+
+    const updatedUnits = getUnitsByType(value);
+    setTypeUnit(updatedUnits);
   };
 
   const handleValueChange = (value) => {
@@ -125,6 +131,7 @@ const CreateProductModal = () => {
 
     if (result?.success) {
       toast.success("Product created successfully");
+      router.push("/dashboard/products");
     }
 
     console.log("result", result);
@@ -337,7 +344,7 @@ const CreateProductModal = () => {
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    {units.map((option, index) => (
+                    {typeUnit.map((option, index) => (
                       <SelectItem key={index} value={option}>
                         {option}
                       </SelectItem>

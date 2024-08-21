@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TopActionButtons from "@/components/Dashboard/TopActionButtons";
 import {
   Select,
@@ -26,6 +26,8 @@ const Products = () => {
     queryFn: () => GetProducts(),
     cacheTime: 10 * (60 * 1000),
     staleTime: 5 * (60 * 1000),
+    refetchOnWindowFocus: true,
+    refetchOnMount: "always",
   });
 
   console.log("allProducts", allProducts);

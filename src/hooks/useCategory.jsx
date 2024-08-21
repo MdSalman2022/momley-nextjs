@@ -257,6 +257,21 @@ const useCategory = () => {
     }
   };
 
+  const DeleteCategory = async (id) => {
+    const response = await fetch(
+      `${process.env.VITE_SERVER_URL}/category/delete?id=${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
+      }
+    );
+    const SubData = await response.json();
+    return SubData;
+  };
+
   return {
     getBooksByCategory,
     getAllCategories,
@@ -274,6 +289,7 @@ const useCategory = () => {
     GetMenuByPosition,
     getProductsByCategory,
     getCategoryBySlug,
+    DeleteCategory,
   };
 };
 

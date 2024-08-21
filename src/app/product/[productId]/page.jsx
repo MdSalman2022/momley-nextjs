@@ -11,6 +11,32 @@ import Image from "next/image";
 import useProduct from "@/hooks/useProduct";
 import LoadingAnimation from "@/libs/utils/LoadingAnimation";
 import ProductDescription from "./ProductDescription";
+import BreadcrumbComponent, {
+  BreadCrumbComponent,
+} from "./BreadCrumbComponent";
+const extractNamesAndSlugs = async (category) => {
+  const namesAndSlugs = [];
+
+  // Add the main category
+  if (category) {
+    namesAndSlugs.push({
+      name: category.name,
+      slug: category.slug,
+    });
+
+    // Add the ancestors
+    if (Array.isArray(category.ancestors)) {
+      category.ancestors.reverse().forEach((ancestor) => {
+        namesAndSlugs.push({
+          name: ancestor.name,
+          slug: ancestor.slug,
+        });
+      });
+    }
+  }
+
+  return namesAndSlugs;
+};
 
 const BookDetails = async ({ params }) => {
   console.log("params", params);
@@ -19,13 +45,24 @@ const BookDetails = async ({ params }) => {
 
   const productDetails = await GetProductsById(productId);
 
+  const breadcrumbItems = [
+    { label: "Home", href: "/" },
+    { label: "Components", href: "/components" },
+    { label: "Breadcrumb" },
+  ];
+
   const bookDetails = productDetails?.data;
+  console.log("bookDetails?.data?.category", bookDetails?.category);
+
+  const items = await extractNamesAndSlugs(bookDetails?.category);
+
+  console.log("items", items);
 
   return (
     <div className="bg-white">
       <div className="container mx-auto text-black">
         <p className="py-5">
-          Home/ Categories / {bookDetails?.categoryInfo?.category}
+          {items?.length > 0 && <BreadCrumbComponent items={items} />}
         </p>
         <div className="grid grid-cols-4">
           <div className="col-span-3 grid grid-cols-2 gap-5 h-fit">
@@ -37,7 +74,7 @@ const BookDetails = async ({ params }) => {
                   width={360}
                   height={400}
                 />
-                {bookDetails.images && bookDetails.images.length > 1 && (
+                {/*   {bookDetails.images && bookDetails.images.length > 1 && (
                   <div className="flex items-center gap-5">
                     {bookDetails.images.slice(1).map((image, index) => (
                       <img
@@ -47,7 +84,7 @@ const BookDetails = async ({ params }) => {
                       />
                     ))}
                   </div>
-                )}
+                )} */}
               </div>
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col">

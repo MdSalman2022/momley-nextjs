@@ -139,20 +139,25 @@ const useProduct = () => {
     }
   };
 
-  const GetFilterMetrics = async (level) => {
+  const GetFilterMetrics = async (level, searchQuery, category) => {
     try {
-      const response = await fetch(
-        `${process.env.VITE_SERVER_URL}/products/get-filter-metrics?storeId=${storeId}&level=${level}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      let url = `${process.env.VITE_SERVER_URL}/products/get-filter-metrics?storeId=${storeId}&level=${level}&searchQuery=${searchQuery}`;
+      if (category) {
+        url += `&categoryId=${category}`;
+      }
+
+      console.log("urlurlurl", url);
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+
       const product = await response.json();
       return product;
     } catch (error) {
@@ -160,7 +165,6 @@ const useProduct = () => {
       throw error;
     }
   };
-
   return {
     createProduct,
     updateProduct,

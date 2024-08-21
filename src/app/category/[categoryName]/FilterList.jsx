@@ -24,6 +24,9 @@ const FilterList = ({
       : `/search-product?${queryString}`;
     router.push(url);
   };
+  const getItemCount = (itemName) => {
+    return items.filter((item) => item[itemType] === itemName).length;
+  };
 
   const handleRadioChange = (itemValue, filterType) => {
     if (selectedItem === itemValue) {
@@ -38,26 +41,31 @@ const FilterList = ({
 
   return (
     <div>
-      {items.map((item, index) => (
-        <label
-          key={index}
-          className="flex justify-start gap-5 cursor-pointer border-b last:border-0"
-        >
-          <input
-            type="radio"
-            name={itemType}
-            className="radio radio-sm"
-            checked={selectedItem === item[itemType]}
-            onChange={() => handleRadioChange(item[itemType], itemType)}
-            onClick={() => handleRadioChange(item[itemType], itemType)}
-          />
-          <div className="flex gap-5 py-3">
-            <span className="transition-all duration-200 cursor-pointer font-medium hover:font-semibold capitalize">
-              {item[itemType]} ({item?.count || "0"})
-            </span>
-          </div>
-        </label>
-      ))}
+      {items?.length > 0 &&
+        items?.map((item, index) => (
+          <label
+            key={index}
+            className="flex justify-start gap-5 cursor-pointer border-b last:border-0"
+          >
+            <input
+              type="radio"
+              name={itemType}
+              className="radio radio-sm"
+              checked={selectedItem === item[itemType]}
+              onChange={() => handleRadioChange(item[itemType], itemType)}
+              onClick={() => handleRadioChange(item[itemType], itemType)}
+            />
+            <div className="flex gap-5 py-3">
+              <span className="transition-all duration-200 cursor-pointer font-medium hover:font-semibold capitalize flex items-center gap-1">
+                {item[itemType]} ({item?.count || "0"}){" "}
+                {getItemCount(item[itemType]) > 1 &&
+                  itemType === "category" && (
+                    <span className="text-xs"> - {item?.parentCategory}</span>
+                  )}
+              </span>
+            </div>
+          </label>
+        ))}
     </div>
   );
 };

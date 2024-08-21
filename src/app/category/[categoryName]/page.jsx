@@ -14,34 +14,33 @@ import useProduct from "@/hooks/useProduct";
 const Category = async ({ params }) => {
   const { getProductsByCategory, getCategoryBySlug, getAllCategoriesLevel } =
     useCategory();
-  const { GetProducts } = useProduct();
+  const { GetProducts, GetFilterMetrics } = useProduct();
   const totalLevel = await getAllCategoriesLevel(storeId).then(
     (res) => res?.data?.length
   );
 
-  const products = await getProductsByCategory(
+  const allDataByCategory = await getProductsByCategory(
     storeId,
     params.categoryName
-  ).then((res) => res.data);
+  ).then((res) => res?.data);
+
+  const products = allDataByCategory?.products;
+  const category = allDataByCategory?.category;
 
   const allProducts = await GetProducts().then((res) => res.products);
 
   console.log("totalLevel", totalLevel);
-
-  const allSubcategories = await getCategoryBySlug(
-    storeId,
-    totalLevel,
-    params.categoryName
+  const allFilterMetrics = await GetFilterMetrics(
+    category?.level,
+    "",
+    category?._id
   ).then((res) => res.data);
-
-  console.log("products", products);
-  console.log("allSubcategories", allSubcategories);
-
-  const allSubcategoriesName = allSubcategories?.subcategories?.map(
-    (category) => category.name
+  console.log(
+    "allFilterMetrics",
+    allFilterMetrics,
+    "subcategories",
+    allFilterMetrics?.categories
   );
-
-  console.log("allSubcategoriesName", allSubcategoriesName);
 
   return (
     <div className="pb-10">
@@ -49,8 +48,9 @@ const Category = async ({ params }) => {
         <Banner />
         <div className="grid grid-cols-4 gap-10 py-5">
           <CategoryPageFilter
-            authors={allSubcategoriesName}
-            categories={allSubcategoriesName}
+            allCategories={allFilterMetrics?.categories || []}
+            brands={allFilterMetrics?.brands}
+            colors={allFilterMetrics?.colors}
           />
           <div className="col-span-3 flex flex-col gap-5">
             <div className="flex flex-col gap-5 w-full">

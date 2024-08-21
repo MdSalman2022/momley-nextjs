@@ -108,6 +108,7 @@ const CategoryPageFilter = ({
   const togglePrice = () => setShowPrice(!showPrice);
   const toggleColors = () => setShowColors(!showColors);
   const toggleBrands = () => setShowBrands(!showBrands);
+  const toggleCategories = () => setShowCategories(!showCategories);
 
   return (
     <div>
@@ -166,7 +167,7 @@ const CategoryPageFilter = ({
             />
           )}
         </div>
-        <div className="flex flex-col ">
+        {/*   <div className="flex flex-col ">
           <div
             className="flex items-center justify-between border-b-[3px] relative"
             onClick={toggleBrands}
@@ -192,11 +193,11 @@ const CategoryPageFilter = ({
               params={params}
             />
           )}
-        </div>
+        </div> */}
         <div className="flex flex-col ">
           <div
             className="flex items-center justify-between border-b-[3px] relative"
-            onClick={toggleBrands}
+            onClick={toggleCategories}
           >
             <span className="flex gap-5 items-center">Categories </span>
             <div className="absolute h-[3px] bg-black w-24 top-6"></div>

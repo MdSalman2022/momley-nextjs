@@ -17,6 +17,7 @@ import { useQuery } from "react-query";
 import { formatTime } from "@/libs/utils/common";
 import LoadingAnimation from "@/libs/utils/LoadingAnimation";
 import toast from "react-hot-toast";
+import { set } from "date-fns";
 
 const headers = [
   { label: "", className: "w-[50px]" },
@@ -34,8 +35,13 @@ const AddSubCategory = ({ params }) => {
   const { userInfo } = useContext(StateContext);
   const storeId = userInfo?.store?._id;
   const level = params.level;
-  const { getAllCategoriesLevel, getAllCategories, CreateCategory } =
-    useCategory();
+  const {
+    getAllCategoriesLevel,
+    getAllCategories,
+    CreateCategory,
+    GetMenus,
+    DeleteCategory,
+  } = useCategory();
 
   const [categoryName, setCategoryName] = useState("");
   const [selectedValues, setSelectedValues] = useState(
@@ -50,6 +56,39 @@ const AddSubCategory = ({ params }) => {
     Array(level - 1).fill(false)
   );
 
+  const {
+    data: getMenus = {},
+    isLoading: isMenuLoading,
+    refetch: refetchMenu,
+  } = useQuery({
+    queryKey: ["getMenus", storeId],
+    queryFn: () => storeId && GetMenus(storeId),
+    cacheTime: 10 * (60 * 1000),
+    staleTime: 5 * (60 * 1000),
+    enabled: !!storeId, // Ensure the query only runs if storeId is available
+  });
+
+  console.log("getMenus", getMenus);
+
+  const allMenus =
+    !isMenuLoading &&
+    getMenus?.data?.map((menu) => {
+      return {
+        label: menu.name,
+        value: menu._id,
+        position: menu?.position,
+      };
+    });
+
+  const [selectedMenuValue, setSelectedMenuValue] = useState("");
+
+  const handleSelectMenuChange = (value) => {
+    setSelectedMenuValue(value);
+  };
+
+  console.log("allMenusallMenus", allMenus);
+  console.log("selectedCategories", selectedCategories);
+  console.log("subcategories", subcategories);
   const {
     data: categories = {},
     isLoading: isCategoryLoading,
@@ -133,13 +172,12 @@ const AddSubCategory = ({ params }) => {
         storeId: userInfo?.store?._id,
         parentCategory: selectedCategories[selectedCategories.length - 1],
         categoryLevel: categories?.data[level - 1]._id,
+        menuId: selectedMenuValue || "",
       };
       try {
         const response = await CreateCategory(payload);
         if (response?.success) {
-          setCategoryName("");
-          refetchCategory();
-          refetchAllCategory();
+          window.location.reload();
           toast.success("Sub category added successfully");
         }
       } catch (error) {
@@ -162,6 +200,22 @@ const AddSubCategory = ({ params }) => {
       const categoryCreatedAt = formatTime(category?.createdAt);
       const parentCategoryName = category.parentCategory?.name || "";
 
+      const handleEditClick = () => {
+        // Your edit logic here
+        console.log(`Edit category: ${categoryName}`);
+      };
+
+      const handleDeleteClick = async () => {
+        // Your delete logic here
+        console.log(`Delete category: ${category._id}`);
+        const response = await DeleteCategory(category._id);
+        console.log("response", response);
+        if (response?.success) {
+          refetchCategory();
+          toast.success("Category deleted successfully");
+        }
+      };
+
       if (Array.isArray(category.subcategories)) {
         category.subcategories.forEach((sub, subIndex) => {
           rows.push([
@@ -174,7 +228,19 @@ const AddSubCategory = ({ params }) => {
             { value: categoryName },
             { value: sub.name },
             { value: categoryCreatedAt, className: "" },
-            { value: "Edit / Delete", className: "", onClick: handleCellClick },
+            {
+              value: (
+                <div className="flex gap-2">
+                  <button onClick={handleEditClick} className="text-blue-500">
+                    Edit
+                  </button>
+                  <button onClick={handleDeleteClick} className="text-red-500">
+                    Delete
+                  </button>
+                </div>
+              ),
+              className: "",
+            },
           ]);
         });
       } else {
@@ -188,7 +254,19 @@ const AddSubCategory = ({ params }) => {
           { value: categoryName },
           { value: parentCategoryName, className: "" },
           { value: categoryCreatedAt, className: "" },
-          { value: "Edit / Delete", className: "", onClick: handleCellClick },
+          {
+            value: (
+              <div className="flex gap-2">
+                <button onClick={handleEditClick} className="text-blue-500">
+                  Edit
+                </button>
+                <button onClick={handleDeleteClick} className="text-red-500">
+                  Delete
+                </button>
+              </div>
+            ),
+            className: "",
+          },
         ]);
       }
     });
@@ -210,14 +288,18 @@ const AddSubCategory = ({ params }) => {
           <label htmlFor="" className="text-sm">
             Select Menu
           </label>
-          <Select onValueChange={handleSelectChange}>
+          <Select onValueChange={handleSelectMenuChange}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select a Menu" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="main">Main Menu</SelectItem>
-                <SelectItem value="footer">Footer</SelectItem>
+                {allMenus?.length > 0 &&
+                  allMenus?.map((menu) => (
+                    <SelectItem key={menu.value} value={menu.value}>
+                      {menu.label}
+                    </SelectItem>
+                  ))}
               </SelectGroup>
             </SelectContent>
           </Select>

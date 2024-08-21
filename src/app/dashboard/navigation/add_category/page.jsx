@@ -19,8 +19,34 @@ import toast from "react-hot-toast";
 
 const AddCategory = () => {
   const { userInfo } = useContext(StateContext);
-  const { getAllCategoriesLevel, CreateCategory } = useCategory();
+  const { getAllCategoriesLevel, CreateCategory, GetMenus, DeleteCategory } =
+    useCategory();
   const storeId = userInfo?.store?._id;
+  const {
+    data: getMenus = {},
+    isLoading: isMenuLoading,
+    refetch: refetchMenu,
+  } = useQuery({
+    queryKey: ["getMenus", storeId],
+    queryFn: () => storeId && GetMenus(storeId),
+    cacheTime: 10 * (60 * 1000),
+    staleTime: 5 * (60 * 1000),
+    enabled: !!storeId, // Ensure the query only runs if storeId is available
+  });
+
+  console.log("getMenus", getMenus);
+
+  const allMenus =
+    !isMenuLoading &&
+    getMenus?.data?.map((menu) => {
+      return {
+        label: menu.name,
+        value: menu._id,
+        position: menu?.position,
+      };
+    });
+
+  console.log("allMenusallMenus", allMenus);
 
   const {
     data: categories = {},
@@ -56,7 +82,22 @@ const AddCategory = () => {
     listCategories.categories.forEach((category, index) => {
       const categoryName = category.name;
       const categoryCreatedAt = formatTime(category?.createdAt);
-      const parentCategoryName = category.parentCategory?.name || "";
+
+      const handleEditClick = () => {
+        // Your edit logic here
+        console.log(`Edit category: ${categoryName}`);
+      };
+
+      const handleDeleteClick = async () => {
+        // Your delete logic here
+        console.log(`Delete category: ${category._id}`);
+        const response = await DeleteCategory(category._id);
+        console.log("response", response);
+        if (response?.success) {
+          refetchCategory();
+          toast.success("Category deleted successfully");
+        }
+      };
 
       if (Array.isArray(category.subcategories)) {
         category.subcategories.forEach((sub, subIndex) => {
@@ -68,7 +109,19 @@ const AddCategory = () => {
             },
             { value: categoryName },
             { value: categoryCreatedAt, className: "" },
-            { value: "Edit / Delete", className: "", onClick: handleCellClick },
+            {
+              value: (
+                <div className="flex gap-2">
+                  <button onClick={handleEditClick} className="text-blue-500">
+                    Edit
+                  </button>
+                  <button onClick={handleDeleteClick} className="text-red-500">
+                    Delete
+                  </button>
+                </div>
+              ),
+              className: "",
+            },
           ]);
         });
       } else {
@@ -80,18 +133,32 @@ const AddCategory = () => {
           },
           { value: categoryName },
           { value: categoryCreatedAt, className: "" },
-          { value: "Edit / Delete", className: "", onClick: handleCellClick },
+          {
+            value: (
+              <div className="flex gap-2">
+                <button onClick={handleEditClick} className="text-blue-500">
+                  Edit
+                </button>
+                <button onClick={handleDeleteClick} className="text-red-500">
+                  Delete
+                </button>
+              </div>
+            ),
+            className: "",
+          },
         ]);
       }
     });
   }
 
-  const [selectedValue, setSelectedValue] = useState("");
+  const [selectedMenuValue, setSelectedMenuValue] = useState("");
   const [categoryName, setCategoryName] = useState("");
 
-  const handleSelectChange = (value) => {
-    setSelectedValue(value);
+  const handleSelectMenuChange = (value) => {
+    setSelectedMenuValue(value);
   };
+
+  console.log("selectedMenuValue", selectedMenuValue);
 
   const handleAddCategory = async () => {
     if (categoryName.trim()) {
@@ -99,6 +166,7 @@ const AddCategory = () => {
         name: categoryName,
         storeId: userInfo?.store?._id,
         categoryLevel: categories?.data[0]._id,
+        menuId: selectedMenuValue || "",
       };
       try {
         const response = await CreateCategory(payload);
@@ -127,14 +195,18 @@ const AddCategory = () => {
       <div className="flex flex-col gap-5 px-10 py-5">
         <span className="flex flex-col gap-1">
           <label htmlFor="">Select Menu</label>
-          <Select onValueChange={handleSelectChange}>
+          <Select onValueChange={handleSelectMenuChange}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select a Menu" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="main">Main Menu</SelectItem>
-                <SelectItem value="footer">Footer</SelectItem>
+                {allMenus?.length > 0 &&
+                  allMenus?.map((menu) => (
+                    <SelectItem key={menu.value} value={menu.value}>
+                      {menu.label}
+                    </SelectItem>
+                  ))}
               </SelectGroup>
             </SelectContent>
           </Select>

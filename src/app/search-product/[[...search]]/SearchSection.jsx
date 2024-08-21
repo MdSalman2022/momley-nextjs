@@ -22,7 +22,7 @@ const SearchSection = ({ search }) => {
 
   return (
     <div>
-      <div className="flex flex-col gap-5 justify-center items-center h-60 w-full rounded-xl bg-gray-100">
+      <div className="flex flex-col gap-5 justify-center items-center h-60 w-full rounded-xl bg-slate-100">
         <p>
           Search results for <span className="font-semibold">"{search}"</span>
         </p>
