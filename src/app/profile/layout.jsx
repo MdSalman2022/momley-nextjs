@@ -64,12 +64,15 @@ const Layout = ({ children }) => {
               key={href}
               href={href}
               className={`h-[52px] px-6 flex items-center gap-2 rounded ${
-                pathname === href
+                pathname.includes(href)
                   ? "bg-black text-white"
                   : "bg-white text-black hover:bg-gray-100"
               }`}
             >
-              <Image src={pathname === href ? activeIcon : icon} alt={label} />
+              <Image
+                src={pathname.includes(href) ? activeIcon : icon}
+                alt={label}
+              />
               {label}
             </Link>
           ))}

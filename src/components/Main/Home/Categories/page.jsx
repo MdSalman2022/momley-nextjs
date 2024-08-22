@@ -16,7 +16,7 @@ const CategoryLink = ({ categories, productImage, truncateText }) => (
   <>
     {categories.map((category, index) => (
       <Link
-        href={`/category/${category?.name}`}
+        href={`/category/${category?.slug}`}
         key={index}
         className="flex justify-between items-center gap-10 h-24 w-60 p-5 hover:bg-gray-100"
       >

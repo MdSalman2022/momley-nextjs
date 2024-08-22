@@ -5,7 +5,7 @@ import CategoryList from "./CategoryList";
 import PriceRange from "./PriceRange";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import FilterList from "./FilterList";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const CategoryPageFilter = ({
   allCategories,
@@ -15,6 +15,11 @@ const CategoryPageFilter = ({
   query,
 }) => {
   const router = useRouter();
+
+  const pathname = usePathname();
+
+  console.log("pathname", pathname);
+
   // State variables for section visibility
   const [showPrice, setShowPrice] = useState(true);
   const [showColors, setShowColors] = useState(true);

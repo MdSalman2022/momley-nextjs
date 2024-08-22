@@ -1,4 +1,4 @@
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 const FilterList = ({
@@ -10,7 +10,13 @@ const FilterList = ({
   query,
   params,
 }) => {
-  console.log("selectedItem", selectedItem);
+  console.log("items", items);
+  const pathname = usePathname();
+  console.log(
+    "selectedItem",
+    selectedItem,
+    !pathname.includes("search-product")
+  );
   const router = useRouter();
 
   const UpdateSearch = async (filterType) => {
@@ -28,14 +34,18 @@ const FilterList = ({
     return items.filter((item) => item[itemType] === itemName).length;
   };
 
-  const handleRadioChange = (itemValue, filterType) => {
+  const handleRadioChange = (itemValue, filterType, slug) => {
     if (selectedItem === itemValue) {
       setSelectedItem(null); // or setSelectedItem("") if you prefer an empty string
       handleSearch(filterType, ""); // Clear the filter
       UpdateSearch(filterType); // Trigger the new search
     } else {
-      setSelectedItem(itemValue);
-      handleSearch(filterType, itemValue);
+      if (pathname.includes("search-product")) {
+        setSelectedItem(itemValue);
+        handleSearch(filterType, itemValue);
+      } else {
+        router.push(`/category/${slug}`);
+      }
     }
   };
 
@@ -52,8 +62,10 @@ const FilterList = ({
               name={itemType}
               className="radio radio-sm"
               checked={selectedItem === item[itemType]}
-              onChange={() => handleRadioChange(item[itemType], itemType)}
-              onClick={() => handleRadioChange(item[itemType], itemType)}
+              // onChange={() => handleRadioChange(item[itemType], itemType)}
+              onClick={() =>
+                handleRadioChange(item[itemType], itemType, item?.slug)
+              }
             />
             <div className="flex gap-5 py-3">
               <span className="transition-all duration-200 cursor-pointer font-medium hover:font-semibold capitalize flex items-center gap-1">

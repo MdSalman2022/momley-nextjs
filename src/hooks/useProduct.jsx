@@ -115,6 +115,27 @@ const useProduct = () => {
       throw error;
     }
   };
+  const GetProductReviewsById = async (slug) => {
+    try {
+      const response = await fetch(
+        `${process.env.VITE_SERVER_URL}/products/get-reviewed-products-by-slug?slug=${slug}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const product = await response.json();
+      return product;
+    } catch (error) {
+      console.error("Failed to fetch book details:", error);
+      throw error;
+    }
+  };
 
   const SearchProduct = async (name, filter) => {
     try {
@@ -165,6 +186,29 @@ const useProduct = () => {
       throw error;
     }
   };
+
+  const GetReviewedProducts = async (storeId) => {
+    try {
+      let url = `${process.env.VITE_SERVER_URL}/products/get-reviewed-products?storeId=${storeId}`;
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const product = await response.json();
+      return product;
+    } catch (error) {
+      console.error("Failed to fetch book details:", error);
+      throw error;
+    }
+  };
   return {
     createProduct,
     updateProduct,
@@ -173,6 +217,8 @@ const useProduct = () => {
     GetProductsById,
     GetNewArrivalProducts,
     GetFilterMetrics,
+    GetReviewedProducts,
+    GetProductReviewsById,
   };
 };
 

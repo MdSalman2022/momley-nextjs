@@ -23,19 +23,17 @@ const MyOrders = () => {
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const [selectedStatus, setSelectedStatus] = useState("Active");
-  const pages = [
-    "All",
-    "Unpaid",
-    "Shipping",
-    "Completed",
-    "Cancellation",
-    "Return/Refund",
-  ];
 
   const actions = [
+    { value: "all", label: "All" },
+    { value: "pending", label: "Pending" },
     { value: "processing", label: "Processing" },
-    { value: "delivery", label: "Delivery" },
+    { value: "shipped", label: "Shipped" },
+    { value: "delivered", label: "Delivered" },
+    { value: "cancelled", label: "Cancelled" },
+    { value: "return_refund", label: "Return/Refund" },
   ];
+  const [activePage, setActivePage] = useState(actions[0]?.value);
 
   const customerId = userInfo?.customer?._id;
   console.log("customerId", customerId);
@@ -108,15 +106,38 @@ const MyOrders = () => {
     },
   ];
 
+  const getFilteredOrders = (orders, status) => {
+    switch (status) {
+      case "all":
+        return orders?.data?.all || [];
+      case "cancelled":
+        return orders?.data?.cancelled || [];
+      case "delivered":
+        return orders?.data?.delivered || [];
+      case "pending":
+        return orders?.data?.pending || [];
+      case "processing":
+        return orders?.data?.processing || [];
+      case "return_refund":
+        return orders?.data?.return_refund || [];
+      case "shipped":
+        return orders?.data?.shipped || [];
+      default:
+        return [];
+    }
+  };
+
+  const filteredOrders = getFilteredOrders(orders, activePage);
+
   const ordersArray =
-    !isOrdersLoading && orders?.data?.length
-      ? orders.data.map((order, index) => ({
+    !isOrdersLoading && filteredOrders.length
+      ? filteredOrders.map((order, index) => ({
           id: index + 1,
-          orderId: order._id,
+          orderId: order.orderNumber,
           date: new Date(order.createdAt).toLocaleDateString(),
           totalPrice: `$${order.totalAmount.toFixed(2)}`,
           partialPayment: `$${order.paymentDetails.partialPayment.toFixed(2)}`,
-          status: order.status,
+          status: <p className="capitalize">{order.status}</p>,
         }))
       : [];
 
@@ -125,8 +146,6 @@ const MyOrders = () => {
     setSelectedStatus(value);
   };
   const paymentOptions = ["Paid", "Due", "Partial"];
-
-  const [activePage, setActivePage] = useState(pages[0]);
 
   if (isOrdersLoading) {
     return <LoadingAnimation />;
@@ -141,16 +160,18 @@ const MyOrders = () => {
       </div>
 
       <div className="flex items-center gap-3">
-        {pages.map((page, index) => (
+        {actions.map((page, index) => (
           <button
             type="button"
-            onClick={() => setActivePage(page)}
+            onClick={() => setActivePage(page?.value)}
             key={index}
             className={`text-sm px-3 ${
-              activePage === page ? "border-b-2 border-black font-semibold" : ""
+              activePage === page?.value
+                ? "border-b-2 border-black font-semibold"
+                : ""
             }`}
           >
-            {page}
+            {page?.label}
           </button>
         ))}
       </div>

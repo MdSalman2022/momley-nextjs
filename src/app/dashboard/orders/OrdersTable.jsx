@@ -13,10 +13,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import useOrder from "@/hooks/useOrder";
 import { storeId } from "@/libs/utils/common";
 import { useQuery } from "react-query";
+import toast from "react-hot-toast";
 
 const OrdersTable = () => {
-  const [allOrders, setAllOrders] = useState(null);
-  const { getOrders } = useOrder();
+  const { getOrders, UpdateOrder } = useOrder();
 
   const {
     data: myorders = {},
@@ -39,14 +39,41 @@ const OrdersTable = () => {
     { value: "pending", label: "Pending" },
     { value: "processing", label: "Processing" },
     { value: "shipped", label: "Shipped" },
-    { value: "delivery", label: "Delivery" },
+    { value: "delivered", label: "Delivered" },
     { value: "cancelled", label: "Cancelled" },
+    { value: "return/refund", label: "Return/Refund" },
   ];
 
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [statusForEach, setStatusForEach] = useState([]);
 
-  const handleValueChange = (value) => {
-    setSelectedStatus(value);
+  console.log("statusForEach", statusForEach);
+
+  useEffect(() => {
+    if (!isOrdersLoading) {
+      const status = myorders?.data?.map((order) => order.status);
+      console.log("status", status);
+      setStatusForEach(status);
+    }
+  }, [isOrdersLoading]);
+
+  const handleUpdateStatus = async (value, item) => {
+    console.log("item", item);
+    setStatusForEach((prevStatus) => {
+      const newStatus = [...prevStatus]; // Create a copy of the previous state
+      newStatus[item?.original?.id - 1] = value; // Update the specific index
+      return newStatus; // Return the new array
+    });
+    const payload = {
+      orderId: item?.original?.orderId,
+      status: value,
+    };
+    const updateOrder = await UpdateOrder(payload);
+    console.log("updateOrder", updateOrder);
+    if (updateOrder?.success) {
+      toast.success("Order status updated successfully");
+      refetchOrders();
+    }
   };
 
   const columns = [
@@ -108,10 +135,17 @@ const OrdersTable = () => {
       header: "Action",
       accessorKey: "status", // Assuming actions are tied to the row's unique 'id'
       cell: ({ row }) => (
-        <Select onValueChange={handleValueChange} aria-label="Select action">
+        <Select
+          onValueChange={(value) => handleUpdateStatus(value, row)}
+          aria-label="Select action"
+        >
           <SelectTrigger className="w-40 h-10 mt-1 border-0 capitalize">
             <SelectValue
-              placeholder={selectedStatus || row?.original?.status}
+              placeholder={
+                statusForEach?.length > 0
+                  ? statusForEach[row?.original?.id - 1]
+                  : row?.original?.status
+              }
             />
           </SelectTrigger>
           <SelectContent>
@@ -137,7 +171,10 @@ const OrdersTable = () => {
           id: index + 1,
           orderId: order._id,
           date: new Date(order.createdAt).toLocaleDateString(),
-          totalPrice: `$${order.totalAmount.toFixed(2)}`,
+          totalPrice: `$${order.totalAmount.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}`,
           partialPayment: `$${order.paymentDetails.partialPayment.toFixed(2)}`,
           items: order.items.length,
           paymentMethod: order.paymentDetails.paymentMethod,
