@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import dynamic from "next/dynamic";
+import GeneratedProfileImage from "@/components/Shared/GeneratedProfileImage";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
@@ -41,7 +42,7 @@ const ProductDescription = ({ bookDetails }) => {
             }`}
             onClick={() => handleTabClick("review")}
           >
-            Review
+            Review ({bookDetails?.reviews?.length || 0})
           </span>
         </div>
 
@@ -70,7 +71,41 @@ const ProductDescription = ({ bookDetails }) => {
               )}
             </div>
           )}
-          {activeTab === "review" && <div>Review Content</div>}
+          {activeTab === "review" && (
+            <div className="flex flex-col gap-3">
+              {bookDetails?.reviews?.map((review) => (
+                <div
+                  key={review._id}
+                  className="flex flex-col gap-4 border border-gray-200 rounded-lg p-4 bg-white w-full"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-10 h-10 rounded-full   flex items-center justify-center">
+                      <GeneratedProfileImage
+                        name={review?.customerId?.firstName || "user"}
+                        size={40}
+                      />
+                    </div>
+                    <div>
+                      <span className="block text-lg font-semibold text-gray-800">
+                        {review.customerId?.firstName}
+                      </span>
+                      <span className="block text-sm text-gray-500">
+                        {new Date(review.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="mt-2">
+                    <p className="text-gray-700">{review.reviewText}</p>
+                  </div>
+                  <div className="flex items-center mt-2">
+                    <span className="text-yellow-500">
+                      {Array(review.rating).fill("⭐")}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

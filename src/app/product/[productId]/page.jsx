@@ -52,7 +52,7 @@ const BookDetails = async ({ params }) => {
   ];
 
   const bookDetails = productDetails?.data;
-  console.log("bookDetails?.data?.category", bookDetails?.category);
+  console.log("bookDetailsbookDetails", bookDetails);
 
   const items = await extractNamesAndSlugs(bookDetails?.category);
 

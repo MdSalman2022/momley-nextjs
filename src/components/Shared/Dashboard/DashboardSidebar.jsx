@@ -101,14 +101,14 @@ const navigationLinks = [
     label: "Page Create",
     icon: <FiLayout />,
   },
-  {
+  /*   {
     id: 12,
     href: "/dashboard/reviews",
     label: "Reviews",
     icon: <GoPeople />,
-  },
+  }, */
   {
-    id: 13,
+    id: 12,
     href: "/dashboard/settings/users&permissions",
     label: "Settings",
     icon: <IoSettingsOutline />,

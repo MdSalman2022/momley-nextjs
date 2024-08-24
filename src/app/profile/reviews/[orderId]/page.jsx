@@ -9,6 +9,7 @@ import { useQuery } from "react-query";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import LoadingAnimation from "@/libs/utils/LoadingAnimation";
+import { storeId } from "@/libs/utils/common";
 
 const OrderReview = ({ params }) => {
   const route = useRouter();
@@ -31,6 +32,7 @@ const OrderReview = ({ params }) => {
 
   const onSubmit = async (data) => {
     const reviewData = {
+      storeId: storeId,
       userId: orderDetails?.data?.customerId,
       orderId: orderDetails?.data?._id,
       productIds: orderDetails?.data?.items.map((item) => item.product),

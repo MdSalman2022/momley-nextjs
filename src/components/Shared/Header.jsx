@@ -27,6 +27,7 @@ import { useQuery } from "react-query";
 import { storeId } from "@/libs/utils/common";
 import Menus from "./Menus";
 import { IoReorderThree } from "react-icons/io5";
+import logo from "../../../public/images/logo.png"
 
 const NavigationItem = ({ name, item }) => (
   <Link
@@ -135,8 +136,8 @@ const Header = () => {
           )}
           <nav className="flex items-center justify-between w-full ">
             <Link href="/" className="logo">
-              <img
-                src="https://i.ibb.co/TW8T2kc/logo-momley.png"
+              <Image
+                src={logo}
                 alt="momley"
                 width={250}
                 height={120}
