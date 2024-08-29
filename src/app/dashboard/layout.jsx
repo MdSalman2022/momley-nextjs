@@ -3,6 +3,8 @@ import Link from "next/link";
 import React from "react";
 import DashboardHeader from "@/components/Shared/Dashboard/DashboardHeader";
 import DashboardSidebar from "@/components/Shared/Dashboard/DashboardSidebar";
+import logo from "../../../public/images/logo.png";
+import Image from "next/image";
 
 const Layout = ({ children }) => {
   return (
@@ -10,12 +12,7 @@ const Layout = ({ children }) => {
       <div className="w-full flex gap-6">
         <nav className="w-[30%] min-h-fit flex flex-col border">
           <Link href="/" className="logo py-5 px-8 border-b">
-            <img
-              src="https://i.ibb.co/TW8T2kc/logo-momley.png"
-              alt="momley"
-              width={250}
-              height={120}
-            />
+            <Image src={logo} alt="momley" width={250} height={120} />
           </Link>
           <DashboardSidebar />
         </nav>

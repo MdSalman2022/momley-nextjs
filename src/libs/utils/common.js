@@ -1,4 +1,28 @@
-import useCategory from "@/hooks/useCategory";
+const allProducts = "all-products";
+const specificCollection = "specific-collections";
+const specificProduct = "specific-products";
+
+const percentage = "percentage";
+const fixedAmount = "fixed-amount";
+const freeShipping = "free-shipping";
+const buyXGetY = "buy-x-get-y";
+
+export const getAppliedToOptions = () => {
+  return {
+    option1: allProducts,
+    option2: specificCollection,
+    option3: specificProduct,
+  };
+};
+
+export const getDiscountTypeOptions = () => {
+  return {
+    option1: percentage,
+    option2: fixedAmount,
+    option3: freeShipping,
+    option4: buyXGetY,
+  };
+};
 
 export const TruncateText = (text, maxLength) => {
   if (text.length > maxLength) {

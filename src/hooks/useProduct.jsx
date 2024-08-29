@@ -46,25 +46,50 @@ const useProduct = () => {
       throw error;
     }
   };
-  const GetProducts = async () => {
+
+  const updateProductStatus = async (payload) => {
     try {
       const response = await fetch(
-        `${process.env.VITE_SERVER_URL}/products/get-all?storeId=${storeId}`,
+        `${process.env.VITE_SERVER_URL}/products/update-status`,
         {
-          method: "GET",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
+          body: JSON.stringify(payload),
         }
       );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const product = await response.json();
+      return product;
+    } catch (error) {
+      console.error("Failed to fetch book details:", error);
+      throw error;
+    }
+  };
+  const GetProducts = async (search) => {
+    try {
+      const baseUrl = `${process.env.VITE_SERVER_URL}/products/get-all?storeId=${storeId}`;
+      const url = search ? `${baseUrl}&search=${search}` : baseUrl;
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
       if (!response.ok) {
         return [];
         // throw new Error(`HTTP error! status: ${response.status}`);
       }
+
       const product = await response.json();
       return product?.data;
     } catch (error) {
-      console.error("Failed to fetch book details:", error);
+      console.error("Failed to fetch product details:", error);
       return [];
       // throw error;
     }
@@ -219,6 +244,7 @@ const useProduct = () => {
     GetFilterMetrics,
     GetReviewedProducts,
     GetProductReviewsById,
+    updateProductStatus,
   };
 };
 

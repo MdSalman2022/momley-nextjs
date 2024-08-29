@@ -15,26 +15,28 @@ import { storeId } from "@/libs/utils/common";
 import { useQuery } from "react-query";
 import toast from "react-hot-toast";
 
-const OrdersTable = () => {
+const OrdersTable = ({ activePage, searchText }) => {
   const { getOrders, UpdateOrder } = useOrder();
+
+  const [sorting, setSorting] = useState([]);
+  const [columnFilters, setColumnFilters] = useState([]);
+  const [columnVisibility, setColumnVisibility] = useState({});
+  const [rowSelection, setRowSelection] = useState({});
 
   const {
     data: myorders = {},
     isLoading: isOrdersLoading,
     refetch: refetchOrders,
   } = useQuery({
-    queryKey: ["myorders", storeId],
-    queryFn: () => storeId && getOrders(storeId),
+    queryKey: ["myorders", storeId, searchText],
+    queryFn: () => storeId && getOrders(storeId, searchText),
     cacheTime: 10 * (60 * 1000),
     staleTime: 5 * (60 * 1000),
   });
 
   console.log("myorders", myorders);
+  console.log("activePage", activePage);
 
-  const [sorting, setSorting] = useState([]);
-  const [columnFilters, setColumnFilters] = useState([]);
-  const [columnVisibility, setColumnVisibility] = useState({});
-  const [rowSelection, setRowSelection] = useState({});
   const actions = [
     { value: "pending", label: "Pending" },
     { value: "processing", label: "Processing" },
@@ -44,14 +46,15 @@ const OrdersTable = () => {
     { value: "return/refund", label: "Return/Refund" },
   ];
 
-  const [selectedStatus, setSelectedStatus] = useState("");
   const [statusForEach, setStatusForEach] = useState([]);
 
   console.log("statusForEach", statusForEach);
 
   useEffect(() => {
     if (!isOrdersLoading) {
-      const status = myorders?.data?.map((order) => order.status);
+      const status =
+        myorders?.data?.[activePage]?.length > 0 &&
+        myorders?.data?.[activePage]?.map((order) => order.status);
       console.log("status", status);
       setStatusForEach(status);
     }
@@ -166,16 +169,16 @@ const OrdersTable = () => {
   ];
 
   const ordersArray =
-    !isOrdersLoading && myorders?.data?.length
-      ? myorders.data.map((order, index) => ({
+    !isOrdersLoading && myorders?.data?.[activePage]?.length
+      ? myorders.data[activePage].map((order, index) => ({
           id: index + 1,
-          orderId: order._id,
+          orderId: order.orderNumber,
           date: new Date(order.createdAt).toLocaleDateString(),
-          totalPrice: `$${order.totalAmount.toLocaleString(undefined, {
+          totalPrice: `৳ ${order.totalAmount.toLocaleString(undefined, {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           })}`,
-          partialPayment: `$${order.paymentDetails.partialPayment.toFixed(2)}`,
+          partialPayment: `৳ ${order.paymentDetails.partialPayment.toFixed(2)}`,
           items: order.items.length,
           paymentMethod: order.paymentDetails.paymentMethod,
           status: order.status,
@@ -186,7 +189,7 @@ const OrdersTable = () => {
 
   return (
     <div className="flex flex-col gap-3">
-      <p>02 Orders</p>
+      <p>{ordersArray?.length} Orders</p>
       <DataTable
         columns={columns}
         data={ordersArray}

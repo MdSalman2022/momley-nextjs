@@ -19,6 +19,9 @@ import TagsInput from "@/libs/utils/tagsInput";
 import { useQuery } from "react-query";
 import LoadingAnimation from "@/libs/utils/LoadingAnimation";
 import { useRouter } from "next/navigation";
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+import "react-quill/dist/quill.snow.css";
+import dynamic from "next/dynamic";
 
 const EditProduct = ({ params }) => {
   const router = useRouter();
@@ -30,6 +33,14 @@ const EditProduct = ({ params }) => {
     name: null,
     ancestors: [],
   });
+
+  const [descriptionValue, setDescriptionValue] = useState("");
+
+  const handleDescriptionChange = (value) => {
+    console.log("value", value);
+    setDescriptionValue(value);
+    setValue("description", value, { shouldValidate: true });
+  };
 
   const [tags, setTags] = useState([]);
   const [specifications, setSpecifications] = useState([]);
@@ -68,6 +79,9 @@ const EditProduct = ({ params }) => {
         name: thisProduct.category?.name,
         ancestors: thisProduct.category?.ancestors,
       });
+    }
+    if (thisProduct?.description) {
+      setDescriptionValue(thisProduct?.description);
     }
   }, [thisProduct]);
 
@@ -280,13 +294,15 @@ const EditProduct = ({ params }) => {
                   </span>
                 )}
               </div>
+
               <div className="flex flex-col">
                 <label className="text-sm" htmlFor="description">
                   Description
                 </label>
-                <textarea
-                  className="input-box border-[#11111170] h-20 py-1"
-                  {...register("description", { required: true })}
+                <ReactQuill
+                  theme="snow"
+                  value={descriptionValue}
+                  onChange={handleDescriptionChange}
                   placeholder="e.g. This is a product description"
                 />
                 {errors.description && (
@@ -295,7 +311,7 @@ const EditProduct = ({ params }) => {
                   </span>
                 )}
               </div>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1 mt-10">
                 <label className="text-sm" htmlFor="description">
                   Media
                 </label>

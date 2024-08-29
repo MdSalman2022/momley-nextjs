@@ -7,10 +7,15 @@ import { FaMinus, FaPlus } from "react-icons/fa";
 import { HiOutlineTrash } from "react-icons/hi";
 import { StateContext } from "@/contexts/StateProvider/StateProvider";
 import LoadingAnimation from "@/libs/utils/LoadingAnimation";
-import { storeId } from "@/libs/utils/common";
+import {
+  getAppliedToOptions,
+  getDiscountTypeOptions,
+  storeId,
+} from "@/libs/utils/common";
 import toast from "react-hot-toast";
 import useOrder from "@/hooks/useOrder";
 import { useRouter } from "next/navigation";
+import useDiscount from "@/hooks/useDiscount";
 
 const FormInput = ({
   label,
@@ -99,6 +104,7 @@ const DeliveryOption = ({
   label,
   price,
   setDeliveryCost,
+  defaultChecked,
 }) => (
   <div className="flex items-center justify-between gap-5 w-full">
     <div className="flex items-center gap-5">
@@ -108,6 +114,7 @@ const DeliveryOption = ({
         value={value}
         id={id}
         onChange={() => setDeliveryCost(price)}
+        defaultChecked={defaultChecked}
       />
       <label htmlFor={id}>{label}</label>
     </div>
@@ -125,6 +132,7 @@ const DeliveryMethods = ({ register, pricing, setDeliveryCost }) => (
         label="Home Delivery In Dhaka"
         price={pricing?.dhaka}
         setDeliveryCost={setDeliveryCost}
+        defaultChecked={true}
       />
       <DeliveryOption
         register={register}
@@ -148,14 +156,27 @@ const DeliveryMethods = ({ register, pricing, setDeliveryCost }) => (
 
 const PaymentOption = ({ register, value, id, label }) => (
   <div className="flex items-center gap-5">
-    <input {...register("payment")} type="radio" value={value} id={id} />
+    <input
+      {...register("payment", { required: true })}
+      type="radio"
+      value={value}
+      id={id}
+    />
     <label htmlFor={id}>{label}</label>
   </div>
 );
-
-const PaymentMethods = ({ register }) => (
-  <div className="border rounded flex flex-col py-5 px-8 h-[172px]">
-    <p className="text-lg font-bold">Payment Methods</p>
+const PaymentMethods = ({ register, errors }) => (
+  <div
+    className={`border rounded flex flex-col py-5 px-8 h-[172px] ${
+      errors?.payment && "border-red-500"
+    }`}
+  >
+    <div className="flex items-center gap-1">
+      <p className="text-lg font-bold">Payment Methods</p>
+      {errors?.payment && (
+        <span className="text-red-500 text-xs">This field is required</span>
+      )}
+    </div>
     <PaymentOption
       register={register}
       value="Credit Card"
@@ -172,30 +193,12 @@ const PaymentMethods = ({ register }) => (
 );
 
 const CheckoutPage = () => {
-  const { cart, setCart, userInfo, isUserInfoLoading, storeInfo } =
-    useContext(StateContext);
-  const { createOrder } = useOrder();
-  console.log("userInfo", userInfo);
-  console.log("storeInfo", storeInfo);
-  const [deliveryCost, setDeliveryCost] = useState(0);
-  const [subTotal, setSubTotal] = useState(0);
-  const [totalAmount, setTotalAmount] = useState(0);
-  const router = useRouter();
-
-  useEffect(() => {
-    const total = cart.reduce((acc, item) => acc + item.totalPrice, 0);
-    setSubTotal(total);
-    setTotalAmount(total + deliveryCost);
-  }, [cart, deliveryCost]);
-
-  console.log("deliveryCost", deliveryCost);
-  console.log("totalAmount", totalAmount);
-  console.log("cart", cart);
   const {
     control,
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -209,6 +212,75 @@ const CheckoutPage = () => {
       address: "",
     },
   });
+
+  console.log("errors", errors);
+
+  const { cart, setCart, userInfo, isUserInfoLoading, storeInfo } =
+    useContext(StateContext);
+  const { createOrder } = useOrder();
+  const { getDiscountByCode } = useDiscount();
+  const [deliveryCost, setDeliveryCost] = useState(70);
+  const [subTotal, setSubTotal] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [discountData, setDiscountData] = useState({});
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const router = useRouter();
+
+  console.log("userInfo", userInfo);
+  console.log("storeInfo", storeInfo);
+  console.log("option", getAppliedToOptions().option1);
+
+  useEffect(() => {
+    const total = cart.reduce((acc, item) => acc + item.totalPrice, 0);
+    setSubTotal(total);
+    if (
+      discountData?.discountInfo?.appliesTo === getAppliedToOptions().option1
+    ) {
+      const type = discountData?.discountInfo?.type;
+      const value = discountData?.discountInfo?.value;
+      if (type === getDiscountTypeOptions().option1) {
+        const discountAmount = (total * value) / 100;
+        setDiscountAmount(discountAmount);
+        setTotalAmount(total - discountAmount + deliveryCost);
+      } else if (type === getDiscountTypeOptions().option2) {
+        setDiscountAmount(value);
+        setTotalAmount(total - value + deliveryCost);
+      } else if (type === getDiscountTypeOptions().option3) {
+        setDiscountAmount(deliveryCost);
+        setTotalAmount(total);
+      } else if (type === getDiscountTypeOptions().option4) {
+      } else {
+        setDiscountAmount(value);
+        setTotalAmount(total - value + deliveryCost);
+      }
+    } else {
+      setTotalAmount(total + deliveryCost);
+    }
+  }, [cart, deliveryCost, discountData]);
+
+  console.log("deliveryCost", deliveryCost);
+  console.log("subTotal", subTotal);
+  console.log("totalAmount", totalAmount);
+  console.log("cart", cart);
+
+  const handleCheckDiscount = async () => {
+    const discountCode = watch("coupon");
+    const discount = await getDiscountByCode(storeId, discountCode);
+    console.log("discount", discount);
+    if (discount) {
+      setDiscountData(discount);
+      toast.success("Coupon Code Applied");
+    } else {
+      toast.error("Invalid Coupon Code");
+    }
+  };
+
+  const handleRemoveDiscount = () => {
+    setDiscountData({});
+    setTotalAmount(totalAmount + discountData?.discountAmount);
+  };
+
+  console.log("discountData", discountData);
 
   useEffect(() => {
     if (userInfo?._id) {
@@ -269,6 +341,11 @@ const CheckoutPage = () => {
   const onSubmit = async (data) => {
     console.log("form input", data);
 
+    if (!data?.payment) {
+      toast.error("Please select a payment method");
+      return;
+    }
+
     const payload = {
       customerId: userInfo?.customer?._id,
       storeId: storeId,
@@ -287,8 +364,8 @@ const CheckoutPage = () => {
       },
       shippingMethod: data?.delivery,
       shippingCost: deliveryCost,
-      discountCode: data?.coupon,
-      discountAmount: 0,
+      discountObject: discountData?._id,
+      discountAmount: discountAmount,
       notes: data?.comment,
     };
     if (data?.firstName !== userInfo?.customer?.firstName) {
@@ -454,7 +531,7 @@ const CheckoutPage = () => {
             </div>
           </div>
           <div className="grid grid-cols-2 gap-5 w-full">
-            <PaymentMethods register={register} />
+            <PaymentMethods register={register} errors={errors} />
             <DeliveryMethods
               register={register}
               pricing={{
@@ -472,22 +549,41 @@ const CheckoutPage = () => {
                 <span>Subtotal</span>
                 <span className="font-bold">৳ {subTotal}</span>
               </div>
+              {discountData?.discountCode && (
+                <div className="flex justify-between">
+                  <span>Discount</span>
+                  <span className="font-bold">৳ - {discountAmount}</span>
+                </div>
+              )}
+
               <div className="flex justify-between">
                 <span>Shipping Charge</span>
-                <span className="font-bold">
-                  ৳{" "}
-                  {deliveryCost ||
-                    storeInfo?.deliveryCharge?.shipmentInsideDhaka}
-                </span>
+                <span className="font-bold">৳ {deliveryCost}</span>
               </div>
               <div className="flex items-center gap-5 border-b pb-5">
                 <input
                   type="text"
                   className="input-box"
                   placeholder="Coupon Code"
+                  autoComplete="on"
                   {...register("coupon", { required: false })}
+                  readOnly={discountData?.discountCode}
                 />
-                <div className="primary-outline-btn">Apply</div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    discountData?.discountCode
+                      ? handleRemoveDiscount()
+                      : handleCheckDiscount();
+                  }}
+                  className={
+                    discountData?.discountCode
+                      ? "primary-outline-btn border-red-600 text-red-600 hover:bg-red-600 hover:text-white"
+                      : "primary-btn"
+                  }
+                >
+                  {discountData?.discountCode ? "Remove" : "Apply"}
+                </button>
               </div>
               <div className="flex justify-between">
                 <span>Grand Total</span>

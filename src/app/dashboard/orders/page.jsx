@@ -12,18 +12,20 @@ import CreateOrderModal from "./CreateOrderModal";
 import OrdersTable from "./OrdersTable";
 
 const Orders = () => {
+  const [searchText, setSearchText] = useState("");
   const pages = [
-    "All",
-    "Unpaid",
-    "Unfulfilled",
-    "Shipping",
-    "Completed",
-    "Cancellation",
-    "Return/Refund",
+    { value: "all", label: "All" },
+    { value: "pending", label: "Pending" },
+    { value: "processing", label: "Processing" },
+    { value: "shipped", label: "Shipped" },
+    { value: "delivered", label: "Delivered" },
+    { value: "cancelled", label: "Cancelled" },
+    { value: "return_refund", label: "Return/Refund" },
   ];
-  const [activePage, setActivePage] = useState(pages[0]);
+  const [activePage, setActivePage] = useState(pages[0]?.value);
   const paymentOptions = ["Paid", "Due", "Partial"];
 
+  console.log("activePage", activePage);
   const [selectedStatus, setSelectedStatus] = useState("Active");
 
   const handleValueChange = (value) => {
@@ -45,15 +47,15 @@ const Orders = () => {
           {pages.map((page, index) => (
             <button
               type="button"
-              onClick={() => setActivePage(page)}
+              onClick={() => setActivePage(page?.value)}
               key={index}
               className={`text-sm px-3 ${
-                activePage === page
+                activePage === page?.value
                   ? "border-b-2 border-black font-semibold"
                   : ""
               }`}
             >
-              {page}
+              {page?.label}
             </button>
           ))}
         </div>
@@ -61,13 +63,15 @@ const Orders = () => {
           <input
             type="text"
             className="input-box bg-[#F2F1F1] border-[#F2F2F2]"
-            placeholder="Search products name, ID"
+            placeholder="Search Order"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
           />
-          <input
+          {/*  <input
             type="text"
             className="input-box bg-[#F2F1F1] border-[#F2F2F2]"
             placeholder="Payments Status"
-          />
+          /> */}
           <Select onValueChange={handleValueChange}>
             <SelectTrigger className="w-40 h-10 mt-1 bg-[#F2F1F1] border-[#F2F2F2]">
               <SelectValue placeholder="Payments Status" />
@@ -86,7 +90,7 @@ const Orders = () => {
           </button>
         </div>
         <div className="flex flex-col gap-3">
-          <OrdersTable />
+          <OrdersTable activePage={activePage} searchText={searchText} />
           <CreateOrderModal isOpen={isOpen} setIsOpen={setIsOpen} />
         </div>
       </div>

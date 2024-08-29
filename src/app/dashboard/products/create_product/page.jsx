@@ -20,6 +20,7 @@ import dynamic from "next/dynamic";
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
 import { useRouter } from "next/navigation";
+import { waitUntilSymbol } from "next/dist/server/web/spec-extension/fetch-event";
 
 const CreateProductModal = () => {
   const router = useRouter();

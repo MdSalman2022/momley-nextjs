@@ -14,19 +14,38 @@ import ProductsInventoryTable from "./ProductsInventoryTable";
 import useProduct from "@/hooks/useProduct";
 import { useQuery } from "react-query";
 import LoadingAnimation from "@/libs/utils/LoadingAnimation";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const Inventory = () => {
-  const { GetProducts } = useProduct();
+  const router = useRouter();
+  const { GetProducts, updateProductStatus } = useProduct();
+  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [searchText, setSearchText] = useState("");
   const {
     data: allProducts = {},
     isLoading: isProductLoading,
     refetch: refetchProducts,
   } = useQuery({
     queryKey: ["allProducts"],
-    queryFn: () => GetProducts(),
+    queryFn: () => GetProducts(searchText),
     cacheTime: 10 * (60 * 1000),
     staleTime: 5 * (60 * 1000),
   });
+
+  const handleUpdateStatus = async (value, item) => {
+    console.log("item", item);
+    const payload = {
+      slug: item?.original?.productSlug,
+      inStock: value === "stock" ? true : false,
+    };
+    const updateOrder = await updateProductStatus(payload);
+    console.log("updateOrder", updateOrder);
+    if (updateOrder?.success) {
+      toast.success("Order status updated successfully");
+      refetchProducts();
+    }
+  };
 
   console.log("allProducts", allProducts);
 
@@ -34,11 +53,11 @@ const Inventory = () => {
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
-  const [selectedStatus, setSelectedStatus] = useState("Active");
+  const [selectedStatus, setSelectedStatus] = useState("stock");
 
   const actions = [
-    { value: "In Stock", label: "In Stock" },
-    { value: "Out of Stock", label: "Out of Stock" },
+    { value: "stock", label: "In Stock" },
+    { value: "out", label: "Out of Stock" },
   ];
 
   const pages = ["All", "Active", "Inactive", "Stock Out"];
@@ -49,6 +68,8 @@ const Inventory = () => {
   };
   const paymentOptions = ["Paid", "Due", "Partial"];
 
+  console.log("selectedProducts", selectedProducts);
+
   const columns = [
     {
       id: "select",
@@ -58,14 +79,31 @@ const Inventory = () => {
             table.getIsAllPageRowsSelected() ||
             (table.getIsSomePageRowsSelected() && "indeterminate")
           }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          onCheckedChange={(value) => {
+            table.toggleAllPageRowsSelected(!!value);
+            setSelectedProducts(
+              value ? productList.map((item) => item.productSlug) : []
+            );
+          }}
           aria-label="Select all"
         />
       ),
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          onCheckedChange={(value) => {
+            row.toggleSelected(!!value);
+            console.log("value", value, row?.original?.id);
+            setSelectedProducts((prev) => {
+              if (value) {
+                return [...prev, row?.original?.productSlug];
+              } else {
+                return prev.filter(
+                  (item) => item !== row?.original?.productSlug
+                );
+              }
+            });
+          }}
           aria-label="Select row"
         />
       ),
@@ -89,9 +127,9 @@ const Inventory = () => {
       accessorKey: "SalePrice",
     },
     {
-      id: "Stock",
-      header: "Stock",
-      accessorKey: "Stock",
+      id: "quantity",
+      header: "Quantity",
+      accessorKey: "quantity",
     },
     {
       id: "Sales",
@@ -108,14 +146,15 @@ const Inventory = () => {
       header: "Stock",
       accessorKey: "Stock", // Assuming actions are tied to the row's unique 'id'
       cell: ({ row }) => {
-        console.log("row", row);
+        console.log("rowrowrow", row?.original);
         return (
-          <Select onValueChange={handleValueChange} aria-label="Select action">
-            <SelectTrigger className="w-40 h-10 mt-1 border-0">
+          <Select
+            onValueChange={(value) => handleUpdateStatus(value, row)}
+            aria-label="Select action"
+          >
+            <SelectTrigger className="w-32 h-10 mt-1 border-0">
               <SelectValue
-                placeholder={
-                  row?.original.stock?.inStock ? "In Stock" : "Out of Stock"
-                }
+                placeholder={row?.original?.Stock ? "In Stock" : "Out of Stock"}
               />
             </SelectTrigger>
             <SelectContent>
@@ -139,37 +178,18 @@ const Inventory = () => {
   const productList =
     !isProductLoading &&
     allProducts?.products?.map((product) => ({
+      id: product._id,
+      productSlug: product.slug,
       productName: product.name,
       Price: product.price,
       SalePrice: product.salePrice,
-      Stock: product.stock?.quantity,
+      quantity: product.stock?.quantity,
       Sales: product.sales?.total,
       vendor: product.vendor,
-      Stock: product.stock?.inStock ? "Active" : "Disabled",
+      Stock: product.stock?.inStock,
     }));
 
   console.log("productList", productList);
-
-  const data = [
-    {
-      id: "1",
-      productName: "Product 1",
-      Price: "100.00",
-      Stock: "100",
-      Sales: "50",
-      Vendor: "Vendor 1",
-      Status: "Active",
-    },
-    {
-      id: "1",
-      productName: "Product 2",
-      Price: "300.00",
-      Stock: "100",
-      Sales: "50",
-      Vendor: "Vendor 2",
-      Status: "Disabled",
-    },
-  ];
 
   if (isProductLoading) {
     return <LoadingAnimation />;
@@ -181,8 +201,16 @@ const Inventory = () => {
         title="Inventory"
         onExport={() => console.log("Exporting...")}
         onImport={() => console.log("Importing...")}
-        handleFunction={() => console.log("Creating Order...")}
-        functionTitle="View Product"
+        handleFunction={() => {
+          if (selectedProducts.length === 1) {
+            router.push(
+              `/dashboard/products/edit-product/${selectedProducts[0]}`
+            );
+          } else {
+            toast.error("Please select only one product to edit");
+          }
+        }}
+        functionTitle="Edit Product"
       />
       <div className="flex flex-col gap-5 p-6 border rounded">
         <div className="flex items-center gap-3">
@@ -206,12 +234,14 @@ const Inventory = () => {
             type="text"
             className="input-box bg-[#F2F1F1] border-[#F2F2F2]"
             placeholder="Search products name, ID"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
           />
-          <input
+          {/*   <input
             type="text"
             className="input-box bg-[#F2F1F1] border-[#F2F2F2]"
             placeholder="Payments Status"
-          />
+          /> */}
           <Select onValueChange={handleValueChange}>
             <SelectTrigger className="w-40 h-10 mt-1 bg-[#F2F1F1] border-[#F2F2F2]">
               <SelectValue placeholder="Payments Status" />
@@ -225,12 +255,16 @@ const Inventory = () => {
               ))}
             </SelectContent>
           </Select>
-          <button type="button" className="primary-btn">
+          <button
+            onClick={() => refetchProducts()}
+            type="button"
+            className="primary-btn"
+          >
             Search
           </button>
         </div>
         <div className="flex flex-col gap-3">
-          <p>02 Orders</p>
+          <p>{productList?.length} Orders</p>
           <DataTable
             columns={columns}
             data={productList}

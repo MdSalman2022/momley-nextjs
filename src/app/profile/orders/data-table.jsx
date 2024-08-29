@@ -33,6 +33,7 @@ export function DataTable({
   columnFilters,
   columnVisibility,
   rowSelection,
+  pageSize = data?.length,
 }) {
   const table = useReactTable({
     data,
@@ -50,8 +51,13 @@ export function DataTable({
       columnFilters,
       columnVisibility,
       rowSelection,
+      pagination: {
+        pageIndex: 0,
+        pageSize: pageSize, // Use the page size from state
+      },
     },
   });
+
   return (
     <div className="rounded-md border">
       <Table>
