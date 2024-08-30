@@ -7,6 +7,22 @@ const fixedAmount = "fixed-amount";
 const freeShipping = "free-shipping";
 const buyXGetY = "buy-x-get-y";
 
+export const mobileWidth = 600;
+export const tabletWidth = 1024;
+export const maxSize = 20000000;
+export const laptopWidth = 1366;
+
+export const supportedImageTypes = [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "image/svg+xml", // SVG
+  "image/bmp", // BMP
+  "image/tiff", // TIFF
+  "image/x-icon", // ICO
+  "image/jp2", // JPEG 2000
+];
 export const getAppliedToOptions = () => {
   return {
     option1: allProducts,

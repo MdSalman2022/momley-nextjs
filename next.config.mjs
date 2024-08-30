@@ -2,6 +2,7 @@
 const nextConfig = {
   env: {
     VITE_SERVER_URL: process.env.VITE_SERVER_URL,
+    VITE_X_API_KEY: process.env.VITE_X_API_KEY,
     VITE_STORE_ID: process.env.VITE_STORE_ID,
     VITE_IMGBB_KEY: process.env.VITE_IMGBB_KEY,
     VITE_FIREBASE_API_KEY: process.env.VITE_FIREBASE_API_KEY,
@@ -32,6 +33,19 @@ const nextConfig = {
         hostname: "lh3.googleusercontent.com",
         port: "",
         pathname: "/**",
+      },
+      // cloudfront
+      {
+        protocol: "https",
+        hostname: "d2cl8yay0cpblh.cloudfront.net",
+        port: "",
+        pathname: "/users/**",
+      },
+      {
+        protocol: "https",
+        hostname: "d2cl8yay0cpblh.cloudfront.net",
+        port: "",
+        pathname: "/sellers/**",
       },
     ],
   },

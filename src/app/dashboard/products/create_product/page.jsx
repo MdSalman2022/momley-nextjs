@@ -13,7 +13,13 @@ import { StateContext } from "@/contexts/StateProvider/StateProvider";
 import toast from "react-hot-toast";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { FiPlusCircle } from "react-icons/fi";
-import { getUnitsByType, quantityType, units } from "@/libs/utils/common";
+import {
+  getUnitsByType,
+  maxSize,
+  quantityType,
+  supportedImageTypes,
+  units,
+} from "@/libs/utils/common";
 import TagsInput from "@/libs/utils/tagsInput";
 import SelectCategoryModal from "@/libs/utils/SelectCategoryModal";
 import dynamic from "next/dynamic";
@@ -21,8 +27,19 @@ const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
 import { useRouter } from "next/navigation";
 import { waitUntilSymbol } from "next/dist/server/web/spec-extension/fetch-event";
+import useFileUpload from "@/hooks/UploadFiles/useFileUploadHooks";
+import imageRename from "@/libs/utils/imageRename";
+import useMoveAssetsSellerHooks from "@/hooks/UploadFiles/useMoveAssetsSellerHooks";
+import Image from "next/image";
 
 const CreateProductModal = () => {
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imageUploadProgress, setImageUploadProgress] = useState(0);
+  const [previewImageName, setPreviewImageName] = useState("");
+  const [imageList, setImageList] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [previewImages, setPreviewImages] = useState([]);
+
   const router = useRouter();
   const { userInfo } = useContext(StateContext);
   const [descriptionValue, setDescriptionValue] = useState("");
@@ -37,6 +54,8 @@ const CreateProductModal = () => {
   console.log("descriptionValue", descriptionValue);
   const [tags, setTags] = useState([]);
 
+  const inputRef = useRef();
+
   const { createProduct } = useProduct();
   const {
     register,
@@ -45,6 +64,74 @@ const CreateProductModal = () => {
     reset,
     formState: { errors },
   } = useForm();
+
+  const handleFilesSelect = (event) => {
+    setSelectedFile([]);
+    const totalImages = event.target.files.length;
+
+    if (totalImages > 5) {
+      toast.error("You can upload a maximum of 5 images!");
+      return;
+    }
+
+    let files = Array.from(event.target.files); // Convert files into an array
+    files = imageRename(files);
+    console.log("sanitizedFiles", files);
+
+    const previewImageArray = [];
+    const largeFiles = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+
+      const supportedImageTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+        "image/svg+xml", // SVG
+        "image/bmp", // BMP
+        "image/tiff", // TIFF
+        "image/x-icon", // ICO
+        "image/jp2", // JPEG 2000
+      ];
+
+      // Check if the selected file is a supported image
+      if (!supportedImageTypes.includes(file.type)) {
+        toast.error(
+          "Unsupported image type. Please upload a supported image (JPEG, PNG, GIF, WebP, svg, bmp,,tiff, ico, jp2)."
+        );
+        return;
+      }
+
+      // Check file size
+      if (file.size > maxSize) {
+        largeFiles.push(file);
+        toast.error(
+          `The image "${file.name}" exceeds the maximum file size of 4MB and cannot be uploaded.`
+        );
+      } else {
+        const previewImage = URL.createObjectURL(file);
+        previewImageArray.push(previewImage);
+      }
+    }
+
+    setIsUploading(true); // Set uploading status to true
+
+    setPreviewImages(previewImageArray);
+    setSelectedFile([...files.filter((file) => !largeFiles.includes(file))]);
+  };
+
+  useFileUpload(
+    selectedFile,
+    setImageUploadProgress,
+    setPreviewImageName,
+    setImageList,
+    setIsUploading
+  );
+
+  console.log("previewImages", previewImages);
+  console.log("imageList", imageList);
 
   const [specifications, setSpecifications] = useState([]);
   const [newSpecName, setNewSpecName] = useState("");
@@ -91,6 +178,12 @@ const CreateProductModal = () => {
       toast.error("Please select a category");
       return;
     }
+
+    if (specifications?.length === 0) {
+      toast.error("Please add specifications");
+      return;
+    }
+
     // Handle form submission with validated data
     console.log("data", data);
     const {
@@ -106,10 +199,18 @@ const CreateProductModal = () => {
       brand,
       specifications,
     } = data;
+
+    const images = imageList.map((image) => image.split("/")[2]);
+
+    const destPathText = `${userInfo?.store?._id}/products`;
+
+    useMoveAssetsSellerHooks(imageList, destPathText);
+
     const payload = {
       name: name,
       description: description,
       price: price,
+      images: images,
       salePrice: salePrice,
       stock: {
         inStock: true,
@@ -219,7 +320,27 @@ const CreateProductModal = () => {
                 <label className="text-sm" htmlFor="description">
                   Media
                 </label>
-                <div className="h-52 rounded-lg flex items-center justify-center border-2 border-dashed p-5">
+                <div className="flex">
+                  {previewImages?.length > 0 &&
+                    previewImages?.map((item, index) => (
+                      <div className="bg-black rounded-lg bg-opacity-5 w-fit p-1 relative">
+                        <div className="flex flex-col justify-center items-center h-full w-full">
+                          <Image src={item} alt="" width={128} height={128} />
+                        </div>
+                      </div>
+                    ))}
+                </div>
+                <div className="h-52 rounded-lg flex items-center justify-center border-2 border-dashed p-5 relative">
+                  <input
+                    ref={inputRef}
+                    onChange={handleFilesSelect}
+                    accept="image/*"
+                    multiple
+                    type="file"
+                    name="image"
+                    className="absolute opacity-0 w-full h-full"
+                    placeholder="Enter number of designers"
+                  />
                   <div className="flex flex-col items-center">
                     <div className="text-2xl">
                       <MdOutlineFileUpload />

@@ -217,7 +217,7 @@ const ReviewPermissions = () => {
           <span className="flex items-center gap-1">
             <Link
               className="text-[#2F80ED] font-semibold"
-              href={`/dashboard/reviews/${review.product.slug}`}
+              href={`/dashboard/settings/review-permissions/${review.product.slug}`}
             >
               {review.rating}
             </Link>

@@ -47,8 +47,8 @@ const DashboardSidebar = () => {
   } = useQuery({
     queryKey: ["pages", storeId],
     queryFn: () => storeId && getPages(storeId),
-    cacheTime: 10 * (60 * 1000),
-    staleTime: 5 * (60 * 1000),
+    cacheTime: Infinity,
+    staleTime: Infinity,
     enabled: !!storeId, // Ensure the query only runs if storeId is available
   });
 

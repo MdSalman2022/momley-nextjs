@@ -11,6 +11,7 @@ import Image from "next/image";
 import { TruncateText } from "@/libs/utils/common";
 
 const ProductCard = ({ book }) => {
+  const { userInfo } = useContext(StateContext);
   const { cart, setCart } = useContext(StateContext);
 
   const [cartCount, setCartCount] = useState(0);
@@ -124,18 +125,31 @@ const ProductCard = ({ book }) => {
   }, [book]);
 
   // console.log(imageUrl);
+  console.log("userInfo", userInfo);
+
+  const productCloudfrontUrl = userInfo?.sellerCloudFrontURL;
+
+  console.log("book?.images", book?.images);
 
   console.log("book", book);
   const truncatedText = TruncateText(book?.name, 15);
   return (
     <div className="flex flex-col items-center justify-between gap-3 border border-[#EEEEEE80] p-3 rounded text-black max-w-[180px] h-fit">
-      <Link href={`/product/${book?.slug}`}>
-        <Image
-          className="object-cover w-[164px] h-[217px]"
-          src={laptop}
-          width={164}
-          height={217}
-        />
+      <Link
+        href={`/product/${book?.slug}`}
+        className="w-[164px] h-[217px] flex items-center justify-center"
+      >
+        {book?.images?.length > 0 && (
+          <Image
+            className="object-contain"
+            src={productCloudfrontUrl?.replace(
+              "*",
+              `products/${book?.images[0]}`
+            )}
+            width={164}
+            height={217}
+          />
+        )}
       </Link>
       <Link href={`/product/${book?.slug}`}>
         <p className="font-semibold text-sm text-center">{truncatedText}</p>
@@ -147,7 +161,8 @@ const ProductCard = ({ book }) => {
         <FaStar />
         <FaStar />
         <FaStar />
-        <FaStarHalf /> <span className="text-xs"> (05 reviews)</span>
+        <FaStarHalf />{" "}
+        <span className="text-xs"> ({book?.reviews?.length} reviews)</span>
       </span>
       {cartCount < 1 && (
         <div

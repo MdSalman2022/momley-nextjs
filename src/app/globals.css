@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+.custom-quill .ql-container {
+  border: none;
+  outline: none;
+}
+
+.custom-quill .ql-editor {
+  pointer-events: none; /* Prevents interaction */
+}
+
 @layer components {
   .primary-btn {
     @apply h-10 flex items-center px-4 bg-[#333333] text-white font-semibold rounded shadow-md hover:bg-[#111111] transition-all duration-300;

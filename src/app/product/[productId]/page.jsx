@@ -14,6 +14,7 @@ import ProductDescription from "./ProductDescription";
 import BreadcrumbComponent, {
   BreadCrumbComponent,
 } from "./BreadCrumbComponent";
+import ImageSection from "./ImageSection";
 const extractNamesAndSlugs = async (category) => {
   const namesAndSlugs = [];
 
@@ -51,12 +52,15 @@ const BookDetails = async ({ params }) => {
     { label: "Breadcrumb" },
   ];
 
-  const bookDetails = productDetails?.data;
-  console.log("bookDetailsbookDetails", bookDetails);
+  const bookDetails = productDetails?.data?.product;
+  console.log("productDetails?.data", productDetails?.data);
+  const cloudFrontURL = productDetails?.data?.cloudFrontURL;
 
   const items = await extractNamesAndSlugs(bookDetails?.category);
 
   console.log("items", items);
+
+  console.log("bookDetails?.images", bookDetails?.images);
 
   return (
     <div className="bg-white">
@@ -68,23 +72,10 @@ const BookDetails = async ({ params }) => {
           <div className="col-span-3 grid grid-cols-2 gap-5 h-fit">
             <div className="flex col-span-2 w-full gap-10">
               <div className="flex flex-col gap-5">
-                <Image
-                  className="object-contain w-full h-full"
-                  src={laptop}
-                  width={360}
-                  height={400}
+                <ImageSection
+                  bookDetails={bookDetails}
+                  cloudFrontURL={cloudFrontURL}
                 />
-                {/*   {bookDetails.images && bookDetails.images.length > 1 && (
-                  <div className="flex items-center gap-5">
-                    {bookDetails.images.slice(1).map((image, index) => (
-                      <img
-                        key={index}
-                        src={image}
-                        className="w-[100px] h-[100px] object-contain border"
-                      />
-                    ))}
-                  </div>
-                )} */}
               </div>
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col">

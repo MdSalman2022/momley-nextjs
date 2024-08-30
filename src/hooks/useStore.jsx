@@ -14,6 +14,22 @@ const useStore = () => {
     return profile?.data;
   };
 
+  const UpdateStore = async (payload) => {
+    const response = await fetch(
+      `${process.env.VITE_SERVER_URL}/store/update`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+    const data = await response.json();
+
+    return data;
+  };
+
   const createStaff = async (payload) => {
     const response = await fetch(
       `${process.env.VITE_SERVER_URL}/store/create-staff`,
@@ -30,7 +46,7 @@ const useStore = () => {
     return data;
   };
 
-  return { getStore, createStaff };
+  return { getStore, UpdateStore, createStaff };
 };
 
 export default useStore;

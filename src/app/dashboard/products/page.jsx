@@ -97,7 +97,7 @@ const Products = () => {
           </button>
         </div>
         <div className="flex flex-col gap-3">
-          <p>02 Orders</p>
+          <p>{allProducts.products?.length} Orders</p>
           <ProductsTable
             allProducts={allProducts.products}
             isProductLoading={isProductLoading}

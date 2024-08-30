@@ -13,9 +13,26 @@ import {
 import { StateContext } from "@/contexts/StateProvider/StateProvider";
 import useCustomer from "@/hooks/useCustomer";
 import toast from "react-hot-toast";
+import imageRename from "@/libs/utils/imageRename";
+import { maxSize, supportedImageTypes } from "@/libs/utils/common";
+import useFileUpload from "@/hooks/UploadFiles/useFileUploadHooks";
+import useMoveAssetsUsersHooks from "@/hooks/UploadFiles/useMoveAssetsUsersHooks";
+import GeneratedProfileImage from "@/components/Shared/GeneratedProfileImage";
+import LoadingAnimation from "@/libs/utils/LoadingAnimation";
+import { AuthContext } from "@/contexts/AuthProvider/AuthProvider";
 
 const EditProfile = () => {
-  const { userInfo } = useContext(StateContext);
+  const { user } = useContext(AuthContext);
+  const { userInfo, isUserInfoLoading } = useContext(StateContext);
+
+  const [imageUploadProgress, setImageUploadProgress] = useState(0);
+  const [prevImage, setPrevImage] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imageList, setImageList] = useState([]);
+  const [previewImageName, setPreviewImageName] = useState("");
+  const [previewImage, setPreviewImage] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
+
   const { UpdateCustomer } = useCustomer();
   const personalInfo = [
     {
@@ -91,6 +108,56 @@ const EditProfile = () => {
     },
   ];
 
+  function handleFileSelect(event) {
+    setIsUploading(true);
+    let files = Array.from(event.target.files);
+    console.log("files", files);
+    files = imageRename(files);
+    console.log("sanitizedFiles", files);
+    const previewImageArray = [];
+    const largeFiles = [];
+    let lastapproved = null;
+
+    const maxSizeInBytes = maxSize;
+
+    files.forEach((file) => {
+      if (!supportedImageTypes.includes(files[0].type)) {
+        toast.error(
+          "Unsupported image type. Please upload a supported image (JPEG, PNG, GIF, WebP, svg, bmp,,tiff, ico, jp2)."
+        );
+        return;
+      }
+
+      if (file.size < maxSizeInBytes) {
+        lastapproved = file;
+
+        setPrevImage(URL.createObjectURL(file));
+        previewImageArray.push(URL.createObjectURL(file));
+      } else if (file.size > maxSizeInBytes) {
+        largeFiles.push(file);
+        toast.error(
+          "File size too large. Please upload an image smaller than 4MB."
+        );
+      }
+    });
+
+    console.log("lastapproved", lastapproved, files[0]);
+    setIsUploading(true); // Set uploading status to true
+
+    setPreviewImage(previewImageArray);
+    console.log("previewImageArray", previewImageArray);
+
+    setSelectedFile([largeFiles?.includes(lastapproved) ? null : lastapproved]);
+  }
+
+  useFileUpload(
+    selectedFile,
+    setImageUploadProgress,
+    setPreviewImageName,
+    setImageList,
+    setIsUploading
+  );
+
   const [selectedGender, setSelectedGender] = useState("");
 
   useEffect(() => {
@@ -141,7 +208,13 @@ const EditProfile = () => {
 
   const onSubmit = async (data) => {
     console.log("formdata", data, selectedGender);
+
+    const destPathText = `${userInfo?.customerId}`;
+
+    useMoveAssetsUsersHooks([imageList[imageList?.length - 1]], destPathText);
+
     const payload = {
+      profilePicture: imageList[imageList?.length - 1]?.split("/")[2],
       id: userInfo.customer?._id,
       firstName: data.fname,
       lastName: data.lname,
@@ -167,6 +240,10 @@ const EditProfile = () => {
 
   console.log("selectedGender", selectedGender);
 
+  if (isUserInfoLoading) {
+    return <LoadingAnimation />;
+  }
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-10">
       <div className="flex justify-between items-center w-full">
@@ -177,14 +254,48 @@ const EditProfile = () => {
       </div>
       <div className="flex flex-col gap-10">
         <div className="flex items-end gap-3">
-          <Image
-            src={profile}
-            alt="profile"
-            className="w-20 h-20 rounded-full"
-          />
-          <div className="flex flex-col gap-2">
+          {userInfo?.customer?.profilePicture ? (
+            <Image
+              className="rounded-full border"
+              src={userInfo?.cloudFrontURL?.replace(
+                "*",
+                `${userInfo?.customerId}/${userInfo?.customer?.profilePicture}`
+              )}
+              alt=""
+              width={100}
+              height={100}
+            />
+          ) : (
+            <GeneratedProfileImage
+              name={
+                userInfo?.customer?.firstName || user?.displayName || "user"
+              }
+              size={100}
+            />
+          )}
+
+          {prevImage && (
+            <Image
+              src={prevImage}
+              alt="profile"
+              className="rounded-full border-2 border-blue-600"
+              width={100}
+              height={100}
+            />
+          )}
+          <div className="flex flex-col gap-2 relative">
             <p>Profile Photo</p>
-            <div className="primary-btn bg-[#828282]">Choose a file</div>
+            <div className="primary-btn bg-[#828282]">
+              <input
+                onChange={handleFileSelect}
+                accept="image/*"
+                type="file"
+                name="image"
+                className="opacity-0 w-full h-32 absolute cursor-pointer"
+                placeholder="Enter number of designers"
+              />
+              Choose a file
+            </div>
           </div>
         </div>
         <div className="grid grid-cols-3 gap-y-5 gap-x-10">

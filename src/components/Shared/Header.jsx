@@ -27,7 +27,7 @@ import { useQuery } from "react-query";
 import { storeId } from "@/libs/utils/common";
 import Menus from "./Menus";
 import { IoReorderThree } from "react-icons/io5";
-import logo from "../../../public/images/logo.png"
+import logo from "../../../public/images/logo.png";
 
 const NavigationItem = ({ name, item }) => (
   <Link
@@ -88,11 +88,22 @@ const Header = () => {
   const isDashboardPage = pathname.includes("/dashboard");
 
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
-
   const [isScrolled, setIsScrolled] = useState(false);
   useEffect(() => {
+    let lastScrollTop = 0;
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      const scrollTop = window.scrollY;
+
+      if (scrollTop > lastScrollTop) {
+        // Scrolling down
+        setIsScrolled(true);
+      } else {
+        // Scrolling up
+        setIsScrolled(false);
+      }
+
+      lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -100,7 +111,6 @@ const Header = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
   const handleSearch = () => {
     if (searchTerm.trim()) {
       router.push(`/search-product/${searchTerm.replace(/\s+/g, "-")}`);
@@ -115,16 +125,17 @@ const Header = () => {
 
   return (
     <div
-      className={`container mx-auto w-full justify-center ${
-        isDashboardPage ? "hidden" : "mb-14 flex"
+      className={`container mx-auto w-auto justify-center ${
+        isDashboardPage ? "hidden" : "mb-32 flex"
       } `}
     >
-      <div className="flex flex-col  w-full z-10">
+      <div className="flex flex-col z-10 w-full">
         <div
           name="general-header"
-          className={` w-full py-2 transition-all duration-300 z-50 ${
-            isScrolled ? "hidden" : "flex justify-start"
+          className={`pb-0 transition-all duration-300 z-50 flex justify-start fixed ${
+            isScrolled ? "-top-20" : "top-0"
           }`}
+          style={{ transition: "top 0.3s ease-in-out" }}
         >
           {isAuthModalOpen && (
             <ModalBox
@@ -136,12 +147,7 @@ const Header = () => {
           )}
           <nav className="flex items-center justify-between w-full ">
             <Link href="/" className="logo">
-              <Image
-                src={logo}
-                alt="momley"
-                width={250}
-                height={120}
-              />
+              <Image src={logo} alt="momley" width={250} height={120} />
             </Link>
             <div className="flex items-center gap-3 relative">
               <input
@@ -180,10 +186,13 @@ const Header = () => {
                 <div className="flex">
                   <DropdownMenu className="" align="end">
                     <DropdownMenuTrigger>
-                      {user?.photoURL ? (
+                      {userInfo?.customer?.profilePicture ? (
                         <img
                           className="w-10 h-10 rounded-full border"
-                          src={user.photoURL}
+                          src={userInfo?.cloudFrontURL?.replace(
+                            "*",
+                            `${userInfo?.customerId}/${userInfo?.customer?.profilePicture}`
+                          )}
                           alt=""
                         />
                       ) : (
@@ -246,8 +255,8 @@ const Header = () => {
         {!isDashboardPage && (
           <div
             name="navigation-header"
-            className={`transition-all duration-300 ${
-              isScrolled ? " bg-white" : "pt-[70px]"
+            className={`transition-all duration-300 bg-white ${
+              isScrolled ? "" : "pt-[90px]"
             } w-full fixed top-0 flex items-center justify-start`}
           >
             <div className="relative">
