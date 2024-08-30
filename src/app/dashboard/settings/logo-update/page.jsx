@@ -131,22 +131,22 @@ const LogoUpdate = () => {
         <p>Main Logo</p>
         <div className="flex justify-between items-end w-full">
           <div className="flex flex-col gap-3">
-            {storeInfo?.preferences?.logoOptions?.mainLogo ? (
+            {prevImages.mainLogo ? (
               <Image
-                src={storeCloudfrontURL?.replace(
-                  "*",
-                  `${storeInfo?.preferences?.logoOptions?.mainLogo}`
-                )}
-                className="object-contain w-[234px] h-[51px]"
+                src={prevImages.mainLogo}
+                alt="profile"
+                className="border-2 border-blue-600 object-contain w-[234px] h-[51px]"
                 width={234}
                 height={51}
               />
             ) : (
-              prevImages.mainLogo && (
+              storeInfo?.preferences?.logoOptions?.mainLogo && (
                 <Image
-                  src={prevImages.mainLogo}
-                  alt="profile"
-                  className="border-2 border-blue-600 object-contain w-[234px] h-[51px]"
+                  src={storeCloudfrontURL?.replace(
+                    "*",
+                    `${storeInfo?.preferences?.logoOptions?.mainLogo}`
+                  )}
+                  className="object-contain w-[234px] h-[51px]"
                   width={234}
                   height={51}
                 />
@@ -178,22 +178,22 @@ const LogoUpdate = () => {
         <p>Invoice Logo</p>
         <div className="flex justify-between items-end w-full">
           <div className="flex flex-col gap-3">
-            {storeInfo?.preferences?.logoOptions?.invoiceLogo ? (
+            {prevImages.invoiceLogo ? (
               <Image
-                src={storeCloudfrontURL?.replace(
-                  "*",
-                  `${storeInfo?.preferences?.logoOptions?.invoiceLogo}`
-                )}
-                className="object-contain w-[234px] h-[51px]"
+                src={prevImages.invoiceLogo}
+                alt="profile"
+                className="border-2 border-blue-600 object-contain w-[234px] h-[51px]"
                 width={234}
                 height={51}
               />
             ) : (
-              prevImages.invoiceLogo && (
+              storeInfo?.preferences?.logoOptions?.invoiceLogo && (
                 <Image
-                  src={prevImages.invoiceLogo}
-                  alt="profile"
-                  className="border-2 border-blue-600 object-contain w-[234px] h-[51px]"
+                  src={storeCloudfrontURL?.replace(
+                    "*",
+                    `${storeInfo?.preferences?.logoOptions?.invoiceLogo}`
+                  )}
+                  className="object-contain w-[234px] h-[51px]"
                   width={234}
                   height={51}
                 />
@@ -225,22 +225,22 @@ const LogoUpdate = () => {
         <p>Navigation Logo</p>
         <div className="flex justify-between items-end w-full">
           <div className="flex flex-col gap-3">
-            {storeInfo?.preferences?.logoOptions?.navigationLogo ? (
+            {prevImages.navigationLogo ? (
               <Image
-                src={storeCloudfrontURL?.replace(
-                  "*",
-                  `${storeInfo?.preferences?.logoOptions?.navigationLogo}`
-                )}
-                className="object-contain w-[234px] h-[51px]"
+                src={prevImages.navigationLogo}
+                alt="profile"
+                className="border-2 border-blue-600 object-contain w-[234px] h-[51px]"
                 width={234}
                 height={51}
               />
             ) : (
-              prevImages.navigationLogo && (
+              storeInfo?.preferences?.logoOptions?.navigationLogo && (
                 <Image
-                  src={prevImages.navigationLogo}
-                  alt="profile"
-                  className="border-2 border-blue-600 object-contain w-[234px] h-[51px]"
+                  src={storeCloudfrontURL?.replace(
+                    "*",
+                    `${storeInfo?.preferences?.logoOptions?.navigationLogo}`
+                  )}
+                  className="object-contain w-[234px] h-[51px]"
                   width={234}
                   height={51}
                 />
