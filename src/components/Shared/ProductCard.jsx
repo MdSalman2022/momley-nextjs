@@ -11,8 +11,10 @@ import Image from "next/image";
 import { TruncateText } from "@/libs/utils/common";
 
 const ProductCard = ({ book }) => {
-  const { userInfo } = useContext(StateContext);
+  const { userInfo, storeInfo } = useContext(StateContext);
   const { cart, setCart } = useContext(StateContext);
+
+  console.log("storeInfo", storeInfo);
 
   const [cartCount, setCartCount] = useState(0);
 
@@ -127,7 +129,7 @@ const ProductCard = ({ book }) => {
   // console.log(imageUrl);
   console.log("userInfo", userInfo);
 
-  const productCloudfrontUrl = userInfo?.sellerCloudFrontURL;
+  const productCloudfrontUrl = storeInfo?.cloudFrontURL;
 
   console.log("book?.images", book?.images);
 

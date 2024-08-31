@@ -45,10 +45,6 @@ const Header = () => {
     useContext(AuthContext);
   const { cart, totalLevel, userInfo, storeInfo } = useContext(StateContext);
 
-  console.log("storeInfo", storeInfo);
-
-  const sellerCloudFrontURL = userInfo?.sellerCloudFrontURL;
-
   const { GetMenuByPosition } = useCategory();
 
   const {
@@ -150,7 +146,7 @@ const Header = () => {
           <nav className="flex items-center justify-between w-full ">
             <Link href="/" className="logo">
               <Image
-                src={sellerCloudFrontURL?.replace(
+                src={storeInfo?.cloudFrontURL?.replace(
                   "*",
                   `${storeInfo?.preferences?.logoOptions?.mainLogo}`
                 )}

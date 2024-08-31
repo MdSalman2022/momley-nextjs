@@ -17,13 +17,14 @@ import { useRouter } from "next/navigation";
 const Products = () => {
   const router = useRouter();
   const { GetProducts } = useProduct();
+  const [searchText, setSearchText] = useState("");
   const {
     data: allProducts = {},
     isLoading: isProductLoading,
     refetch: refetchProducts,
   } = useQuery({
     queryKey: ["allProducts"],
-    queryFn: () => GetProducts(),
+    queryFn: () => GetProducts(searchText),
     cacheTime: 10 * (60 * 1000),
     staleTime: 5 * (60 * 1000),
     refetchOnWindowFocus: true,
@@ -73,12 +74,14 @@ const Products = () => {
             type="text"
             className="input-box bg-[#F2F1F1] border-[#F2F2F2]"
             placeholder="Search products name, ID"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
           />
-          <input
+          {/*           <input
             type="text"
             className="input-box bg-[#F2F1F1] border-[#F2F2F2]"
             placeholder="Payments Status"
-          />
+          /> */}
           <Select onValueChange={handleValueChange}>
             <SelectTrigger className="w-40 h-10 mt-1 bg-[#F2F1F1] border-[#F2F2F2]">
               <SelectValue placeholder="Payments Status" />
@@ -92,7 +95,11 @@ const Products = () => {
               ))}
             </SelectContent>
           </Select>
-          <button type="button" className="primary-btn">
+          <button
+            onClick={() => refetchProducts()}
+            type="button"
+            className="primary-btn"
+          >
             Search
           </button>
         </div>

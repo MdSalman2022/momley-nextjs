@@ -15,6 +15,13 @@ import BreadcrumbComponent, {
   BreadCrumbComponent,
 } from "./BreadCrumbComponent";
 import ImageSection from "./ImageSection";
+
+export async function generateMetadata() {
+  return {
+    title: `Product`,
+  };
+}
+
 const extractNamesAndSlugs = async (category) => {
   const namesAndSlugs = [];
 
@@ -102,7 +109,7 @@ const BookDetails = async ({ params }) => {
           </div>
           <div className="col-span-1 flex flex-col gap-5">
             <SecurityCard />
-            <ReviewCard />
+            <ReviewCard  bookDetails={bookDetails} />
             <RecommendedBooks productId={productId} />
           </div>
           <div className="col-span-4">

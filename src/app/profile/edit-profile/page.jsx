@@ -83,28 +83,28 @@ const EditProfile = () => {
       label: "State",
       placeholder: "Enter your state",
       type: "text",
-      required: true,
+      required: false,
     },
     {
       name: "city",
       label: "City",
       placeholder: "Enter your city",
       type: "text",
-      required: true,
+      required: false,
     },
     {
       name: "area",
       label: "Area",
       placeholder: "Enter your area",
       type: "text",
-      required: true,
+      required: false,
     },
     {
       name: "address",
       label: "Address",
       placeholder: "Enter your address",
       type: "text",
-      required: true,
+      required: false,
     },
   ];
 

@@ -5,19 +5,17 @@ import GeneratedProfileImage from "@/components/Shared/GeneratedProfileImage";
 import Image from "next/image";
 import { StateContext } from "@/contexts/StateProvider/StateProvider";
 
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
-
 const ProductDescription = ({ bookDetails }) => {
-  const { userInfo } = useContext(StateContext);
+  const { userInfo, storeInfo } = useContext(StateContext);
   const [activeTab, setActiveTab] = useState("description");
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
 
-  console.log("reviews", bookDetails?.reviews);
+  console.log("bookDetails", bookDetails);
 
-  const cloudFrontURL = userInfo?.sellerCloudFrontURL;
+  const cloudFrontURL = storeInfo?.cloudFrontURL;
 
   return (
     <div>
@@ -64,15 +62,20 @@ const ProductDescription = ({ bookDetails }) => {
           {activeTab === "specification" && (
             <div className="flex flex-col gap-1">
               {bookDetails?.specifications ? (
-                <span className="flex flex-col gap-1">
-                  {Object.entries(bookDetails.specifications).map(
-                    ([label, value]) => (
-                      <span key={label}>
-                        <strong>{label}:</strong> {value}
-                      </span>
-                    )
-                  )}
-                </span>
+                <table className="table-auto border-collapse w-full">
+                  <tbody className="border">
+                    {Object.entries(bookDetails.specifications).map(
+                      ([label, value]) => (
+                        <tr key={label} className="border-b">
+                          <td className="px-4 py-2 bg-gray-100 border-r">
+                            {label}
+                          </td>
+                          <td className="px-4 py-2">{value}</td>
+                        </tr>
+                      )
+                    )}
+                  </tbody>
+                </table>
               ) : (
                 <div>No specifications available.</div>
               )}

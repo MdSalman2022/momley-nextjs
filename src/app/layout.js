@@ -1,37 +1,81 @@
-"use client";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import StateProvider from "@/contexts/StateProvider/StateProvider";
-import { ReactQueryClientProvider } from "@/components/Shared/ReactQueryClientProvider";
-import { AuthProvider } from "@/contexts/AuthProvider/AuthProvider";
-import Header from "@/components/Shared/Header";
-import Footer from "@/components/Shared/Footer";
-import Favicon from "./favicon.ico";
-import { QueryClient, QueryClientProvider } from "react-query";
-import { Toaster } from "react-hot-toast";
+import Providers from "./providers";
+import { storeId } from "@/libs/utils/common";
 
 const inter = Inter({ subsets: ["latin"] });
 
-const queryClient = new QueryClient();
+export async function generateMetadata() {
+  const res = await fetch(
+    `${process.env.VITE_SERVER_URL}/store/get-store?storeId=${storeId}`
+  );
+  const storeInfo = await res.json();
 
-// Move the QueryClient instance creation inside the component that uses it
+  const storeName = storeInfo.data?.storeName;
+  const title = storeInfo.data?.seoSettings?.homepageTitle;
+  const description = storeInfo.data?.seoSettings?.metaDescription;
+  const logoUrl = `${process.env.VITE_SERVER_URL}/public/images/logo.png`; // Update this to your actual logo URL
+  const keywords = storeInfo.data?.seoSettings?.metaKeywords;
+
+  return {
+    title: {
+      absolute: title || "",
+      default: "",
+      template: `%s | ${storeName}`,
+    },
+    description: description || "",
+    generator: storeName,
+    applicationName: storeName,
+    referrer: "origin-when-cross-origin",
+    keywords: keywords,
+    authors: [
+      { name: storeName },
+      { name: storeName, url: "https://nextjs.org" },
+    ],
+    creator: storeName,
+    publisher: storeName,
+    formatDetection: {
+      email: false,
+      address: false,
+      telephone: false,
+    },
+    openGraph: {
+      type: "website",
+      url: process.env.VITE_SERVER_URL,
+      title: title || storeName,
+      description: description || "",
+      images: [
+        {
+          url: logoUrl,
+          width: 800,
+          height: 600,
+          alt: `${storeName} Logo`,
+        },
+      ],
+    },
+    /* twitter: {
+      card: "summary_large_image",
+      site: "@yoursite", // Update this to your Twitter handle
+      title: title || storeName,
+      description: description || "",
+      images: [
+        {
+          url: logoUrl,
+          width: 800,
+          height: 600,
+          alt: `${storeName} Logo`,
+        },
+      ],
+    }, */
+  };
+}
+
 export default function RootLayout({ children }) {
   return (
-    <ReactQueryClientProvider>
-      <html lang="en">
-        <QueryClientProvider client={queryClient}>
-          <body className={inter.className}>
-            <AuthProvider>
-              <StateProvider>
-                <Toaster />
-                <Header />
-                <div>{children}</div>
-                <Footer />
-              </StateProvider>
-            </AuthProvider>
-          </body>
-        </QueryClientProvider>
-      </html>
-    </ReactQueryClientProvider>
+    <html lang="en">
+      <body className={inter.className}>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
   );
 }
