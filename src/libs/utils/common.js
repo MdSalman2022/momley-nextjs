@@ -1,3 +1,6 @@
+import toast from "react-hot-toast";
+import imageRename from "./imageRename";
+
 const allProducts = "all-products";
 const specificCollection = "specific-collections";
 const specificProduct = "specific-products";
@@ -221,4 +224,79 @@ export const getUnitsByType = (selectedType) => {
       updatedUnits = [];
   }
   return updatedUnits;
+};
+export const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const options = {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true, // Add this option to use 12-hour format
+  };
+  return date.toLocaleDateString("en-GB", options).replace(",", "");
+};
+
+export const handleFilesSelect = (
+  allFiles,
+  setSelectedFile,
+  setIsUploading,
+  setPreviewImages,
+  limit
+) => {
+  setSelectedFile([]);
+  const totalImages = allFiles.length;
+
+  if (totalImages > limit) {
+    toast.error(`You can upload a maximum of ${limit} images!`);
+    return;
+  }
+
+  let files = Array.from(allFiles); // Convert files into an array
+  files = imageRename(files);
+  console.log("sanitizedFiles", files);
+
+  const previewImageArray = [];
+  const largeFiles = [];
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+
+    const supportedImageTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "image/svg+xml",
+      "image/bmp",
+      "image/tiff",
+      "image/x-icon",
+      "image/jp2",
+    ];
+
+    // Check if the selected file is a supported image
+    if (!supportedImageTypes.includes(file.type)) {
+      toast.error(
+        "Unsupported image type. Please upload a supported image (JPEG, PNG, GIF, WebP, svg, bmp,,tiff, ico, jp2)."
+      );
+      return;
+    }
+
+    // Check file size
+    if (file.size > maxSize) {
+      largeFiles.push(file);
+      toast.error(
+        `The image "${file.name}" exceeds the maximum file size of 4MB and cannot be uploaded.`
+      );
+    } else {
+      const previewImage = URL.createObjectURL(file);
+      previewImageArray.push(previewImage);
+    }
+  }
+
+  setIsUploading(true); // Set uploading status to true
+
+  setPreviewImages(previewImageArray);
+  setSelectedFile([...files.filter((file) => !largeFiles.includes(file))]);
 };

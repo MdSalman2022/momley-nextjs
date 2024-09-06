@@ -31,7 +31,7 @@ const Customers = () => {
   const [isCustomerCreateOpen, setIsCustomerCreateOpen] = useState("");
 
   return (
-    <div className="flex flex-col gap-5 px-6">
+    <div className="flex flex-col gap-5">
       <TopActionButtons
         title={pageName}
         onExport={() => console.log("Exporting...")}

@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import { DataTable } from "@/app/profile/orders/data-table";
 import {
@@ -11,24 +12,25 @@ import { Checkbox } from "@/components/ui/checkbox";
 import Image from "next/image";
 import avatar from "@/../public/images/profile/avatar.jpg";
 import useCustomer from "@/hooks/useCustomer";
+import Link from "next/link";
+import LoadingAnimation from "@/libs/utils/LoadingAnimation";
+import { storeId } from "@/libs/utils/common";
+import { useQuery } from "react-query";
 
 const CustomersTable = () => {
-  const [allCustomers, setAllCustomers] = useState([]);
   const { GetCustomers } = useCustomer();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const allCustomer = await GetCustomers();
-      console.log("allCustomer", allCustomer);
-
-      if (allCustomer.success) {
-        setAllCustomers(allCustomer?.data);
-      }
-      console.log("allCustomer", allCustomer);
-    };
-
-    fetchData();
-  }, []);
+  const {
+    data: allCustomers = [],
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["allCustomers", storeId],
+    queryFn: () => storeId && GetCustomers(storeId),
+    cacheTime: 10 * (60 * 1000),
+    staleTime: 5 * (60 * 1000),
+    select: (data) => data?.data || [], // Extract the data array
+  });
 
   console.log("all customers", allCustomers);
 
@@ -72,6 +74,16 @@ const CustomersTable = () => {
       accessorKey: "CustomersName",
     },
     {
+      id: "MobileNumber",
+      header: "Mobile Number",
+      accessorKey: "MobileNumber",
+    },
+    {
+      id: "City",
+      header: "City",
+      accessorKey: "City",
+    },
+    {
       id: "Orders",
       header: "Orders",
       accessorKey: "Orders",
@@ -88,19 +100,26 @@ const CustomersTable = () => {
       id: (index + 1).toString(),
       CustomersName: (
         <span className="flex items-center gap-1">
-          <Image src={avatar} className="w-10 h-10 rounded-lg" />
+          {/* <Image src={avatar} className="w-10 h-10 rounded-lg" /> */}
           <div className="flex flex-col">
-            <span>{c.customer?.firstName}</span>
-            <span>
-              {shippingAddress?.[shippingAddress.length - 1]?.city || ""}
-            </span>
+            <Link
+              href={`/dashboard/customers/${c.customer?._id}`}
+              className="font-semibold text-[#146eb4]"
+            >
+              {c.customer?.firstName}
+            </Link>
           </div>
         </span>
       ),
+      MobileNumber: c.customer?.phoneNumber,
+      City: shippingAddress?.[shippingAddress.length - 1]?.city,
       Orders: c.customer?.orders?.length || 0,
       BDTSpent: c.customer?.totalSpent || 0,
     };
   });
+
+  if (isLoading) return <LoadingAnimation />;
+
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-between">

@@ -19,6 +19,7 @@ import { storeId } from "@/libs/utils/common";
 import usePage from "@/hooks/usePage";
 import { useQuery } from "react-query";
 import LoadingAnimation from "@/libs/utils/LoadingAnimation";
+import { RiDashboardLine } from "react-icons/ri";
 
 const iconMapping = {
   BsBarChart,
@@ -34,6 +35,7 @@ const iconMapping = {
   TbShoppingBag,
   MdOutlineLocalOffer,
   FaChevronDown,
+  RiDashboardLine,
 };
 
 const DashboardSidebar = () => {

@@ -120,7 +120,7 @@ const ReportPage = () => {
   ];
 
   return (
-    <div className="flex flex-col gap-5 px-6">
+    <div className="flex flex-col gap-5">
       <div className="flex items-center gap-3">
         <p className="font-semibold">Reports</p>
         <span className="text-[#BDBDBD] text-sm">

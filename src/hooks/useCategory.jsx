@@ -272,6 +272,20 @@ const useCategory = () => {
     return SubData;
   };
 
+  const GetAllCategory = async (id) => {
+    const response = await fetch(
+      `${process.env.VITE_SERVER_URL}/category/get-all?storeId=${id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const CategoryData = await response.json();
+    return CategoryData;
+  };
+
   return {
     getBooksByCategory,
     getAllCategories,
@@ -290,6 +304,7 @@ const useCategory = () => {
     getProductsByCategory,
     getCategoryBySlug,
     DeleteCategory,
+    GetAllCategory,
   };
 };
 

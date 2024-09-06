@@ -35,7 +35,7 @@ const Orders = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="flex flex-col gap-5 px-6">
+    <div className="flex flex-col gap-5">
       <TopActionButtons
         title="Orders"
         onExport={() => console.log("Exporting...")}
