@@ -210,8 +210,9 @@ const Header = () => {
                       )}
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      {storeInfo?._id === userInfo?.storeId &&
-                        userInfo?.role === "seller" && (
+                      {(storeInfo?._id === userInfo?.store &&
+                        userInfo?.role === "seller") ||
+                        (userInfo?.role === "staff" && (
                           <DropdownMenuItem>
                             <Link
                               href="/dashboard/overview"
@@ -220,7 +221,7 @@ const Header = () => {
                               Dashboard
                             </Link>
                           </DropdownMenuItem>
-                        )}
+                        ))}
                       {userInfo?.role === "customer" && (
                         <DropdownMenuItem>
                           <Link
@@ -263,7 +264,7 @@ const Header = () => {
           <div
             name="navigation-header"
             className={`transition-all duration-300 bg-white ${
-              isScrolled ? "" : "pt-[90px]"
+              isScrolled ? "" : "pt-[70px]"
             } w-full fixed top-0 flex items-center justify-start`}
           >
             <div className="relative">
