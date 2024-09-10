@@ -37,6 +37,9 @@ const AdminLogin = () => {
     };
     console.log("payload", payload);
     const createUserResult = await CreateUser(payload);
+    console.log("createUserResult", createUserResult);
+
+    router.push("/");
     if (createUserResult?.success) {
       refetchUserInfo();
     }
@@ -51,10 +54,6 @@ const AdminLogin = () => {
     watch,
     formState: { errors },
   } = useForm();
-
-  const onSubmit = async (data) => {
-    console.log(data);
-  };
 
   async function createUserWithEmailAndPassword(
     email,
@@ -71,7 +70,6 @@ const AdminLogin = () => {
       await updateUser(userInfo);
       try {
         await sendEmailVerification(user);
-        router.push("/");
         toast.success("Verification email sent");
         setIsAuthModalOpen(false);
         await saveToDb(user);
@@ -159,8 +157,10 @@ const AdminLogin = () => {
       toast.success("Account created successfully");
 
       const result = await saveToDb(user);
+      console.log("resultresult", result);
     } else {
       setIsAuthModalOpen(false);
+      router.push("/");
       toast.success("Logged in successfully");
     }
   };
