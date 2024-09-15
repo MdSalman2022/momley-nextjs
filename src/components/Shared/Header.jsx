@@ -121,6 +121,10 @@ const Header = () => {
     }
   };
 
+  const isAdmin =
+    userInfo?.role === "seller" ||
+    (userInfo?.role === "staff" && userInfo?.store === storeId);
+
   return (
     <div
       className={`container mx-auto w-auto justify-center ${
@@ -210,18 +214,16 @@ const Header = () => {
                       )}
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      {(storeInfo?._id === userInfo?.store &&
-                        userInfo?.role === "seller") ||
-                        (userInfo?.role === "staff" && (
-                          <DropdownMenuItem>
-                            <Link
-                              href="/dashboard/overview"
-                              className="cursor-pointer w-full"
-                            >
-                              Dashboard
-                            </Link>
-                          </DropdownMenuItem>
-                        ))}
+                      {isAdmin && (
+                        <DropdownMenuItem>
+                          <Link
+                            href="/dashboard/overview"
+                            className="cursor-pointer w-full"
+                          >
+                            Dashboard
+                          </Link>
+                        </DropdownMenuItem>
+                      )}
                       {userInfo?.role === "customer" && (
                         <DropdownMenuItem>
                           <Link
