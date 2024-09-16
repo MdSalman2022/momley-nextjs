@@ -1,11 +1,13 @@
 "use client";
+import Image from "next/image";
+import bannerImg from "../../../../../public/images/ads/banner.webp";
 
 const Banner = () => {
   return (
-    <div className="mx-auto container py-5">
-      <img
+    <div className="">
+      <Image
         className="rounded-lg w-full "
-        src="https://i.ibb.co/JBSWXjq/image.png"
+        src={bannerImg}
         alt="banner"
         width={1200}
         height={600}

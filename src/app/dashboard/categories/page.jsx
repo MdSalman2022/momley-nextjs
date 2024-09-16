@@ -19,9 +19,23 @@ import { DataTable } from "@/libs/utils/data-table";
 import { AiOutlineEye } from "react-icons/ai";
 import { BiEdit } from "react-icons/bi";
 import Link from "next/link";
+import { FiMinus, FiPlus } from "react-icons/fi";
+import styles from "./category.module.css"; // Import the CSS module
 
 const Categories = () => {
-  const { GetAllCategory } = useCategory();
+  const { GetAllCategory, getAllCategoriesLevel } = useCategory();
+
+  const {
+    data: categoriesLevel = {},
+    isLoading: isCategoryLevelLoading,
+    refetch: refetchCategoryLevel,
+  } = useQuery({
+    queryKey: ["categoriesLevel", storeId],
+    queryFn: () => storeId && getAllCategoriesLevel(storeId),
+    cacheTime: 10 * (60 * 1000),
+    staleTime: 5 * (60 * 1000),
+  });
+  const totalLevel = categoriesLevel?.data?.length || 1;
 
   const {
     data: allCategories = {},
@@ -29,7 +43,7 @@ const Categories = () => {
     refetch: refetchCategories,
   } = useQuery({
     queryKey: ["allCategories", storeId],
-    queryFn: () => storeId && GetAllCategory(storeId),
+    queryFn: () => storeId && GetAllCategory(storeId, totalLevel),
     cacheTime: 10 * (60 * 1000),
     staleTime: 5 * (60 * 1000),
   });
@@ -113,27 +127,66 @@ const Categories = () => {
       width: "100px", // Optional width
     },
   ];
+  const [expandedCategories, setExpandedCategories] = useState({});
+
+  const toggleCategory = (index) => {
+    setExpandedCategories((prev) => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
+  };
 
   const myCategories = allCategories?.data || [];
 
-  const categories = myCategories?.map((c, index) => {
-    return {
-      id: (index + 1).toString(),
-      Category: (
-        <Link
-          href={`
-        /dashboard/categories/${c?.slug}
-        `}
-          className="font-semibold text-[#146eb4]"
-        >
-          {c?.name}
-        </Link>
-      ),
-      Products: (c?.products?.length > 0 && c?.products?.length) || 0,
-      Status: c?.status,
-      link: `/dashboard/categories/${c?._id}/edit`,
-    };
-  });
+  const buildCategories = (categories, level = 0, parentIndex = "") => {
+    return categories.reduce((acc, c, index) => {
+      const currentIndex = parentIndex
+        ? `${parentIndex}-${index + 1}`
+        : `${index + 1}`;
+
+      acc.push({
+        id: currentIndex,
+        Category: (
+          <div
+            className={`${styles.categoryItem} ${
+              level > 0 ? styles.indent : ""
+            }`}
+          >
+            {Array.from({ length: level }).map((_, i) => (
+              <FiMinus key={i} className="text-gray-90" />
+            ))}
+            {c?.subcategories?.length > 0 && (
+              <div
+                className={styles.icon}
+                onClick={() => toggleCategory(currentIndex)}
+              >
+                {expandedCategories[currentIndex] ? <FiMinus /> : <FiPlus />}
+              </div>
+            )}
+            <Link
+              href={`/dashboard/categories/${c?.slug}`}
+              className="font-semibold text-[#146eb4] ml-2"
+            >
+              {c?.name}
+            </Link>
+          </div>
+        ),
+        Products: (c?.products?.length > 0 && c?.products?.length) || 0,
+        Status: c?.status,
+        link: `/dashboard/categories/${c?.slug}/edit`,
+      });
+
+      if (expandedCategories[currentIndex] && level < totalLevel - 1) {
+        acc.push(
+          ...buildCategories(c?.subcategories || [], level + 1, currentIndex)
+        );
+      }
+
+      return acc;
+    }, []);
+  };
+
+  const categories = buildCategories(myCategories);
 
   const [enabled, setEnabled] = useState(false);
   return (

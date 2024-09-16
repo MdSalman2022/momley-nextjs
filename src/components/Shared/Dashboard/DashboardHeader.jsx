@@ -1,7 +1,7 @@
 "use client";
 import { useAuth } from "@/contexts/AuthProvider/AuthProvider";
 import Image from "next/image";
-import React from "react";
+import React, { useContext } from "react";
 import { GrSearch } from "react-icons/gr";
 import { HiOutlineShoppingBag } from "react-icons/hi";
 import { MdOutlineNotifications } from "react-icons/md";
@@ -14,9 +14,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
+import DropdownMenus from "../DropDownMenus/DropdownMenus";
+import { StateContext } from "@/contexts/StateProvider/StateProvider";
 
 const DashboardHeader = () => {
   const { user, logOut } = useAuth();
+  const { userInfo } = useContext(StateContext);
   return (
     <div className="flex justify-between p-6 border py-3 px-9 w-full rounded mb-1">
       <div className="flex items-center gap-3 relative">
@@ -43,49 +46,7 @@ const DashboardHeader = () => {
             <p className="leading-6 font-semibold">{user?.displayName}</p>
             <p>Admin</p>
           </div>
-          {user && (
-            <DropdownMenu className="" align="end">
-              <DropdownMenuTrigger>
-                <img
-                  className="w-10 rounded-full"
-                  src={
-                    user.photoURL ||
-                    "https://media.istockphoto.com/id/1300845620/vector/user-icon-flat-isolated-on-white-background-user-symbol-vector-illustration.jpg?s=612x612&w=0&k=20&c=yBeyba0hUkh14_jgv1OKqIH0CCSWU_4ckRkAoy2p73o="
-                  }
-                  alt=""
-                />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>
-                  <Link
-                    href="/dashboard/overview"
-                    className="cursor-pointer w-full"
-                  >
-                    Dashboard
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link
-                    href="/profile/edit-profile"
-                    className="cursor-pointer w-full"
-                  >
-                    Profile
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link href="/checkout" className="cursor-pointer w-full">
-                    Cart
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => logOut()}
-                  className="cursor-pointer w-full"
-                >
-                  Log Out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+          {user && <DropdownMenus user={user} userInfo={userInfo} />}
         </div>
       </div>
     </div>

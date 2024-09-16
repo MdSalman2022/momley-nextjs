@@ -138,7 +138,7 @@ const SelectCategoryModal = ({ isOpen, setIsOpen, setSelectedSubCategory }) => {
         setIsOpen={setIsOpen}
         title="Select Category"
       >
-        <div className="flex flex-col h-full gap-1">
+        <div className="flex flex-col h-full gap-1 px-6 pb-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1 h-full">
               {allCategories?.data && renderCategories(allCategories.data)}

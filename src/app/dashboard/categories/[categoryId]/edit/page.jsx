@@ -1,8 +1,10 @@
 "use client";
+import HeadlessModalBox from "@/components/Shared/HeadlessModalBox";
 import { StateContext } from "@/contexts/StateProvider/StateProvider";
 import useFileUpload from "@/hooks/UploadFiles/useFileUploadHooks";
 import useMoveAssetsSellerHooks from "@/hooks/UploadFiles/useMoveAssetsSellerHooks";
 import useCategory from "@/hooks/useCategory";
+import useProduct from "@/hooks/useProduct";
 import { handleFilesSelect, storeId } from "@/libs/utils/common";
 import TagsInput from "@/libs/utils/tagsInput";
 import dynamic from "next/dynamic";
@@ -15,9 +17,11 @@ import { AiOutlineCamera } from "react-icons/ai";
 import { useQuery } from "react-query";
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
+import { Checkbox } from "@/components/ui/checkbox";
+import { BiDotsVerticalRounded } from "react-icons/bi";
 
 const CategoryDetailsEdit = ({ params }) => {
-  const { userInfo } = useContext(StateContext);
+  const { userInfo, storeInfo } = useContext(StateContext);
   const { UpdateCategory, getCategoryBySlug } = useCategory();
 
   const [tags, setTags] = useState([]);
@@ -66,6 +70,8 @@ const CategoryDetailsEdit = ({ params }) => {
 
   const [descriptionValue, setDescriptionValue] = useState("");
 
+  console.log("previewImages", previewImages);
+
   useEffect(() => {
     console.log("previewImages", previewImages);
     if (CategoryDetails?.data) {
@@ -77,12 +83,25 @@ const CategoryDetailsEdit = ({ params }) => {
         metaLink: CategoryDetails?.data?.seoProperties?.metaLink,
       });
       setDescriptionValue(CategoryDetails?.data?.description);
-      setPreviewImages([CategoryDetails?.data?.image]);
-      setPreviewBannerImages([CategoryDetails?.data?.bannerImages?.webImage]);
-      setPreviewSocialImages([CategoryDetails?.data?.seoProperties?.metaImage]);
+      setPreviewImages(
+        CategoryDetails?.data?.image ? [CategoryDetails?.data?.image] : []
+      );
+      setPreviewBannerImages(
+        CategoryDetails?.data?.bannerImages?.webImage
+          ? [CategoryDetails?.data?.bannerImages?.webImage]
+          : []
+      );
+      setPreviewSocialImages(
+        CategoryDetails?.data?.seoProperties?.metaImage
+          ? [CategoryDetails?.data?.seoProperties?.metaImage]
+          : []
+      );
       setTags(CategoryDetails?.data?.tags);
+      setSelectedProducts(CategoryDetails?.data?.products?.map((p) => p));
     }
   }, [CategoryDetails, reset]);
+
+  console.log("products", CategoryDetails?.data?.products);
 
   const handleDescriptionChange = (value) => {
     console.log("value", value);
@@ -158,8 +177,26 @@ const CategoryDetailsEdit = ({ params }) => {
     setSocialImageList,
     setIsSocialUploading
   );
+  const { GetProducts } = useProduct();
+
+  const [searchText, setSearchText] = useState("");
 
   const {
+    data: allProducts = {},
+    isLoading: isProductLoading,
+    refetch: refetchProducts,
+  } = useQuery({
+    queryKey: ["allProducts", searchText],
+    queryFn: () => GetProducts(searchText),
+    cacheTime: 10 * (60 * 1000),
+    staleTime: 5 * (60 * 1000),
+    refetchOnWindowFocus: true,
+    refetchOnMount: "always",
+  });
+
+  console.log("allProducts", allProducts);
+
+  /*   const {
     data: categories = {},
     isLoading: isCategoryLoading,
     refetch: refetchCategory,
@@ -168,7 +205,7 @@ const CategoryDetailsEdit = ({ params }) => {
     queryFn: () => storeId && getAllCategoriesLevel(storeId),
     cacheTime: 10 * (60 * 1000),
     staleTime: 5 * (60 * 1000),
-  });
+  }); */
 
   const getChangedFields = (originalData, currentData) => {
     const changedFields = {};
@@ -197,6 +234,7 @@ const CategoryDetailsEdit = ({ params }) => {
       name: CategoryDetails?.data?.name,
       description: CategoryDetails?.data?.description,
       image: CategoryDetails?.data?.image,
+      products: CategoryDetails?.data?.products || [],
       bannerImages: {
         webImage: CategoryDetails?.data?.bannerImages?.webImage,
       },
@@ -219,6 +257,7 @@ const CategoryDetailsEdit = ({ params }) => {
             ? bannerImages[0]
             : CategoryDetails?.data?.bannerImages?.webImage,
       },
+      products: selectedProducts?.map((p) => p._id) || [],
       seoProperties: {
         metaTitle: data?.metaTitle,
         metaDescription: data?.metaDescription,
@@ -262,8 +301,102 @@ const CategoryDetailsEdit = ({ params }) => {
 
   const cloudFrontURL = CategoryDetails?.data?.cloudFrontURL;
 
+  const [isSelectProductModalOpen, setIsSelectProductModalOpen] =
+    useState(false);
+  const [selectedProducts, setSelectedProducts] = useState([]);
+
+  console.log("selectedProducts", selectedProducts);
+
+  const handleSearchChange = (e) => {
+    setSearchText(e.target.value);
+  };
+
+  const handleCheckboxChange = (product) => {
+    setSelectedProducts((prevSelectedProducts) =>
+      prevSelectedProducts.some((p) => p._id === product._id)
+        ? prevSelectedProducts.filter((p) => p._id !== product._id)
+        : [...prevSelectedProducts, product]
+    );
+  };
+
+  const productCloudfrontUrl = storeInfo?.cloudFrontURL;
+
   return (
     <div className="container mx-auto p-6">
+      <HeadlessModalBox
+        isOpen={isSelectProductModalOpen}
+        setIsOpen={setIsSelectProductModalOpen}
+        title="Select Product"
+      >
+        <div className="flex flex-col overflow-y-auto max-h-[700px] px-6 pb-4 scrollbar-thin relative">
+          <input
+            type="text"
+            placeholder="Search products"
+            value={searchText}
+            onChange={handleSearchChange}
+            className="w-full p-2 mb-4 border rounded"
+          />
+          <ul className="space-y-4 mb-14">
+            {isProductLoading ? (
+              <div className="flex items-center justify-between p-2 border rounded">
+                <div className="flex gap-3">
+                  <div className="h-12 w-12 bg-gray-300 animate-pulse rounded-lg"></div>
+                  <div className="flex flex-col gap-1">
+                    <span className="w-20 bg-gray-300 animate-pulse h-4"></span>
+                    <span className="w-10 bg-gray-300 animate-pulse h-4"></span>
+                  </div>
+                </div>
+                <div className="h-5 w-5 bg-gray-300 animate-pulse"></div>
+              </div>
+            ) : (
+              allProducts?.products?.map((product) => (
+                <li
+                  key={product._id}
+                  className="flex items-center justify-between p-2"
+                >
+                  <div className="flex items-center">
+                    <Image
+                      src={productCloudfrontUrl?.replace(
+                        "*",
+                        `products/${product?.images[0]}`
+                      )}
+                      alt={product.name}
+                      className="w-12 h-12 mr-4"
+                      width={50}
+                      height={50}
+                    />
+                    <div>
+                      <p className="font-semibold">{product.name}</p>
+                      <p className="text-gray-500">${product.salePrice}</p>
+                    </div>
+                  </div>
+                  <Checkbox
+                    checked={selectedProducts.some(
+                      (p) => p._id === product._id
+                    )}
+                    onCheckedChange={(value) => handleCheckboxChange(product)}
+                    aria-label="Select all"
+                  />
+                  {/*         <input
+                      type="checkbox"
+                      checked={selectedProducts.includes(product._id)}
+                      onChange={() => handleCheckboxChange(product._id)}
+                    /> */}
+                </li>
+              ))
+            )}
+          </ul>
+          <div className="fixed bottom-0 left-0 h-14 flex items-center justify-center bg-[#e5e5e5] w-full px-4 border-t border-gray-300">
+            <button
+              onClick={() => setIsSelectProductModalOpen(false)}
+              type="button"
+              className="primary-btn"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </HeadlessModalBox>
       {/* Top Section */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Edit Category</h1>
@@ -375,13 +508,47 @@ const CategoryDetailsEdit = ({ params }) => {
           </div>
         </div>
 
+        {/* subcategory list */}
+        <div className="bg-white p-6 rounded-lg border mb-6">
+          <h2 className="font-bold pb-2 border-b">Subcategories</h2>
+
+          <div className="flex flex-col gap-4 max-h-[400px] overflow-y-auto scrollbar-thin">
+            {CategoryDetails?.data?.subcategories?.length > 0 &&
+              CategoryDetails?.data?.subcategories?.map(
+                (subcategory, index) => (
+                  <div
+                    key={subcategory?._id}
+                    className="border p-4 rounded-lg flex items-center justify-between gap-2"
+                  >
+                    <p className="text-sm">{subcategory?.name}</p>
+                    <BiDotsVerticalRounded />
+                  </div>
+                )
+              )}
+          </div>
+
+          <div className="flex flex-col items-center justify-center h-32 gap-3">
+            {CategoryDetails?.data?.subcategories?.length < 1 && (
+              <p className="text-center">
+                Select products to show inside this category
+              </p>
+            )}
+            <button
+              onClick={() => setIsSelectProductModalOpen(true)}
+              type="button"
+              className="primary-outline-btn text-sm"
+            >
+              Add Subcategory
+            </button>
+          </div>
+        </div>
         {/* Products List Section */}
         <div className="bg-white p-6 rounded-lg border mb-6">
-          <h2 className="text-xl font-bold mb-4">Products List</h2>
+          <h2 className="font-bold pb-2 border-b">Products List</h2>
           {/* Add your products list here */}
-          <div className="flex flex-col gap-4">
-            {CategoryDetails?.data?.products?.length > 0 &&
-              CategoryDetails?.data?.products?.map((product, index) => (
+          <div className="flex flex-col gap-4 max-h-[400px] overflow-y-auto scrollbar-thin">
+            {selectedProducts?.length > 0 &&
+              selectedProducts?.map((product, index) => (
                 <div className="border p-4 rounded-lg flex items-center gap-2">
                   <Image
                     src={cloudFrontURL?.replace(
@@ -394,6 +561,20 @@ const CategoryDetailsEdit = ({ params }) => {
                   <p>{product?.name}</p>
                 </div>
               ))}
+          </div>
+          <div className="flex flex-col items-center justify-center h-32 gap-3">
+            {CategoryDetails?.data?.products?.length < 1 && (
+              <p className="text-center">
+                Select products to show inside this category
+              </p>
+            )}
+            <button
+              onClick={() => setIsSelectProductModalOpen(true)}
+              type="button"
+              className="primary-outline-btn text-sm"
+            >
+              Select products
+            </button>
           </div>
         </div>
 
@@ -418,7 +599,7 @@ const CategoryDetailsEdit = ({ params }) => {
               <textarea
                 rows="2"
                 {...register("metaDescription")}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               ></textarea>
             </div>
             <div>

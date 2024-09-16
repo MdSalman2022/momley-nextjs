@@ -12,21 +12,6 @@ import brandImage7 from "../../../../../public/images/brands/7.png";
 import { storeId, TruncateText } from "@/libs/utils/common";
 import useCategory from "@/hooks/useCategory";
 
-const CategoryLink = ({ categories, productImage, truncateText }) => (
-  <>
-    {categories.map((category, index) => (
-      <Link
-        href={`/category/${category?.slug}`}
-        key={index}
-        className="flex justify-between items-center gap-10 h-24 w-60 p-5 hover:bg-gray-100"
-      >
-        <Image src={productImage} alt={"product"} className="w-16 h-16" />
-        {TruncateText(category?.name, 18)}
-      </Link>
-    ))}
-  </>
-);
-
 const Categories = async () => {
   const { getAllCategories } = useCategory();
 
@@ -67,29 +52,35 @@ const Categories = async () => {
         }
       >
         <div className="flex flex-col">
-          <div className="flex items-center">
-            <CategoryLink
-              categories={categories}
-              productImage={productImage}
-              truncateText={TruncateText}
-            />
-            <CategoryLink
-              categories={categories}
-              productImage={productImage}
-              truncateText={TruncateText}
-            />
-          </div>
-          <div className="flex items-center">
-            <CategoryLink
-              categories={categories}
-              productImage={productImage}
-              truncateText={TruncateText}
-            />
-            <CategoryLink
-              categories={categories}
-              productImage={productImage}
-              truncateText={TruncateText}
-            />
+          <div className="grid grid-cols-6">
+            {categories.map((category, index) => (
+              <Link
+                href={`/category/${category?.slug}`}
+                key={index}
+                className="flex justify-between items-center gap-10 h-24 w-fit p-5 hover:bg-gray-100"
+              >
+                <Image
+                  src={productImage}
+                  alt={"product"}
+                  className="w-16 h-16"
+                />
+                {TruncateText(category?.name, 18)}
+              </Link>
+            ))}
+            {categories.map((category, index) => (
+              <Link
+                href={`/category/${category?.slug}`}
+                key={index}
+                className="flex justify-between items-center gap-10 h-24 w-fit p-5 hover:bg-gray-100"
+              >
+                <Image
+                  src={productImage}
+                  alt={"product"}
+                  className="w-16 h-16"
+                />
+                {TruncateText(category?.name, 18)}
+              </Link>
+            ))}
           </div>
         </div>
       </Suspense>

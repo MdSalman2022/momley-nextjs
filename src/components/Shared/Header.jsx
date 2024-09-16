@@ -12,14 +12,6 @@ import Link from "next/link";
 import CartIcon from "../../../public/images/CartIcon.svg";
 import Image from "next/image";
 import { FaChevronRight, FaChevronUp } from "react-icons/fa";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { usePathname, useRouter } from "next/navigation";
 import GeneratedProfileImage from "./GeneratedProfileImage";
 import useCategory from "@/hooks/useCategory";
@@ -28,6 +20,7 @@ import { storeId } from "@/libs/utils/common";
 import Menus from "./Menus";
 import { IoReorderThree } from "react-icons/io5";
 import logo from "../../../public/images/logo.png";
+import DropdownMenus from "./DropDownMenus/DropdownMenus";
 
 const NavigationItem = ({ name, item }) => (
   <Link
@@ -121,22 +114,16 @@ const Header = () => {
     }
   };
 
-  const isAdmin =
-    userInfo?.role === "seller" ||
-    (userInfo?.role === "staff" && userInfo?.store === storeId);
-
   return (
-    <div
-      className={`container mx-auto w-auto justify-center ${
-        isDashboardPage ? "hidden" : "mb-32 flex"
-      } `}
-    >
-      <div className="flex flex-col z-10 w-full">
+    <div className="fixed top-0 w-full z-50 bg-white">
+      <div
+        className={`w-full ${
+          isDashboardPage ? "hidden" : "flex flex-col justify-start"
+        } `}
+      >
         <div
           name="general-header"
-          className={`pb-0 transition-all duration-300 z-50 flex justify-start fixed ${
-            isScrolled ? "-top-20" : "top-0"
-          }`}
+          className={`container mx-auto px-0 transition-all duration-300 z-50 flex justify-between bg-white w-full`}
           style={{ transition: "top 0.3s ease-in-out" }}
         >
           {isAuthModalOpen && (
@@ -194,63 +181,7 @@ const Header = () => {
                 </span>
               </Link>
               {user ? (
-                <div className="flex">
-                  <DropdownMenu className="" align="end">
-                    <DropdownMenuTrigger>
-                      {userInfo?.customer?.profilePicture ? (
-                        <img
-                          className="w-10 h-10 rounded-full border"
-                          src={userInfo?.cloudFrontURL?.replace(
-                            "*",
-                            `${userInfo?.customerId}/${userInfo?.customer?.profilePicture}`
-                          )}
-                          alt=""
-                        />
-                      ) : (
-                        <GeneratedProfileImage
-                          name={user?.displayName || "user"}
-                          size={40}
-                        />
-                      )}
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      {isAdmin && (
-                        <DropdownMenuItem>
-                          <Link
-                            href="/dashboard/overview"
-                            className="cursor-pointer w-full"
-                          >
-                            Dashboard
-                          </Link>
-                        </DropdownMenuItem>
-                      )}
-                      {userInfo?.role === "customer" && (
-                        <DropdownMenuItem>
-                          <Link
-                            href="/profile/edit-profile"
-                            className="cursor-pointer w-full"
-                          >
-                            Profile
-                          </Link>
-                        </DropdownMenuItem>
-                      )}
-                      <DropdownMenuItem>
-                        <Link
-                          href="/checkout"
-                          className="cursor-pointer w-full"
-                        >
-                          Cart
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => logOut()}
-                        className="cursor-pointer w-full"
-                      >
-                        Log Out
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
+                <DropdownMenus userInfo={userInfo} user={user} />
               ) : (
                 <button
                   onClick={() => setIsAuthModalOpen(!isAuthModalOpen)}
@@ -265,9 +196,11 @@ const Header = () => {
         {!isDashboardPage && (
           <div
             name="navigation-header"
-            className={`transition-all duration-300 bg-white ${
-              isScrolled ? "" : "pt-[70px]"
-            } w-full fixed top-0 flex items-center justify-start`}
+            className={`container mx-auto px-0 transition-all duration-300 z-0 flex justify-start bg-white w-full ${
+              isScrolled
+                ? "transform -translate-y-full opacity-0 h-0"
+                : "transform translate-y-0 opacity-1"
+            }`}
           >
             <div className="relative">
               <div

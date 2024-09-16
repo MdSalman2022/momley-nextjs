@@ -33,7 +33,7 @@ const HeadlessModalBox = ({ isOpen, setIsOpen, title, children }) => {
                 <RxCross2 />
               </span>
             </div>
-            <div className=" px-6 pb-4">{children}</div>
+            <div className="">{children}</div>
           </DialogPanel>
         </div>
       </div>

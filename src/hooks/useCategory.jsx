@@ -272,9 +272,9 @@ const useCategory = () => {
     return SubData;
   };
 
-  const GetAllCategory = async (id) => {
+  const GetAllCategory = async (id, level) => {
     const response = await fetch(
-      `${process.env.VITE_SERVER_URL}/category/get-all?storeId=${id}`,
+      `${process.env.VITE_SERVER_URL}/category/get-all?storeId=${id}&depth=${level}`,
       {
         method: "GET",
         headers: {

@@ -7,8 +7,13 @@ import Footer from "@/components/Shared/Footer";
 import { Toaster } from "react-hot-toast";
 import StateProvider from "@/contexts/StateProvider/StateProvider";
 import { AuthProvider } from "@/contexts/AuthProvider/AuthProvider";
+import NewHeader from "@/components/Shared/NewHeader";
+import { usePathname } from "next/navigation";
 
 const Providers = ({ children }) => {
+  const pathname = usePathname();
+
+  const isDashboardPage = pathname.includes("/dashboard");
   const queryClient = new QueryClient();
   return (
     <div>
@@ -17,7 +22,10 @@ const Providers = ({ children }) => {
           <AuthProvider>
             <StateProvider>
               <Toaster />
-              <Header />
+              <div className={isDashboardPage ? "" : "mb-32"}>
+                <Header />
+                {/* <NewHeader /> */}
+              </div>
               <div>{children}</div>
               <Footer />
             </StateProvider>

@@ -1,0 +1,31 @@
+.categoryItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.indent {
+  position: relative;
+  padding-left: 16px;
+}
+
+.indent::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: #111111;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid black;
+  border-radius: 50%;
+  cursor: pointer;
+}

@@ -73,8 +73,13 @@ export async function generateMetadata() {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <Providers>{children}</Providers>
+      <body className={`${inter.className} w-screen overflow-x-hidden`}>
+        <div>
+          {" "}
+          <Providers>
+            <div className="container mx-auto px-0">{children}</div>
+          </Providers>
+        </div>
       </body>
     </html>
   );
