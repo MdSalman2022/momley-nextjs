@@ -10,7 +10,6 @@ import usePage from "@/hooks/usePage";
 import { storeId } from "@/libs/utils/common";
 import { useQuery } from "react-query";
 import LoadingAnimation from "@/libs/utils/LoadingAnimation";
-import useStore from "@/hooks/useStore";
 import useStaff from "@/hooks/useStaff";
 import {
   Select,
@@ -220,21 +219,23 @@ const UsersPermissions = () => {
 
   const allStaffs = staffs?.data;
 
-  const data = allStaffs?.map((staff) => ({
-    id: staff._id || "",
-    AdminUserName: (
-      <span className="flex items-center gap-1">
-        <Image src={avatar} className="w-10 h-10 rounded-lg" alt="Avatar" />
-        <div className="flex flex-col">
-          <span>{staff.fullName || ""}</span>
-          <span>{staff.role || ""}</span>
-        </div>
-      </span>
-    ),
-    Phonenumber: staff.phone, // Assuming phone number is not available in the staff object
-    Email: staff.email || "",
-    Role: staff.role || "", // Assuming permissions are joined as a string
-  }));
+  const data =
+    allStaffs?.length > 0 &&
+    allStaffs?.map((staff) => ({
+      id: staff._id || "",
+      AdminUserName: (
+        <span className="flex items-center gap-1">
+          <Image src={avatar} className="w-10 h-10 rounded-lg" alt="Avatar" />
+          <div className="flex flex-col">
+            <span>{staff.fullName || ""}</span>
+            <span>{staff.role || ""}</span>
+          </div>
+        </span>
+      ),
+      Phonenumber: staff.phone, // Assuming phone number is not available in the staff object
+      Email: staff.email || "",
+      Role: staff.role || "", // Assuming permissions are joined as a string
+    }));
 
   const defaultCheckboxValues = {
     admin: pages.reduce(

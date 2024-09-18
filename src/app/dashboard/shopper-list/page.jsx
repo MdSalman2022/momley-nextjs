@@ -194,7 +194,7 @@ const ShopperList = () => {
 
   const handleEdit = () => {
     setIsEdit(true);
-    const selectedSupplierId = Object.keys(rowSelection).find(
+    const selectedSupplierId = Object?.keys(rowSelection)?.find(
       (key) => rowSelection[key]
     );
     console.log("selectedSupplierId", selectedSupplierId);
@@ -216,9 +216,26 @@ const ShopperList = () => {
     console.log("Delete action triggered");
   };
 
-  const selectedRows = Object.values(rowSelection).filter(
-    (isSelected) => isSelected
-  );
+  const handleRowSelection = (rowSelection) => {
+    try {
+      if (!rowSelection || typeof rowSelection !== "object") {
+        throw new Error("Invalid rowSelection object");
+      }
+
+      const selectedRows = Object.values(rowSelection).filter(
+        (isSelected) => isSelected
+      );
+
+      return selectedRows;
+    } catch (error) {
+      console.error("Error processing row selection:", error.message);
+      // Optionally, you can add more error handling logic here, such as displaying an error message to the user
+      return [];
+    }
+  };
+
+  const selectedRows = handleRowSelection(rowSelection);
+
   const isSingleRowSelected = selectedRows.length === 1;
   const isMultipleRowsSelected = selectedRows.length > 1;
 
