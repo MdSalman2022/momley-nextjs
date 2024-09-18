@@ -11,6 +11,17 @@ import { storeId } from "@/libs/utils/common";
 import { useQuery } from "react-query";
 import LoadingAnimation from "@/libs/utils/LoadingAnimation";
 import useStore from "@/hooks/useStore";
+import useStaff from "@/hooks/useStaff";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import toast from "react-hot-toast";
 
 const CheckboxComp = ({ name, checked, onChange }) => {
   return (
@@ -47,7 +58,7 @@ const CheckboxItem = ({ name, label, checked, onChange, className = "" }) => {
 };
 
 const UsersPermissions = () => {
-  const { createStaff } = useStore();
+  const { createStaff, getStaffs } = useStaff();
   const { getPages } = usePage();
 
   const {
@@ -61,6 +72,17 @@ const UsersPermissions = () => {
     staleTime: 5 * (60 * 1000),
     enabled: !!storeId, // Ensure the query only runs if storeId is available
   });
+  const {
+    data: staffs = [],
+    isLoading: isStaffsLoading,
+    refetch: refetchStaffs,
+  } = useQuery({
+    queryKey: ["staffs", storeId],
+    queryFn: () => storeId && getStaffs(storeId),
+    cacheTime: 10 * (60 * 1000),
+    staleTime: 5 * (60 * 1000),
+    enabled: !!storeId, // Ensure the query only runs if storeId is available
+  });
 
   console.log("pages", pages);
 
@@ -68,7 +90,6 @@ const UsersPermissions = () => {
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
-  const [selectedStatus, setSelectedStatus] = useState("Active");
   const [checkboxValues, setCheckboxValues] = useState({});
 
   useEffect(() => {
@@ -87,9 +108,10 @@ const UsersPermissions = () => {
     handleSubmit,
     setValue,
     formState: { errors },
+    reset,
   } = useForm();
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const selectedPages = Object.keys(checkboxValues)
       .filter((key) => checkboxValues[key].checked)
       .map((key) => checkboxValues[key]._id);
@@ -98,39 +120,28 @@ const UsersPermissions = () => {
       ...data,
       selectedPages,
     };
-    console.log("datadata", formData);
+    console.log("payload", formData);
 
     const payload = {
       fullName: data.fullName,
       email: data.contact,
       permissions: selectedPages,
-      store: storeId,
+      storeId: storeId,
     };
+    console.log("payload", payload);
 
-    const response = createStaff(payload);
+    const response = await createStaff(payload);
     console.log("response", response);
     if (response?.success) {
-      refetchPages();
+      toast.success("Staff created successfully");
+      reset();
+      refetchStaffs();
+      setCheckboxValues({});
+      setSelectedRole("");
+    } else {
+      toast.error("Failed to create staff");
     }
   };
-
-  const roles = [
-    { id: 1, name: "Moderator", value: "moderator" },
-    { id: 2, name: "Store Manager", value: "store_manager" },
-    { id: 3, name: "Sales Associate", value: "sales_associate" },
-    { id: 4, name: "Inventory Specialist", value: "inventory_specialist" },
-    {
-      id: 5,
-      name: "Customer Service Representative",
-      value: "customer_service_representative",
-    },
-    { id: 6, name: "Cashier", value: "cashier" },
-    { id: 7, name: "Visual Merchandiser", value: "visual_merchandiser" },
-    { id: 8, name: "Marketing Coordinator", value: "marketing_coordinator" },
-    { id: 9, name: "Logistics Coordinator", value: "logistics_coordinator" },
-  ];
-
-  console.log("checkboxValues", checkboxValues);
 
   const handleCheckboxChange = (name) => (checked) => {
     setCheckboxValues((prevValues) => ({
@@ -180,9 +191,9 @@ const UsersPermissions = () => {
       accessorKey: "Email",
     },
     {
-      id: "Access",
-      header: "Access",
-      accessorKey: "Access",
+      id: "Role",
+      header: "Role",
+      accessorKey: "Role",
     },
     {
       id: "Action",
@@ -190,71 +201,102 @@ const UsersPermissions = () => {
       accessorKey: "Action", // Assuming actions are tied to the row's unique 'id'
       cell: ({ row }) => {
         // console.log("row", row);
-        return <p className="text-[#2F80ED]">Edit/Add</p>;
+        return <p className="text-[#2F80ED]">Edit/Delete</p>;
       },
       enableSorting: false, // Assuming sorting is not needed for actions
     },
   ];
 
-  const data = [
-    {
-      id: "1",
-      AdminUserName: (
-        <span className="flex items.center gap-1">
-          <Image src={avatar} className="w-10 h-10 rounded-lg" />
-          <div className="flex flex-col">
-            <span>Admin 1</span>
-            <span>Admin</span>
-          </div>
-        </span>
-      ),
-      Phonenumber: "01700000000",
-      Email: "farukmix2@gmail.com",
-      Access: "Full access",
-    },
-    {
-      id: "2",
-      AdminUserName: (
-        <span className="flex items.center gap-1">
-          <Image src={avatar} className="w-10 h-10 rounded-lg" />
-          <div className="flex flex-col">
-            <span>Mod 1</span>
-            <span>Moderator</span>
-          </div>
-        </span>
-      ),
-      Phonenumber: "01700000000",
-      Email: "momleyoline@gmail.com",
-      Access: "Order  page access",
-    },
+  console.log("staffs", staffs);
+
+  const roles = [
+    { id: 1, name: "Admin", value: "admin" },
+    { id: 2, name: "Moderator", value: "moderator" },
+    { id: 3, name: "Store Manager", value: "store_manager" },
+    { id: 4, name: "Sales Associate", value: "sales_associate" },
   ];
 
-  const items = [
-    {
-      id: "recents",
-      label: "Recents",
-    },
-    {
-      id: "home",
-      label: "Home",
-    },
-    {
-      id: "applications",
-      label: "Applications",
-    },
-    {
-      id: "desktop",
-      label: "Desktop",
-    },
-    {
-      id: "downloads",
-      label: "Downloads",
-    },
-    {
-      id: "documents",
-      label: "Documents",
-    },
-  ];
+  const [selectedRole, setSelectedRole] = useState("");
+
+  const allStaffs = staffs?.data;
+
+  const data = allStaffs?.map((staff) => ({
+    id: staff._id || "",
+    AdminUserName: (
+      <span className="flex items-center gap-1">
+        <Image src={avatar} className="w-10 h-10 rounded-lg" alt="Avatar" />
+        <div className="flex flex-col">
+          <span>{staff.fullName || ""}</span>
+          <span>{staff.role || ""}</span>
+        </div>
+      </span>
+    ),
+    Phonenumber: staff.phone, // Assuming phone number is not available in the staff object
+    Email: staff.email || "",
+    Role: staff.role || "", // Assuming permissions are joined as a string
+  }));
+
+  const defaultCheckboxValues = {
+    admin: pages.reduce(
+      (acc, page) => ({
+        ...acc,
+        [page.name]: { checked: true, _id: page._id },
+      }),
+      {}
+    ),
+    moderator: pages.reduce(
+      (acc, page) => ({
+        ...acc,
+        [page.name]: {
+          checked: page.name.toLowerCase() !== "settings",
+          _id: page._id,
+        },
+      }),
+      {}
+    ),
+    store_manager: pages.reduce(
+      (acc, page) => ({
+        ...acc,
+        [page.name]: {
+          checked: [
+            "order",
+            "products",
+            "inventory",
+            "shopper list",
+            "customers",
+            "discount",
+          ].includes(page.name.toLowerCase()),
+          _id: page._id,
+        },
+      }),
+      {}
+    ),
+    sales_associate: pages.reduce(
+      (acc, page) => ({
+        ...acc,
+        [page.name]: {
+          checked: ["order", "products", "inventory"].includes(
+            page.name.toLowerCase()
+          ),
+          _id: page._id,
+        },
+      }),
+      {}
+    ),
+  };
+
+  useEffect(() => {
+    if (selectedRole) {
+      setCheckboxValues(defaultCheckboxValues[selectedRole] || {});
+    }
+  }, [selectedRole]);
+
+  console.log("checkboxValues", checkboxValues);
+  console.log("defaultCheckboxValues", defaultCheckboxValues);
+
+  const handleRoleChange = (value) => {
+    setSelectedRole(value);
+  };
 
   if (isPagesLoading) {
     return <LoadingAnimation />;
@@ -262,33 +304,11 @@ const UsersPermissions = () => {
 
   return (
     <div className="flex flex-col gap-5">
-      <TopActionButtons
-        title="User and Permission"
-        handleFunction={() => console.log("Creating Order...")}
-        functionTitle="Add new User/staff "
-      />
-
-      <div className="flex flex-col gap-3 border p-6 rounded">
-        <p>05 Admin & Users</p>
-        <DataTable
-          columns={columns}
-          data={data}
-          setSorting={setSorting}
-          setColumnFilters={setColumnFilters}
-          setColumnVisibility={setColumnVisibility}
-          setRowSelection={setRowSelection}
-          sorting={sorting}
-          columnFilters={columnFilters}
-          columnVisibility={columnVisibility}
-          rowSelection={rowSelection}
-        />
-      </div>
-
-      <p className="font-semibold">Add a new user/staff</p>
+      <TopActionButtons title="User and Permission" />
       <div className="border p-6 rounded">
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="grid grid-cols-2 gap-5"
+          className="grid grid-cols-3 gap-5"
         >
           <label htmlFor="fullName" className="flex flex-col gap-1">
             <span>Full Name*</span>
@@ -318,7 +338,30 @@ const UsersPermissions = () => {
               </span>
             )}
           </label>
-          <div className="col-span-2 flex flex-col gap-5 w-full">
+          <label htmlFor="fullName" className="flex flex-col gap-1">
+            <span>Role*</span>
+            <Select onValueChange={handleRoleChange}>
+              <SelectTrigger className="input-box h-10 border-black/40">
+                <SelectValue placeholder="Select a role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {roles.map((role) => (
+                    <SelectItem key={role.id} value={role.value}>
+                      {role.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            {errors.fullName && (
+              <span className="text-sm text-red-600">
+                {errors.fullName.message}
+              </span>
+            )}
+          </label>
+
+          <div className="col-span-3 flex flex-col gap-5 w-full">
             <p className="font-semibold">Assign a New Page Role</p>
             <div className="grid grid-cols-3 gap-5">
               {pages?.map((page) => (
@@ -333,13 +376,28 @@ const UsersPermissions = () => {
                 </React.Fragment>
               ))}
             </div>
-            <div className="flex items-center justify-end gap-3 col-span-2">
+            <div className="flex items-center justify-end gap-3 col-span-3">
               <button type="submit" className="primary-btn">
                 Send invite
               </button>
             </div>
           </div>
         </form>
+      </div>
+      <div className="flex flex-col gap-3 rounded">
+        <p className="font-semibold">{allStaffs?.length} Admin & Staffs</p>
+        <DataTable
+          columns={columns}
+          data={data}
+          setSorting={setSorting}
+          setColumnFilters={setColumnFilters}
+          setColumnVisibility={setColumnVisibility}
+          setRowSelection={setRowSelection}
+          sorting={sorting}
+          columnFilters={columnFilters}
+          columnVisibility={columnVisibility}
+          rowSelection={rowSelection}
+        />
       </div>
     </div>
   );

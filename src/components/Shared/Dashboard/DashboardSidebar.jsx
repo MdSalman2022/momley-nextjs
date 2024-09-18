@@ -9,7 +9,11 @@ import { BsBarChart, BsShop } from "react-icons/bs";
 import { FiBox, FiLayout } from "react-icons/fi";
 import { GoPeople } from "react-icons/go";
 import { IoSettingsOutline } from "react-icons/io5";
-import { MdOutlineInventory, MdOutlineRoomPreferences } from "react-icons/md";
+import {
+  MdOutlineInventory,
+  MdOutlineRoomPreferences,
+  MdPayments,
+} from "react-icons/md";
 import { PiPathBold } from "react-icons/pi";
 import { RxDashboard } from "react-icons/rx";
 import { TbShoppingBag } from "react-icons/tb";
@@ -36,6 +40,7 @@ const iconMapping = {
   MdOutlineLocalOffer,
   FaChevronDown,
   RiDashboardLine,
+  MdPayments,
 };
 
 const DashboardSidebar = () => {
