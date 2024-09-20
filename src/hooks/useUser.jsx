@@ -31,7 +31,28 @@ const useUser = () => {
     return user;
   };
 
-  return { CreateUser, updateCustomer };
+  const GetAddress = async (addressId) => {
+    // Construct the base URL
+    let url = `${process.env.VITE_SERVER_URL}/users/getSubAddressList`;
+
+    // Append the addressId as a query parameter if it is available
+    if (addressId) {
+      url += `?addressId=${addressId}`;
+    }
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const user = await response.json();
+
+    return user.data;
+  };
+
+  return { CreateUser, updateCustomer, GetAddress };
 };
 
 export default useUser;

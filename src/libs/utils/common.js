@@ -300,3 +300,10 @@ export const handleFilesSelect = (
   setPreviewImages(previewImageArray);
   setSelectedFile([...files.filter((file) => !largeFiles.includes(file))]);
 };
+
+export const formatBDT = (amount) => {
+  return new Intl.NumberFormat("en-BD", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};

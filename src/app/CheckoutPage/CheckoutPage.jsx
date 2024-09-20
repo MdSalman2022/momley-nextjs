@@ -8,9 +8,9 @@ import { useContext, useEffect, useState } from "react";
 import CheckoutBookList from "../../../components/Main/CheckoutPage/CheckoutBookList";
 
 const CheckoutPage = () => {
-  const { cart, setCart } = useContext(StateContext);
+  const { cartInfo } = useContext(StateContext);
 
-  const totalPrice = cart.reduce(
+  const totalPrice = cartInfo.reduce(
     (accumulator, item) => accumulator + item.totalPrice,
     0
   );
@@ -47,7 +47,7 @@ const CheckoutPage = () => {
           <div>Total Price</div>
           <div>Action</div>
         </div>
-        {cart.map((item, index) => (
+        {cartInfo.map((item, index) => (
           <CheckoutBookList key={index} book={item} />
         ))}
 

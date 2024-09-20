@@ -1,63 +1,71 @@
 "use client";
 import { StateContext } from "@/contexts/StateProvider/StateProvider";
+import { storeId } from "@/libs/utils/common";
 import Link from "next/link";
 import React, { useContext, useEffect, useState } from "react";
 import { FaMinus, FaPlus } from "react-icons/fa";
 
 export default function BookCartControl({ bookDetails }) {
-  const { cart, setCart } = useContext(StateContext);
-  const [cartCount, setCartCount] = useState(0);
+  const { userInfo, cartInfo, isCartInfoLoading } = useContext(StateContext);
 
-  useEffect(() => {
-    const cartItem = cart.find((item) => item._id === bookDetails._id);
-    if (cartItem) {
-      setCartCount(cartItem.quantity);
-    } else {
-      setCartCount(0);
+  const productCartCount =
+    cartInfo?.length > 0
+      ? cartInfo?.find((product) => product._id === bookDetails._id)?.quantity
+      : 0;
+
+  console.log("productCartCount", productCartCount);
+
+  const handleAddToCart = async () => {
+    const payload = {
+      userId: userInfo?._id,
+      storeId: storeId,
+      productId: bookDetails._id,
+      quantity: 1,
+    };
+
+    const response = await AddToCart(payload);
+
+    if (response?.success) {
+      refetchCartInfo();
     }
-  }, [cart, bookDetails._id]);
+  };
+  const handleMinusClick = async () => {
+    const payload = {
+      userId: userInfo?._id,
+      storeId: storeId,
+      productId: bookDetails._id,
+      quantity: productCartCount - 1,
+    };
 
-  const handleAddToCart = () => {
-    const cartItem = cart.find((item) => item._id === bookDetails._id);
+    const response = await AddToCart(payload);
 
-    if (cartItem) {
-      const updatedCart = cart.map((item) => {
-        if (item._id === bookDetails._id) {
-          const updatedItem = {
-            ...item,
-            quantity: cartCount ? cartCount : item.quantity + 1,
-            totalPrice:
-              item.salePrice * (cartCount ? cartCount : item.quantity + 1),
-          };
-          return updatedItem;
-        } else {
-          return item;
-        }
-      });
-      setCart(updatedCart);
-    } else {
-      const newCartItem = {
-        ...bookDetails,
-        quantity: cartCount ? cartCount : 1,
-        totalPrice: bookDetails.salePrice * (cartCount ? cartCount : 1),
-      };
-      setCart([...cart, newCartItem]);
+    if (response?.success) {
+      refetchCartInfo();
     }
-    setCartCount(0);
   };
 
-  const handleMinusClick = () => {
-    if (cartCount === 0) {
-      return;
+  const handlePlusClick = async () => {
+    const payload = {
+      userId: userInfo?._id,
+      storeId: storeId,
+      productId: bookDetails._id,
+      quantity: productCartCount + 1,
+    };
+
+    const response = await AddToCart(payload);
+
+    if (response?.success) {
+      refetchCartInfo();
     }
-    setCartCount(cartCount - 1);
   };
 
-  const handlePlusClick = () => {
-    setCartCount(cartCount + 1);
-  };
+  const alreadyInCart =
+    cartInfo?.length > 0 &&
+    cartInfo?.find((item) => item._id === bookDetails._id);
 
-  const alreadyInCart = cart?.find((item) => item._id === bookDetails._id);
+  if (isCartInfoLoading) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <div className="flex flex-col gap-3">
@@ -69,7 +77,7 @@ export default function BookCartControl({ bookDetails }) {
         >
           <FaMinus />
         </button>
-        <span className="w-6 flex justify-center">{cartCount}</span>
+        <span className="w-6 flex justify-center">{productCartCount}</span>
         <button
           onClick={handlePlusClick}
           className="h-full w-10 flex justify-center items-center text-white bg-[#4F4F4F]"
@@ -86,7 +94,8 @@ export default function BookCartControl({ bookDetails }) {
               : "primary-outline-btn cursor-pointer"
           }`}
         >
-          {cart?.find((item) => item._id === bookDetails._id)
+          {cartInfo?.length > 0 &&
+          cartInfo?.find((item) => item._id === bookDetails._id)
             ? "In Cart"
             : "Add to Cart"}
         </div>

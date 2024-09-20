@@ -1,13 +1,14 @@
 "use client";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import lotion from "../../../public/images/products/lotion.jpeg";
 import Image from "next/image";
 import { FaMinus, FaPlus } from "react-icons/fa";
-import { HiOutlineTrash } from "react-icons/hi";
+import { HiCheckCircle, HiOutlineTrash } from "react-icons/hi";
 import { StateContext } from "@/contexts/StateProvider/StateProvider";
 import LoadingAnimation from "@/libs/utils/LoadingAnimation";
 import {
+  formatBDT,
   getAppliedToOptions,
   getDiscountTypeOptions,
   storeId,
@@ -16,43 +17,42 @@ import toast from "react-hot-toast";
 import useOrder from "@/hooks/useOrder";
 import { useRouter } from "next/navigation";
 import useDiscount from "@/hooks/useDiscount";
-
-const FormInput = ({
-  label,
-  name,
-  register,
-  required,
-  placeholder,
-  type = "text",
-  colSpan = "col-span-1",
-}) => (
-  <label className={`flex flex-col ${colSpan}`}>
-    <span>
-      {label}
-      {required && "*"}
-    </span>
-    <input
-      type={type}
-      {...register(name, { required })}
-      className="input-box w-full"
-      placeholder={placeholder}
-    />
-  </label>
-);
+import { BsCartXFill } from "react-icons/bs";
+import { MdEdit } from "react-icons/md";
+import { FiPlus } from "react-icons/fi";
+import Link from "next/link";
+import useCart from "@/hooks/useCart";
+import { useQuery } from "react-query";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const CartItem = ({
   item,
+  productCloudfrontUrl,
   handleMinusClick,
   handlePlusClick,
   handleRemoveItem,
 }) => (
   <div className="flex items-center">
     <div className="flex items-center px-7 gap-5 w-full justify-between">
-      <div className="flex items-center h-20 w-[300px]">
-        <Image src={lotion} alt="book" className="h-12 w-12 object-cover" />
+      <div className="flex items-center h-20 w-[300px] gap-2">
+        <Image
+          src={productCloudfrontUrl?.replace(
+            "*",
+            `products/${item?.images[0]}`
+          )}
+          alt="book"
+          className="h-12 w-12 object-cover"
+          width={48}
+          height={48}
+        />
         <div className="flex flex-col gap-1">
           <span className="text-sm">{item?.name}</span>
-          <span className="text-xs">{item?.author}</span>
+          {item?.stock?.quantity < item?.quantity && (
+            <span className="px-2 py-1 bg-red-100 text-xs w-fit">
+              Low Stock
+            </span>
+          )}
         </div>
       </div>
       <div className="flex items-center justify-center h-20 w-[150px]">
@@ -61,7 +61,7 @@ const CartItem = ({
       <div className="flex items-center justify-center h-20 w-[150px]">
         <div className="flex items-center rounded-sm justify-between border border-[#E0E0E0]">
           <span
-            onClick={() => handleMinusClick(item._id)}
+            onClick={() => handleMinusClick(item)}
             className={`flex items-center rounded-sm-l justify-center w-7 h-7 border-r text-xs select-none cursor-pointer ${
               item?.quantity === 1
                 ? "bg-gray-100 text-gray-200 cursor-not-allowed"
@@ -74,7 +74,7 @@ const CartItem = ({
             {item?.quantity}
           </span>
           <span
-            onClick={() => handlePlusClick(item._id)}
+            onClick={() => handlePlusClick(item)}
             className="flex items-center rounded-sm-r border-[#E0E0E0] justify-center bg-gray-500 text-white  w-7 h-7 border-l text-xs select-none cursor-pointer"
           >
             <FaPlus />
@@ -82,13 +82,15 @@ const CartItem = ({
         </div>
       </div>
       <div className="flex items-center justify-center h-20 w-[150px]">
-        <span className="text-sm font-semibold">৳ {item?.totalPrice}</span>
+        <span className="text-sm font-semibold">
+          ৳ {formatBDT(item?.totalPrice)}
+        </span>
       </div>
       <div className="flex items-center justify-center h-20 w-[150px]">
         <button
           type="button"
           className="text-red-500 text-2xl"
-          onClick={() => handleRemoveItem(item._id)}
+          onClick={() => handleRemoveItem(item)}
         >
           <HiOutlineTrash />
         </button>
@@ -97,63 +99,56 @@ const CartItem = ({
   </div>
 );
 
-const DeliveryOption = ({
-  register,
-  value,
-  id,
-  label,
-  price,
-  setDeliveryCost,
-  defaultChecked,
-}) => (
-  <div className="flex items-center justify-between gap-5 w-full">
-    <div className="flex items-center gap-5">
-      <input
-        {...register("delivery")}
-        type="radio"
-        value={value}
-        id={id}
-        onChange={() => setDeliveryCost(price)}
-        defaultChecked={defaultChecked}
-      />
-      <label htmlFor={id}>{label}</label>
-    </div>
-    <span>{price}</span>
-  </div>
-);
-const DeliveryMethods = ({ register, pricing, setDeliveryCost }) => (
-  <div className="border rounded flex flex-col justify-start py-5 px-8 h-[172px]">
-    <p className="text-lg font-bold">Delivery Methods</p>
-    <div className="flex flex-col mt-1">
-      <DeliveryOption
-        register={register}
-        value="dhaka"
-        id="dhaka"
-        label="Home Delivery In Dhaka"
-        price={pricing?.dhaka}
-        setDeliveryCost={setDeliveryCost}
-        defaultChecked={true}
-      />
-      <DeliveryOption
-        register={register}
-        value="dOutside"
-        id="dOutside"
-        label="Home Delivery In Dhaka Outside"
-        price={pricing?.dOutside}
-        setDeliveryCost={setDeliveryCost}
-      />
-      <DeliveryOption
-        register={register}
-        value="Store"
-        id="Store"
-        label="Store Pickup"
-        price={pricing?.storePickup || 0}
-        setDeliveryCost={setDeliveryCost}
-      />
-    </div>
-  </div>
-);
+/* const DeliveryMethods = ({ register, pricing, setDeliveryCost }) => {
+  const deliveryOptions = [
+    {
+      value: "dhaka",
+      id: "dhaka",
+      label: "Home Delivery In Dhaka",
+      price: pricing?.dhaka,
+      defaultChecked: true,
+    },
+    {
+      value: "dOutside",
+      id: "dOutside",
+      label: "Home Delivery In Dhaka Outside",
+      price: pricing?.dOutside,
+    },
+    {
+      value: "Store",
+      id: "Store",
+      label: "Store Pickup",
+      price: pricing?.storePickup || 0,
+    },
+  ];
 
+  return (
+    <div className="border rounded flex flex-col justify-start py-5 px-8 h-[172px]">
+      <p className="text-lg font-bold">Delivery Methods</p>
+      <div className="flex flex-col mt-1">
+        {deliveryOptions.map((option) => (
+          <div
+            key={option.id}
+            className="flex items-center justify-between gap-5 w-full"
+          >
+            <div className="flex items-center gap-5">
+              <input
+                {...register("delivery")}
+                type="radio"
+                value={option.value}
+                id={option.id}
+                onChange={() => setDeliveryCost(option.price)}
+                defaultChecked={option.defaultChecked}
+              />
+              <label htmlFor={option.id}>{option.label}</label>
+            </div>
+            <span>{option.price}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}; */
 const PaymentOption = ({ register, value, id, label }) => (
   <div className="flex items-center gap-5">
     <input
@@ -167,7 +162,7 @@ const PaymentOption = ({ register, value, id, label }) => (
 );
 const PaymentMethods = ({ register, errors }) => (
   <div
-    className={`border rounded flex flex-col py-5 px-8 h-[172px] ${
+    className={`border rounded flex flex-col py-5 px-8 h-fit ${
       errors?.payment && "border-red-500"
     }`}
   >
@@ -193,6 +188,7 @@ const PaymentMethods = ({ register, errors }) => (
 );
 
 const CheckoutPage = () => {
+  const { AddToCart, getCartCheckout, EmptyCart } = useCart();
   const {
     control,
     register,
@@ -206,7 +202,7 @@ const CheckoutPage = () => {
       lastName: "",
       phone: "",
       email: "",
-      state: "",
+      division: "",
       city: "",
       area: "",
       address: "",
@@ -215,8 +211,14 @@ const CheckoutPage = () => {
 
   console.log("errors", errors);
 
-  const { cart, setCart, userInfo, isUserInfoLoading, storeInfo } =
-    useContext(StateContext);
+  const {
+    userInfo,
+    isUserInfoLoading,
+    storeInfo,
+    cartInfo,
+    isCartInfoLoading,
+    refetchCartInfo,
+  } = useContext(StateContext);
   const { createOrder } = useOrder();
   const { getDiscountByCode } = useDiscount();
   const [deliveryCost, setDeliveryCost] = useState(70);
@@ -225,46 +227,85 @@ const CheckoutPage = () => {
   const [discountData, setDiscountData] = useState({});
   const [discountAmount, setDiscountAmount] = useState(0);
   const router = useRouter();
+  const [deliveryLocation, setDeliveryLocation] = useState("");
+  const [deliveryMethod, setDeliveryMethod] = useState("homeDelivery");
+  const [discountCode, setDiscountCode] = useState("");
+
+  console.log("deliveryLocation", deliveryLocation);
+
+  useEffect(() => {
+    if (userInfo?.customer?.shippingAddress[0]?.city) {
+      setDeliveryLocation(userInfo?.customer?.shippingAddress[0]?.city);
+      setDeliveryMethod("homeDelivery");
+    }
+  }, [userInfo]);
+
+  const {
+    data: checkoutInfo = {},
+    isLoading: isCheckoutInfoLoading,
+    refetch: refetchCheckoutInfo,
+  } = useQuery({
+    queryKey: [
+      "checkoutInfo",
+      storeId,
+      userInfo?._id,
+      deliveryLocation,
+      discountCode,
+    ],
+    queryFn: () =>
+      storeId &&
+      getCartCheckout(storeId, userInfo?._id, deliveryLocation, discountCode),
+    cacheTime: 10 * (60 * 1000),
+    staleTime: 5 * (60 * 1000),
+  });
+
+  console.log("checkoutInfo", checkoutInfo);
+
+  const productCloudfrontUrl = storeInfo?.cloudFrontURL;
 
   console.log("userInfo", userInfo);
   console.log("storeInfo", storeInfo);
   console.log("option", getAppliedToOptions().option1);
+  console.log("cartInfo", cartInfo);
 
   useEffect(() => {
-    const total = cart.reduce((acc, item) => acc + item.totalPrice, 0);
-    setSubTotal(total);
-    if (
-      discountData?.discountInfo?.appliesTo === getAppliedToOptions().option1
-    ) {
-      const type = discountData?.discountInfo?.type;
-      const value = discountData?.discountInfo?.value;
-      if (type === getDiscountTypeOptions().option1) {
-        const discountAmount = (total * value) / 100;
-        setDiscountAmount(discountAmount);
-        setTotalAmount(total - discountAmount + deliveryCost);
-      } else if (type === getDiscountTypeOptions().option2) {
-        setDiscountAmount(value);
-        setTotalAmount(total - value + deliveryCost);
-      } else if (type === getDiscountTypeOptions().option3) {
-        setDiscountAmount(deliveryCost);
-        setTotalAmount(total);
-      } else if (type === getDiscountTypeOptions().option4) {
+    if (!isCartInfoLoading && cartInfo?.length > 0) {
+      const total = cartInfo?.reduce((acc, item) => acc + item.totalPrice, 0);
+      setSubTotal(total);
+      if (
+        discountData?.discountInfo?.appliesTo === getAppliedToOptions().option1
+      ) {
+        const type = discountData?.discountInfo?.type;
+        const value = discountData?.discountInfo?.value;
+        if (type === getDiscountTypeOptions().option1) {
+          const discountAmount = (total * value) / 100;
+          setDiscountAmount(discountAmount);
+          setTotalAmount(total - discountAmount + deliveryCost);
+        } else if (type === getDiscountTypeOptions().option2) {
+          setDiscountAmount(value);
+          setTotalAmount(total - value + deliveryCost);
+        } else if (type === getDiscountTypeOptions().option3) {
+          setDiscountAmount(deliveryCost);
+          setTotalAmount(total);
+        } else if (type === getDiscountTypeOptions().option4) {
+        } else {
+          setDiscountAmount(value);
+          setTotalAmount(total - value + deliveryCost);
+        }
       } else {
-        setDiscountAmount(value);
-        setTotalAmount(total - value + deliveryCost);
+        setTotalAmount(total + deliveryCost);
       }
-    } else {
-      setTotalAmount(total + deliveryCost);
     }
-  }, [cart, deliveryCost, discountData]);
+  }, [cartInfo, deliveryCost, discountData, isCartInfoLoading]);
 
   console.log("deliveryCost", deliveryCost);
   console.log("subTotal", subTotal);
   console.log("totalAmount", totalAmount);
-  console.log("cart", cart);
+  console.log("cartInfo", cartInfo);
 
   const handleCheckDiscount = async () => {
-    const discountCode = watch("coupon");
+    setDiscountCode(watch("coupon"));
+    /*     const discountCode = watch("coupon");
     const discount = await getDiscountByCode(storeId, discountCode);
     console.log("discount", discount);
     if (discount) {
@@ -272,7 +313,7 @@ const CheckoutPage = () => {
       toast.success("Coupon Code Applied");
     } else {
       toast.error("Invalid Coupon Code");
-    }
+    } */
   };
 
   const handleRemoveDiscount = () => {
@@ -289,7 +330,7 @@ const CheckoutPage = () => {
         lastName: userInfo?.customer?.lastName,
         phone: userInfo?.customer?.phoneNumber,
         email: userInfo?.email || "",
-        state: userInfo?.customer?.shippingAddress[0]?.state || "",
+        division: userInfo?.customer?.shippingAddress[0]?.state || "",
         city: userInfo?.customer?.shippingAddress[0]?.city || "",
         area: userInfo?.customer?.shippingAddress[0]?.street || "",
         address: userInfo?.customer?.shippingAddress[0]?.street || "",
@@ -297,49 +338,71 @@ const CheckoutPage = () => {
     }
   }, [userInfo, reset]);
 
-  const handleMinusClick = (itemId) => {
-    const updatedCart = cart.map((item) => {
-      if (item._id === itemId) {
-        const newQuantity = item.quantity - 1;
-        const newTotalPrice =
-          item.salePrice * (newQuantity < 1 ? 1 : newQuantity);
-        return {
-          ...item,
-          quantity: newQuantity < 1 ? 1 : newQuantity,
-          totalPrice: newTotalPrice,
-        };
-      }
-      return item;
-    });
-    setCart(updatedCart);
+  const handleMinusClick = async (product) => {
+    if (product?.quantity === 1) {
+      return;
+    }
+    const payload = {
+      userId: userInfo?._id,
+      storeId: storeId,
+      productId: product._id,
+      quantity: product?.quantity - 1,
+    };
+
+    const response = await AddToCart(payload);
+
+    if (response?.success) {
+      refetchCartInfo();
+    }
   };
 
-  const handlePlusClick = (itemId) => {
-    const updatedCart = cart.map((item) => {
-      if (item._id === itemId) {
-        const newQuantity = item.quantity + 1;
-        const newTotalPrice = item.salePrice * newQuantity;
-        return {
-          ...item,
-          quantity: newQuantity,
-          totalPrice: newTotalPrice,
-        };
-      }
-      return item;
-    });
-    setCart(updatedCart);
+  const handlePlusClick = async (product) => {
+    if (product?.quantity >= product?.stock?.quantity) {
+      toast.error("Stock low");
+      return;
+    }
+    const payload = {
+      userId: userInfo?._id,
+      storeId: storeId,
+      productId: product._id,
+      quantity: product?.quantity - 1,
+    };
+
+    const response = await AddToCart(payload);
+
+    if (response?.success) {
+      refetchCartInfo();
+    }
   };
 
-  const [cartItems, setCartItems] = useState([]);
+  const handleRemoveItem = async (product) => {
+    const payload = {
+      userId: userInfo?._id,
+      storeId: storeId,
+      productId: product._id,
+      quantity: 0,
+    };
 
-  useEffect(() => {
-    setCartItems(cart);
-  }, [cart]);
+    const response = await AddToCart(payload);
 
-  console.log("cartItems", cartItems);
+    if (response?.success) {
+      refetchCartInfo();
+    }
+  };
+  const isQuantityExceedingStock =
+    cartInfo?.length > 0 &&
+    cartInfo?.some((item) => item?.quantity > item?.stock?.quantity);
+
+  console.log("isQuantityExceedingStock", isQuantityExceedingStock);
 
   const onSubmit = async (data) => {
     console.log("form input", data);
+    if (isQuantityExceedingStock) {
+      toast.error(
+        "One or more items have a quantity exceeding the available stock."
+      );
+      return;
+    }
 
     if (!data?.payment) {
       toast.error("Please select a payment method");
@@ -349,66 +412,68 @@ const CheckoutPage = () => {
     const payload = {
       customerId: userInfo?.customer?._id,
       storeId: storeId,
-      items: cartItems.map(({ _id, salePrice, quantity, name }) => ({
+      items: cartInfo.map(({ _id, salePrice, quantity, name }) => ({
         product: _id,
         price: salePrice,
         quantity,
         productName: name,
       })),
-      subTotal: subTotal,
-      totalAmount: totalAmount,
+      subTotal: checkoutInfo?.subTotal,
+      totalAmount: checkoutInfo?.grandTotal,
       paymentDetails: {
         paymentMethod: data?.payment,
         paymentStatus: "pending",
         partialPayment: 0,
       },
-      shippingMethod: data?.delivery,
-      shippingCost: deliveryCost,
-      discountObject: discountData?._id,
-      discountAmount: discountAmount,
+      shippingMethod: deliveryMethod,
+      shippingCost: checkoutInfo?.deliveryCharge,
+      shippingInfo: userInfo?.customer?.shippingAddress[0],
+      discountObject: checkoutInfo?.discountId,
+      discountAmount: checkoutInfo?.discount,
       notes: data?.comment,
     };
-    if (data?.firstName !== userInfo?.customer?.firstName) {
-      payload.customCustomerDetails.name = data?.name;
-    }
-    if (data?.phone !== userInfo?.customer?.phoneNumber) {
-      payload.customCustomerDetails.phone = data?.phone;
-    }
-    if (data?.email !== userInfo?.email) {
-      payload.customCustomerDetails.email = data?.email;
-    }
-    if (userInfo?.customer?.shippingAddress?.[0]?.state !== data?.state) {
-      payload.customCustomerDetails.shippingAddress.state = data?.state;
-    }
-    if (userInfo?.customer?.shippingAddress?.[0]?.city !== data?.city) {
-      payload.customCustomerDetails.shippingAddress.city = data?.city;
-    }
-    if (userInfo?.customer?.shippingAddress?.[0]?.street !== data?.area) {
-      payload.customCustomerDetails.shippingAddress.street = data?.area;
-    }
-    if (userInfo?.customer?.shippingAddress?.[0]?.street !== data?.address) {
-      payload.customCustomerDetails.shippingAddress.street = data?.address;
-    }
 
     const response = await createOrder(payload);
 
     console.log("response", response);
     if (response?.success) {
       router.push("/order-successful");
-      toast.success("Order placed successfully");
-      setCart([]);
-      localStorage.removeItem("cart");
+      await EmptyCart(userInfo?._id);
+      refetchCartInfo();
+      refetchCheckoutInfo();
     }
   };
 
-  const handleRemoveItem = (itemId) => {
-    const updatedCart = cart.filter((item) => item._id !== itemId);
-    setCart(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  const handleChangeDeliveryLocation = (value) => {
+    console.log("delivery location", value);
+    if (value === "homeDelivery") {
+      setDeliveryLocation(userInfo?.customer?.shippingAddress[0]?.city);
+      setDeliveryMethod("homeDelivery");
+    } else {
+      setDeliveryLocation("storePickup");
+      setDeliveryMethod("storePickup");
+    }
   };
 
-  if (isUserInfoLoading) {
+  if (isUserInfoLoading || isCartInfoLoading) {
     return <LoadingAnimation />;
+  }
+
+  if (cartInfo?.length === 0) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen bg-gray-50">
+        <BsCartXFill className="w-24 h-24 text-gray-400 mb-4" />
+        <p className="text-2xl font-semibold text-gray-700">
+          Your cart is empty
+        </p>
+        <p className="text-gray-500 mt-2">
+          Looks like you haven't added anything to your cart yet.
+        </p>
+        <button onClick={() => router.push("/")} className="primary-btn mt-6">
+          Start Shopping
+        </button>
+      </div>
+    );
   }
 
   return (
@@ -417,77 +482,96 @@ const CheckoutPage = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="grid grid-cols-3 gap-5"
       >
-        <div className="col-span-1 mt-5 flex flex-col border py-4 px-6 rounded ">
-          <p className="text-lg font-bold">Customer Information</p>
-
-          <div className="grid grid-cols-2 gap-7 pt-5">
-            <FormInput
-              label="First Name"
-              name="firstName"
-              register={register}
-              required={true}
-              placeholder="First Name"
-            />
-            <FormInput
-              label="Last Name"
-              name="lastName"
-              register={register}
-              required={true}
-              placeholder="Last Name"
-            />
-            <FormInput
-              label="Phone Number"
-              name="phone"
-              register={register}
-              required={true}
-              placeholder="Phone Number"
-              colSpan="col-span-2"
-            />
-            <FormInput
-              label="Email"
-              name="email"
-              register={register}
-              placeholder="Email (Optional)"
-              colSpan="col-span-2"
-            />
-            <FormInput
-              label="State"
-              name="state"
-              register={register}
-              required={true}
-              placeholder="state"
-              colSpan="col-span-2"
-            />
-            <FormInput
-              label="City"
-              name="city"
-              register={register}
-              required={true}
-              placeholder="City"
-            />
-            <FormInput
-              label="Area"
-              name="area"
-              register={register}
-              required={true}
-              placeholder="Area"
-            />
-            <FormInput
-              label="Address"
-              name="address"
-              register={register}
-              required={true}
-              placeholder="Address"
-              colSpan="col-span-2"
-            />
-            <FormInput
-              label="Comment"
-              name="comment"
-              register={register}
-              placeholder="Comment"
-              colSpan="col-span-2"
-            />
+        <div className="col-span-1 mt-5 flex flex-col gap-5 border py-4 px-6 rounded ">
+          <div className="flex flex-col gap-5">
+            <p className="font-semibold">Delivery Location</p>
+            <RadioGroup
+              onValueChange={handleChangeDeliveryLocation}
+              defaultValue="homeDelivery"
+              className="flex flex-col gap-5"
+            >
+              <div className="flex items-center px-0 bg-gray-100 w-full h-24 relative">
+                {userInfo?.customer?.shippingAddress[0]?.division && (
+                  <Link
+                    href="/profile/edit-profile"
+                    className="absolute top-3 right-3 flex items-center justify-center rounded-full"
+                  >
+                    <MdEdit />
+                  </Link>
+                )}
+                <div className="flex items-center justify-between w-full px-3">
+                  <div className="flex">
+                    {userInfo?.customer?.shippingAddress[0]?.division ? (
+                      <div className="flex flex-col items-center">
+                        <div className="flex items-center gap-3 w-full relative">
+                          <Image
+                            src={userInfo?.cloudFrontURL?.replace(
+                              "*",
+                              `${userInfo?.customerId}/${userInfo?.customer?.profilePicture}`
+                            )}
+                            className="w-10 h-10 rounded-full border"
+                            width={40}
+                            height={40}
+                          />
+                          <div className="flex flex-col text-sm">
+                            <span className="font-semibold">
+                              {userInfo?.customer?.firstName +
+                                " " +
+                                userInfo?.customer?.lastName}{" "}
+                            </span>
+                            <span>{userInfo?.customer?.phoneNumber}</span>
+                            <span className="flex flex-wrap">
+                              {userInfo?.customer?.shippingAddress[0]?.address +
+                                ", " +
+                                userInfo?.customer?.shippingAddress[0]?.area +
+                                ", " +
+                                userInfo?.customer?.shippingAddress[0]?.city +
+                                ", " +
+                                userInfo?.customer?.shippingAddress[0]
+                                  ?.division}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col w-full py-10 items-center px-3">
+                        <Link
+                          href="/profile/edit-profile"
+                          className="flex gap-3 items-center justify-center w-fit cursor-pointer"
+                        >
+                          <span className="text-xl text-black">
+                            <FiPlus />
+                          </span>
+                          <span>Add Delivery Address</span>
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                  <RadioGroupItem value="homeDelivery" id="r2" />
+                </div>
+              </div>
+              <div className="flex items-center justify-between px-3 bg-gray-100 w-full h-24">
+                <div className="flex flex-col w-fit">
+                  <p>Store Pickup</p>
+                  <p className="text-sm">
+                    Collect your parcel from our pick-up point with no shipping
+                    fee
+                  </p>
+                </div>
+                <RadioGroupItem value="pickup" id="r3" />
+              </div>
+            </RadioGroup>
           </div>
+          <PaymentMethods register={register} errors={errors} />
+          <label>
+            <span>Comment</span>
+            <input
+              type="text"
+              {...register("comment")}
+              className="input-box w-full"
+              placeholder={"Comment"}
+            />
+          </label>
         </div>
         <div className="col-span-2 mt-5 w-full flex flex-col gap-5">
           <div className="flex flex-col border rounded">
@@ -519,20 +603,22 @@ const CheckoutPage = () => {
               </div>
             </div>
             <div className=" flex flex-col">
-              {cartItems.map((item) => (
-                <CartItem
-                  key={item.id}
-                  item={item}
-                  handleMinusClick={handleMinusClick}
-                  handlePlusClick={handlePlusClick}
-                  handleRemoveItem={handleRemoveItem}
-                />
-              ))}
+              {cartInfo?.length > 0 &&
+                cartInfo?.map((item) => (
+                  <CartItem
+                    key={item.id}
+                    item={item}
+                    productCloudfrontUrl={productCloudfrontUrl}
+                    handleMinusClick={handleMinusClick}
+                    handlePlusClick={handlePlusClick}
+                    handleRemoveItem={handleRemoveItem}
+                  />
+                ))}
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-5 w-full">
+          {/* <div className="grid grid-cols-2 gap-5 w-full">
             <PaymentMethods register={register} errors={errors} />
-            <DeliveryMethods
+              <DeliveryMethods
               register={register}
               pricing={{
                 dhaka: storeInfo?.deliveryCharge?.shipmentInsideDhaka,
@@ -541,24 +627,30 @@ const CheckoutPage = () => {
               }}
               setDeliveryCost={setDeliveryCost}
             />
-          </div>
+          </div> */}
           <div className="flex border p-9 justify-between w-full">
             <p className="font-semibold text-[22px]">Order Summary</p>
             <div className="flex flex-col gap-2">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span className="font-bold">৳ {subTotal}</span>
+                <span className="font-bold">
+                  ৳ {formatBDT(checkoutInfo?.subTotal || 0)}
+                </span>
               </div>
-              {discountData?.discountCode && (
+              {checkoutInfo?.discountValid && (
                 <div className="flex justify-between">
                   <span>Discount</span>
-                  <span className="font-bold">৳ - {discountAmount}</span>
+                  <span className="font-bold">
+                    ৳ - {checkoutInfo?.discount || 0}
+                  </span>
                 </div>
               )}
 
               <div className="flex justify-between">
                 <span>Shipping Charge</span>
-                <span className="font-bold">৳ {deliveryCost}</span>
+                <span className="font-bold">
+                  ৳ {checkoutInfo?.deliveryCharge || 0}
+                </span>
               </div>
               <div className="flex items-center gap-5 border-b pb-5">
                 <input
@@ -572,22 +664,24 @@ const CheckoutPage = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    discountData?.discountCode
+                    checkoutInfo?.discountValid
                       ? handleRemoveDiscount()
                       : handleCheckDiscount();
                   }}
                   className={
-                    discountData?.discountCode
+                    checkoutInfo?.discountValid
                       ? "primary-outline-btn border-red-600 text-red-600 hover:bg-red-600 hover:text-white"
                       : "primary-btn"
                   }
                 >
-                  {discountData?.discountCode ? "Remove" : "Apply"}
+                  {checkoutInfo?.discountValid ? "Remove" : "Apply"}
                 </button>
               </div>
               <div className="flex justify-between">
                 <span>Grand Total</span>
-                <span className="font-bold">৳ {totalAmount}</span>
+                <span className="font-bold">
+                  ৳ {formatBDT(checkoutInfo?.grandTotal || 0)}
+                </span>
               </div>
               <button className="primary-btn w-full flex justify-center cursor-pointer bg-[#333333]">
                 Place Order

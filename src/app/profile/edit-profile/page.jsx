@@ -20,6 +20,7 @@ import useMoveAssetsUsersHooks from "@/hooks/UploadFiles/useMoveAssetsUsersHooks
 import GeneratedProfileImage from "@/components/Shared/GeneratedProfileImage";
 import LoadingAnimation from "@/libs/utils/LoadingAnimation";
 import { AuthContext } from "@/contexts/AuthProvider/AuthProvider";
+import LocationSelection from "./LocationSelection";
 
 const EditProfile = () => {
   const { user } = useContext(AuthContext);
@@ -74,37 +75,6 @@ const EditProfile = () => {
       type: "text",
       required: true,
       options: ["male", "female"],
-    },
-  ];
-
-  const additionalInfo = [
-    {
-      name: "state",
-      label: "State",
-      placeholder: "Enter your state",
-      type: "text",
-      required: false,
-    },
-    {
-      name: "city",
-      label: "City",
-      placeholder: "Enter your city",
-      type: "text",
-      required: false,
-    },
-    {
-      name: "area",
-      label: "Area",
-      placeholder: "Enter your area",
-      type: "text",
-      required: false,
-    },
-    {
-      name: "address",
-      label: "Address",
-      placeholder: "Enter your address",
-      type: "text",
-      required: false,
     },
   ];
 
@@ -173,6 +143,7 @@ const EditProfile = () => {
     handleSubmit,
     reset,
     formState: { errors },
+    setValue,
   } = useForm({
     defaultValues: {
       fname: "",
@@ -181,7 +152,7 @@ const EditProfile = () => {
       email: "",
       birthday: "",
       gender: "",
-      state: "",
+      division: "",
       city: "",
       area: "",
       address: "",
@@ -196,7 +167,7 @@ const EditProfile = () => {
         phone: userInfo?.customer?.phoneNumber,
         gender: userInfo?.customer?.gender || "",
         email: userInfo?.email || "",
-        state: userInfo?.customer?.shippingAddress[0]?.state || "",
+        division: userInfo?.customer?.shippingAddress[0]?.state || "",
         city: userInfo?.customer?.shippingAddress[0]?.city || "",
         area: userInfo?.customer?.shippingAddress[0]?.street || "",
         address: userInfo?.customer?.shippingAddress[0]?.street || "",
@@ -223,9 +194,9 @@ const EditProfile = () => {
       birthday: data.birthday,
       gender: selectedGender,
       shippingAddress: {
-        state: data.state,
+        division: data.division,
         city: data.city,
-        street: data.area,
+        area: data.area,
         address: data.address,
       },
     };
@@ -355,33 +326,13 @@ const EditProfile = () => {
           )}
         </div>
       </div>
-      <div className="flex justify-start w-full">
+      <div className="flex flex-col gap-5">
         <p className="font-semibold">Additional Info</p>
-      </div>
-      <div className="grid grid-cols-3 gap-y-5 gap-x-10">
-        {additionalInfo.map(({ label, type, name, required, placeholder }) => (
-          <label htmlFor={name}>
-            <p>
-              {label} {required && "*"}
-            </p>
-            <input
-              type={type}
-              {...register(name, {
-                required: {
-                  value: required,
-                  message: `${label} is required`,
-                },
-              })}
-              placeholder={placeholder}
-              className="input-box w-full bg-[#F2F2F2] border-[#E0E0E0]"
-            />
-            {errors[name] && (
-              <p className="text-red-500 text-xs mt-1 w-80">
-                {errors[name].message}
-              </p>
-            )}
-          </label>
-        ))}
+        <LocationSelection
+          register={register}
+          setValue={setValue}
+          userInfo={userInfo}
+        />
       </div>
     </form>
   );

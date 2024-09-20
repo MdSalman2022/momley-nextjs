@@ -36,7 +36,10 @@ const Header = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { isAuthModalOpen, setIsAuthModalOpen, user, logOut } =
     useContext(AuthContext);
-  const { cart, totalLevel, userInfo, storeInfo } = useContext(StateContext);
+  const { totalLevel, userInfo, storeInfo, cartInfo } =
+    useContext(StateContext);
+
+  console.log("cartInfo header", cartInfo);
 
   const { GetMenuByPosition } = useCategory();
 
@@ -177,7 +180,7 @@ const Header = () => {
               <Link href="/checkout" className="relative">
                 <Image src={CartIcon} alt="" />
                 <span className="absolute top-0 -right-1 w-4 h-4 text-xs rounded-full text-white bg-red-500 flex justify-center">
-                  {cart.length}
+                  {cartInfo?.length}
                 </span>
               </Link>
               {user ? (

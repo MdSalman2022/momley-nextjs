@@ -10,11 +10,20 @@ import {
 import Link from "next/link";
 import GeneratedProfileImage from "../GeneratedProfileImage";
 import { storeId } from "@/libs/utils/common";
+import { useAuth } from "@/contexts/AuthProvider/AuthProvider";
+import { useRouter } from "next/navigation";
 
 const DropdownMenus = ({ userInfo, user }) => {
+  const router = useRouter();
+  const {logOut} = useAuth();
   const isAdmin =
     userInfo?.role === "seller" ||
     (userInfo?.role === "staff" && userInfo?.store === storeId);
+
+    const handleLogOut = () => {
+      router.push("/");
+      logOut();
+    };
 
   return (
     <div className="flex gap-4 flex-1 justify-end items-center'">
@@ -63,7 +72,7 @@ const DropdownMenus = ({ userInfo, user }) => {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={() => logOut()}
+            onClick={() => handleLogOut()}
             className="cursor-pointer w-full"
           >
             Log Out

@@ -23,15 +23,13 @@ const BooksInHome = async () => {
   const { GetProductsByFeaturedCategory } = useCategory();
 
   const allProducts = await GetProducts();
-
   const newArrivalProducts = await GetNewArrivalProducts();
-
   const featuredCategoryProducts = await GetProductsByFeaturedCategory();
 
   console.log("allProducts", allProducts);
   console.log("featuredCategoryProducts", featuredCategoryProducts);
 
-  const Sections = [
+  const sections = [
     {
       title: "New Arrival",
       items:
@@ -99,28 +97,6 @@ const BooksInHome = async () => {
         ],
       };
     }),
-    // {
-    //   title: "Mom & Baby",
-    //   items:
-    //     allProducts?.products?.length > 0 &&
-    //     allProducts?.products?.slice(0, 10),
-    //   ads: [
-    //     {
-    //       image: NewLatestCollection,
-    //       firstLine: "New  arrivals",
-    //       secondLine: "NEW LATEST COLLECTION",
-    //       thirdLine: "All Special Products, Up To 45% Off",
-    //       TextColor: "#333333",
-    //     },
-    //     {
-    //       image: TrendingManCollection,
-    //       firstLine: "New  arrivals",
-    //       secondLine: "TENDING MAN’S COLLECTION",
-    //       thirdLine: "All Special Products, Up To 45% Off",
-    //       TextColor: "#ffffff",
-    //     },
-    //   ],
-    // },
     {
       title: "All Products",
       items:
@@ -147,16 +123,15 @@ const BooksInHome = async () => {
 
   return (
     <div className="flex flex-col gap-5 items-start">
-      {Sections.map((section, index) => {
-        return (
-          <ReusableItemsSection
-            title={section.title}
-            items={section.items}
-            ads={section.ads}
-            bottomAds={section.bottomAds}
-          />
-        );
-      })}
+      {sections.map((section, index) => (
+        <ReusableItemsSection
+          key={index}
+          title={section.title}
+          items={section.items}
+          ads={section.ads}
+          bottomAds={section.bottomAds}
+        />
+      ))}
     </div>
   );
 };

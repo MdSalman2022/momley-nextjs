@@ -7,25 +7,23 @@ import CartIcon from "../../../../../public/images/CartIcon.svg";
 import Image from "next/image";
 
 const HorizontalProductCard = ({ book }) => {
-  const { cart, setCart } = useContext(StateContext);
-
   const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
     let count = 0;
-    cart.forEach((item) => {
+    cartInfo.forEach((item) => {
       if (item._id === book._id) {
         count += item.quantity;
       }
     });
     setCartCount(count);
-  }, [cart]);
+  }, [cartInfo]);
 
   const handleAddToCart = () => {
-    const cartItem = cart.find((item) => item._id === book._id);
+    const cartItem = cartInfo.find((item) => item._id === book._id);
 
     if (cartItem) {
-      const updatedCart = cart.map((item) => {
+      const updatedCart = cartInfo.map((item) => {
         if (item._id === book._id) {
           const updatedItem = {
             ...item,
@@ -38,8 +36,7 @@ const HorizontalProductCard = ({ book }) => {
           return item;
         }
       });
-      setCart(updatedCart);
-      localStorage.setItem("cart", JSON.stringify(updatedCart));
+      localStorage.setItem("cartInfo", JSON.stringify(updatedCart));
       setCartCount(cartCount ? cartCount : cartItem.quantity + 1);
     } else {
       const newCartItem = {
@@ -47,8 +44,10 @@ const HorizontalProductCard = ({ book }) => {
         quantity: cartCount ? cartCount : 1,
         totalPrice: book.salePrice * (cartCount ? cartCount : 1),
       };
-      setCart([...cart, newCartItem]);
-      localStorage.setItem("cart", JSON.stringify([...cart, newCartItem]));
+      localStorage.setItem(
+        "cartInfo",
+        JSON.stringify([...cartInfo, newCartItem])
+      );
       setCartCount(cartCount ? cartCount : 1);
     }
   };
@@ -57,7 +56,7 @@ const HorizontalProductCard = ({ book }) => {
       return; // do not update cartCount if it's already 0
     }
 
-    const updatedCart = cart.map((item) => {
+    const updatedCart = cartInfo.map((item) => {
       if (item._id === book._id) {
         const newQuantity = item.quantity - 1;
         const newTotalPrice =
@@ -71,13 +70,12 @@ const HorizontalProductCard = ({ book }) => {
       return item;
     });
 
-    setCart(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    localStorage.setItem("cartInfo", JSON.stringify(updatedCart));
     setCartCount(cartCount - 1);
   };
 
   const handlePlusClick = () => {
-    const updatedCart = cart.map((item) => {
+    const updatedCart = cartInfo.map((item) => {
       if (item._id === book._id) {
         const newQuantity = item.quantity + 1;
         const newTotalPrice = item.salePrice * newQuantity;
@@ -90,8 +88,7 @@ const HorizontalProductCard = ({ book }) => {
       return item;
     });
 
-    setCart(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    localStorage.setItem("cartInfo", JSON.stringify(updatedCart));
     setCartCount(cartCount + 1);
   };
 

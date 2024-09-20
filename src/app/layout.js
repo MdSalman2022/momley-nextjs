@@ -1,9 +1,9 @@
-import { Inter } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import { storeId } from "@/libs/utils/common";
+import localFont from "next/font/local";
 
-const inter = Inter({ subsets: ["latin"] });
+const myFont = localFont({ src: "../../public/fonts/momley2.ttf" });
 
 export async function generateMetadata() {
   const res = await fetch(
@@ -73,7 +73,7 @@ export async function generateMetadata() {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} w-screen overflow-x-hidden`}>
+      <body className={`${myFont.className} w-screen overflow-x-hidden`}>
         <div>
           {" "}
           <Providers>

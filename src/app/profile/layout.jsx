@@ -56,7 +56,7 @@ const Layout = ({ children }) => {
   };
 
   return (
-    <div className="container mx-auto flex gap-6">
+    <div className="container mx-auto px-0 flex gap-6">
       <nav className="w-[15%] min-h-fit mt-4">
         <div className="flex flex-col gap-1 h-fit border p-3">
           {navigationLinks.map(({ href, label, icon, activeIcon }) => (

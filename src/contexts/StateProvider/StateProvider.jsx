@@ -6,6 +6,7 @@ import useProfile from "@/hooks/useProfile";
 import useStore from "@/hooks/useStore";
 import { storeId } from "@/libs/utils/common";
 import useCategory from "@/hooks/useCategory";
+import useCart from "@/hooks/useCart";
 
 export const StateContext = createContext();
 
@@ -13,6 +14,7 @@ const StateProvider = ({ children }) => {
   const { getProfile } = useProfile();
   const { getStore } = useStore();
   const { getAllCategoriesLevel } = useCategory();
+  const { getCart } = useCart();
 
   const { user } = useContext(AuthContext);
   const [page, setPage] = useState(1);
@@ -23,22 +25,6 @@ const StateProvider = ({ children }) => {
   const [writerName, setWriterName] = useState("");
 
   const uid = user?.uid;
-  const [cart, setCart] = useState([]);
-  const [cartLoaded, setCartLoaded] = useState(false);
-
-  useEffect(() => {
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
-      setCart(JSON.parse(savedCart));
-    }
-    setCartLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (cartLoaded) {
-      localStorage.setItem("cart", JSON.stringify(cart));
-    }
-  }, [cart]);
 
   const {
     data: storeInfo = {},
@@ -79,6 +65,17 @@ const StateProvider = ({ children }) => {
   });
 
   console.log("userInfo", userInfo);
+
+  const {
+    data: cartInfo = {},
+    isLoading: isCartInfoLoading,
+    refetch: refetchCartInfo,
+  } = useQuery({
+    queryKey: ["cartInfo", storeId, userInfo?._id],
+    queryFn: () => storeId && userInfo?._id && getCart(storeId, userInfo?._id),
+    cacheTime: 10 * (60 * 1000), // cache data for 10 minutes
+    staleTime: 5 * (60 * 1000), // consider data fresh for 5 minutes
+  });
 
   // console.log(page);
   // console.log(pageSize);
@@ -131,8 +128,6 @@ const StateProvider = ({ children }) => {
     isLoading,
     error,
     refetch,
-    cart,
-    setCart,
     setPageSize,
     setPage,
     page,
@@ -145,7 +140,9 @@ const StateProvider = ({ children }) => {
     setWriterName,
     categoriesLevel,
     totalLevel,
-    cartLoaded,
+    cartInfo,
+    isCartInfoLoading,
+    refetchCartInfo,
   };
 
   return (

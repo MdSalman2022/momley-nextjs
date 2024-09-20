@@ -108,7 +108,7 @@ const CreateOrderModal = ({ isOpen, setIsOpen }) => {
             ? data?.phone
             : undefined,
         shippingAddress: {
-          state:
+          division:
             selectedCustomer?.shippingAddress[0]?.state !== data?.state
               ? data?.state
               : undefined,
@@ -539,13 +539,13 @@ const CreateOrderModal = ({ isOpen, setIsOpen }) => {
             </div>
             <div className="grid grid-cols-2 gap-5">
               <div className="flex flex-col gap-1">
-                <label className="text-sm" htmlFor="state">
+                <label className="text-sm" htmlFor="division">
                   State
                 </label>
                 <input
                   className="input-box border-[#11111170]"
-                  id="state"
-                  {...register("state", { required: true })}
+                  id="division"
+                  {...register("division", { required: true })}
                   defaultValue={
                     selectedCustomer?.shippingAddress?.length > 0
                       ? selectedCustomer?.shippingAddress[0]?.state
