@@ -36,7 +36,7 @@ const Header = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { isAuthModalOpen, setIsAuthModalOpen, user, logOut } =
     useContext(AuthContext);
-  const { totalLevel, userInfo, storeInfo, cartInfo } =
+  const { totalLevel, userInfo, storeInfo, isStoreInfoLoading, cartInfo } =
     useContext(StateContext);
 
   console.log("cartInfo header", cartInfo);
@@ -146,18 +146,26 @@ const Header = () => {
             </ModalBox>
           )}
           <nav className="flex items-center justify-between w-full ">
-            <Link href="/" className="logo">
-              <Image
-                src={storeInfo?.cloudFrontURL?.replace(
-                  "*",
-                  `${storeInfo?.preferences?.logoOptions?.mainLogo}`
-                )}
-                className="object-contain w-[234px] h-[51px] cursor-pointer"
-                alt="momley"
-                width={234}
-                height={51}
-              />
-            </Link>
+            {isStoreInfoLoading ? (
+              <div className="flex items-center gap-3">
+                {/* animate circle */}
+                <div className="w-[200px] h-[38px] bg-gray-300 animate-pulse rounded"></div>
+              </div>
+            ) : (
+              <Link href="/" className="logo">
+                <Image
+                  src={storeInfo?.cloudFrontURL?.replace(
+                    "*",
+                    `${storeInfo?.preferences?.logoOptions?.mainLogo}`
+                  )}
+                  className="object-contain w-[234px] h-[51px] cursor-pointer"
+                  alt={storeInfo?.storeName || "store"}
+                  width={234}
+                  height={51}
+                />
+              </Link>
+            )}
+
             <div className="flex items-center gap-3 relative">
               <input
                 type="text"
@@ -187,11 +195,9 @@ const Header = () => {
               </div>
               <Link href="/checkout" className="relative">
                 <Image src={CartIcon} alt="" />
-                {cartInfo?.length > 0 && (
-                  <span className="absolute top-0 -right-1 w-4 h-4 text-xs rounded-full text-white bg-red-500 flex justify-center">
-                    {cartInfo?.length}
-                  </span>
-                )}
+                <span className="absolute top-0 -right-1 w-4 h-4 text-xs rounded-full text-white bg-red-500 flex justify-center">
+                  {cartInfo?.length || 0}
+                </span>
               </Link>
               {user ? (
                 <DropdownMenus userInfo={userInfo} user={user} />

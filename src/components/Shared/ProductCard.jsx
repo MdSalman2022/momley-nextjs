@@ -111,6 +111,7 @@ const ProductCard = React.memo(({ book }) => {
               "*",
               `products/${book?.images[0]}`
             )}
+            alt={book?.name}
             width={164}
             height={217}
           />
@@ -135,7 +136,7 @@ const ProductCard = React.memo(({ book }) => {
           onClick={handleAddToCart}
           className="primary-outline-btn w-full flex justify-center gap-2 cursor-pointer"
         >
-          <Image src={CartIcon} alt="" className="w-5 h-5" />
+          <Image src={CartIcon} alt="cart" className="w-5 h-5" />
           Add to cart
         </div>
       )}

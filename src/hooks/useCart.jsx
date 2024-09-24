@@ -1,5 +1,20 @@
 const useCart = () => {
-  const getCart = async (id, userId) => {
+  const getAbandonedCart = async (storeId) => {
+    const response = await fetch(
+      `${process.env.VITE_SERVER_URL}/cart/get-abandoned-cart?storeId=${storeId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const profile = await response.json();
+
+    return profile?.data;
+  };
+
+  const getCart = async (id, userId) => { 
     const response = await fetch(
       `${process.env.VITE_SERVER_URL}/cart/get?storeId=${id}&userId=${userId}`,
       {
@@ -11,7 +26,7 @@ const useCart = () => {
     );
     const profile = await response.json();
 
-    return profile?.data;
+    return profile?.data || []; 
   };
   const getCartCheckout = async (
     storeId,
@@ -73,7 +88,7 @@ const useCart = () => {
     return data;
   };
 
-  return { getCart, getCartCheckout, AddToCart, EmptyCart };
+  return { getAbandonedCart, getCart, getCartCheckout, AddToCart, EmptyCart };
 };
 
 export default useCart;

@@ -10,8 +10,27 @@ import {
 } from "@/components/ui/select";
 import { DataTable } from "@/app/profile/orders/data-table";
 import { Checkbox } from "@/components/ui/checkbox";
+import useCart from "@/hooks/useCart";
+import { storeId } from "@/libs/utils/common";
+import { useQuery } from "react-query";
+import LoadingAnimation from "@/libs/utils/LoadingAnimation";
 
 const AbandonedOrders = () => {
+  const { getAbandonedCart } = useCart();
+
+  const {
+    data: allAbandonedCart = {},
+    isLoading: isAbandonedCartLoading,
+    refetch: refetchAbandonedCart,
+  } = useQuery({
+    queryKey: ["allAbandonedCart", storeId],
+    queryFn: () => storeId && getAbandonedCart(storeId),
+    cacheTime: 10 * (60 * 1000),
+    staleTime: 5 * (60 * 1000),
+  });
+
+  console.log("allAbandonedCart", allAbandonedCart);
+
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -63,9 +82,9 @@ const AbandonedOrders = () => {
       accessorKey: "id", // Assuming each row has a unique 'id' field
     },
     {
-      id: "orderId",
-      header: "Order Id",
-      accessorKey: "orderId",
+      id: "id",
+      header: "Id",
+      accessorKey: "id",
     },
     {
       id: "date",
@@ -83,9 +102,9 @@ const AbandonedOrders = () => {
       accessorKey: "emailStatus",
     },
     {
-      id: "recoveryStatus",
-      header: "RecoveryStatus",
-      accessorKey: "recoveryStatus",
+      id: "products",
+      header: "Products",
+      accessorKey: "products",
     },
     {
       id: "totalPrice",
@@ -94,26 +113,37 @@ const AbandonedOrders = () => {
     },
   ];
 
-  const data = [
-    {
-      id: "1",
-      orderId: "123",
-      date: "2023-04-01",
-      placedBy: "John Doe",
-      emailStatus: "Sent",
-      recoveryStatus: "Recovery",
-      totalPrice: 100,
-    },
-    {
-      id: "2",
-      orderId: "456",
-      date: "2023-04-02",
-      placedBy: "Rasel",
-      emailStatus: "Not Sent",
-      recoveryStatus: "Not Recovery",
-      totalPrice: 200,
-    },
-  ];
+  const data =
+    allAbandonedCart?.length > 0
+      ? allAbandonedCart?.map((cart) => {
+          const id = cart._id;
+          const date = new Date(cart.updatedAt).toISOString().split("T")[0]; // Format date as YYYY-MM-DD
+          const placedBy = `${cart.customerInfo.firstName} ${cart.customerInfo.lastName}`;
+          const emailStatus = "Unknown"; // Replace with actual logic to determine email status if available
+          const products = (
+            <div className="flex flex-col text-xs">
+              {cart.items.map((item) => item.product.name).join(", ")}
+            </div>
+          );
+          const totalPrice = cart.items.reduce(
+            (total, item) => total + item.price,
+            0
+          );
+
+          return {
+            id,
+            date,
+            placedBy,
+            emailStatus,
+            products,
+            totalPrice,
+          };
+        })
+      : [];
+
+  if (isAbandonedCartLoading) {
+    return <LoadingAnimation />;
+  }
 
   return (
     <div className="flex flex-col gap-5">

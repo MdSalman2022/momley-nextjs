@@ -204,7 +204,7 @@ const MyOrders = () => {
         </button>
       </div>
       <div className="flex flex-col gap-3">
-        <p>02 Orders</p>
+        <p>{data?.length || 0} Orders</p>
         <DataTable
           columns={columns}
           data={data}

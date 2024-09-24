@@ -62,6 +62,7 @@ const StateProvider = ({ children }) => {
     queryFn: () => uid && getProfile(uid),
     cacheTime: 2 * (60 * 1000), // cache data for 10 minutes
     staleTime: 1 * (60 * 1000), // consider data fresh for 5 minutes
+    enabled: !!uid,
   });
 
   console.log("userInfo", userInfo);
@@ -72,9 +73,15 @@ const StateProvider = ({ children }) => {
     refetch: refetchCartInfo,
   } = useQuery({
     queryKey: ["cartInfo", storeId, userInfo?._id],
-    queryFn: () => storeId && userInfo?._id && getCart(storeId, userInfo?._id),
+    queryFn: () => {
+      if (storeId && userInfo?._id) {
+        return getCart(storeId, userInfo?._id);
+      }
+      return Promise.resolve({}); // Return a default value if conditions are not met
+    },
     cacheTime: 10 * (60 * 1000), // cache data for 10 minutes
     staleTime: 5 * (60 * 1000), // consider data fresh for 5 minutes
+    enabled: !!storeId && !!userInfo?._id, // Only enable the query if conditions are met
   });
 
   // console.log(page);
@@ -120,6 +127,7 @@ const StateProvider = ({ children }) => {
 
   const stateInfo = {
     storeInfo,
+    isStoreInfoLoading,
     storeId,
     userInfo,
     isUserInfoLoading,

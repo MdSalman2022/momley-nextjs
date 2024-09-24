@@ -80,7 +80,24 @@ const DashboardSidebar = () => {
   const [activeSubLink, setActiveSubLink] = useState(null);
 
   if (isPagesLoading) {
-    return <LoadingAnimation />;
+    return (
+      <div className="flex flex-col gap-1 p-3">
+        <div className="flex h-[52px] w-full bg-gray-300 animate-pulse rounded"></div>
+        <div className="flex h-[52px] w-full bg-gray-300 animate-pulse rounded"></div>
+        <div className="flex h-[52px] w-full bg-gray-300 animate-pulse rounded"></div>
+        <div className="flex h-[52px] w-full bg-gray-300 animate-pulse rounded"></div>
+        <div className="flex h-[52px] w-full bg-gray-300 animate-pulse rounded"></div>
+        <div className="flex h-[52px] w-full bg-gray-300 animate-pulse rounded"></div>
+        <div className="flex h-[52px] w-full bg-gray-300 animate-pulse rounded"></div>
+        <div className="flex h-[52px] w-full bg-gray-300 animate-pulse rounded"></div>
+        <div className="flex h-[52px] w-full bg-gray-300 animate-pulse rounded"></div>
+        <div className="flex h-[52px] w-full bg-gray-300 animate-pulse rounded"></div>
+        <div className="flex h-[52px] w-full bg-gray-300 animate-pulse rounded"></div>
+        <div className="flex h-[52px] w-full bg-gray-300 animate-pulse rounded"></div>
+        <div className="flex h-[52px] w-full bg-gray-300 animate-pulse rounded"></div>
+        <div className="flex h-[52px] w-full bg-gray-300 animate-pulse rounded"></div>
+      </div>
+    );
   }
 
   return (
