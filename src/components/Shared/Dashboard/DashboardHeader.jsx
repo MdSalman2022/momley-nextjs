@@ -43,7 +43,7 @@ const DashboardHeader = () => {
 
         <div className="flex items-center gap-5">
           <div className="flex flex-col">
-            <p className="leading-6 font-semibold">{user?.displayName}</p>
+            <p className="leading-6 font-semibold">{userInfo?.userName}</p>
             <p>Admin</p>
           </div>
           {user && <DropdownMenus user={user} userInfo={userInfo} />}

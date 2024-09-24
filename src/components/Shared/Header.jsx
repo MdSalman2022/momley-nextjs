@@ -16,7 +16,7 @@ import { usePathname, useRouter } from "next/navigation";
 import GeneratedProfileImage from "./GeneratedProfileImage";
 import useCategory from "@/hooks/useCategory";
 import { useQuery } from "react-query";
-import { storeId } from "@/libs/utils/common";
+import { formatBDT, storeId } from "@/libs/utils/common";
 import Menus from "./Menus";
 import { IoReorderThree } from "react-icons/io5";
 import logo from "../../../public/images/logo.png";
@@ -117,6 +117,14 @@ const Header = () => {
     }
   };
 
+  console.log("cartInfo", cartInfo);
+  const totalCartPrice = Array.isArray(cartInfo)
+    ? cartInfo.reduce(
+        (acc, item) => acc + (item?.salePrice || 0) * (item?.quantity || 0),
+        0
+      )
+    : 0;
+
   return (
     <div className="fixed top-0 w-full z-50 bg-white">
       <div
@@ -175,13 +183,15 @@ const Header = () => {
                 </div>
               </div>
               <div className="flex flex-col px-5">
-                Bag <span>৳ 0.00</span>
+                Bag <span>৳ {formatBDT(totalCartPrice)}</span>
               </div>
               <Link href="/checkout" className="relative">
                 <Image src={CartIcon} alt="" />
-                <span className="absolute top-0 -right-1 w-4 h-4 text-xs rounded-full text-white bg-red-500 flex justify-center">
-                  {cartInfo?.length}
-                </span>
+                {cartInfo?.length > 0 && (
+                  <span className="absolute top-0 -right-1 w-4 h-4 text-xs rounded-full text-white bg-red-500 flex justify-center">
+                    {cartInfo?.length}
+                  </span>
+                )}
               </Link>
               {user ? (
                 <DropdownMenus userInfo={userInfo} user={user} />

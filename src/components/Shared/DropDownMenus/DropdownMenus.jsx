@@ -15,15 +15,15 @@ import { useRouter } from "next/navigation";
 
 const DropdownMenus = ({ userInfo, user }) => {
   const router = useRouter();
-  const {logOut} = useAuth();
+  const { logOut } = useAuth();
   const isAdmin =
     userInfo?.role === "seller" ||
-    (userInfo?.role === "staff" && userInfo?.store === storeId);
+    (userInfo?.role === "staff" && userInfo?.storeId === storeId);
 
-    const handleLogOut = () => {
-      router.push("/");
-      logOut();
-    };
+  const handleLogOut = () => {
+    router.push("/");
+    logOut();
+  };
 
   return (
     <div className="flex gap-4 flex-1 justify-end items-center'">
@@ -40,7 +40,7 @@ const DropdownMenus = ({ userInfo, user }) => {
             />
           ) : (
             <GeneratedProfileImage
-              name={user?.displayName || "user"}
+              name={userInfo?.userName || "user"}
               size={40}
             />
           )}
