@@ -11,6 +11,7 @@ import { GoPeople } from "react-icons/go";
 import { IoSettingsOutline } from "react-icons/io5";
 import {
   MdOutlineInventory,
+  MdOutlineLocalShipping,
   MdOutlineRoomPreferences,
   MdPayments,
 } from "react-icons/md";
@@ -41,6 +42,7 @@ const iconMapping = {
   FaChevronDown,
   RiDashboardLine,
   MdPayments,
+  MdOutlineLocalShipping,
 };
 
 const DashboardSidebar = () => {

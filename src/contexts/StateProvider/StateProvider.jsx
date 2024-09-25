@@ -128,6 +128,7 @@ const StateProvider = ({ children }) => {
   const stateInfo = {
     storeInfo,
     isStoreInfoLoading,
+    refetchStoreInfo,
     storeId,
     userInfo,
     isUserInfoLoading,
