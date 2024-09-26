@@ -26,9 +26,44 @@ import { GiBlackBook } from "react-icons/gi";
 import Link from "next/link";
 import ProductShare from "./ProductShare";
 
-export async function generateMetadata() {
+const stripHtmlTags = (html) => {
+  return html.replace(/<\/?[^>]+(>|$)/g, "");
+};
+
+export async function generateMetadata({ params }) {
+  const productId = params.productId;
+  const { GetProductsById } = useProduct();
+  const productDetails = await GetProductsById(productId);
+  const bookDetails = productDetails?.data?.product;
+
+  const cloudFrontURL = productDetails?.data?.cloudFrontURL;
+  const description = stripHtmlTags(
+    bookDetails?.description || "Product description"
+  );
+
+  console.log("description", description);
+
   return {
-    title: `Product`,
+    title: bookDetails?.name || "Product",
+    description: description || "Product description",
+    openGraph: {
+      title: bookDetails?.name || "Product",
+      description: description || "Product description",
+      images: bookDetails?.images?.map((image) => ({
+        url: cloudFrontURL.replace("*", `products/${image}`),
+        width: 800,
+        height: 600,
+        alt: bookDetails?.name,
+      })),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: bookDetails?.name || "Product",
+      description: description || "Product description",
+      image: bookDetails?.images?.length
+        ? cloudFrontURL.replace("*", `products/${bookDetails.images[0]}`)
+        : undefined,
+    },
   };
 }
 
