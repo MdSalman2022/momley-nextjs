@@ -67,10 +67,12 @@ const ProductDescription = ({ bookDetails }) => {
                     {Object.entries(bookDetails.specifications).map(
                       ([label, value]) => (
                         <tr key={label} className="border-b">
-                          <td className="px-4 py-2 bg-gray-100 border-r">
-                            {label}
+                          <td className="px-4 py-2 bg-gray-100 border-r capitalize">
+                            {label === "bookLength" ? "Length" : label}
                           </td>
-                          <td className="px-4 py-2">{value}</td>
+                          <td className="px-4 py-2">
+                            {label === "bookLength" ? `${value} pages` : value}
+                          </td>
                         </tr>
                       )
                     )}

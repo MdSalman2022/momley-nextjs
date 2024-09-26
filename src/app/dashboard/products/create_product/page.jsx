@@ -179,10 +179,10 @@ const CreateProductModal = () => {
       return;
     }
 
-    if (specifications?.length === 0) {
+    /*    if (specifications?.length === 0) {
       toast.error("Please add specifications");
       return;
-    }
+    } */
 
     // Handle form submission with validated data
     console.log("data", data);
@@ -305,11 +305,6 @@ const CreateProductModal = () => {
                   onChange={handleDescriptionChange}
                   placeholder="e.g. This is a product description"
                 />
-                {/* <textarea
-                  className="input-box border-[#11111170] h-20 py-1"
-                  {...register("description", { required: true })}
-                  placeholder="e.g. This is a product description"
-                /> */}
                 {errors.description && (
                   <span className="text-xs text-red-600">
                     This field is required
@@ -498,9 +493,6 @@ const CreateProductModal = () => {
                     ? selectedSubCategory?.name
                     : "Select Category"}
                 </span>
-                {/* {!selectedSubCategory?.id && (
-            <span className="text-xs text-red-600">This field is required</span>
-          )} */}
               </div>
 
               <div className="flex flex-col">
@@ -531,18 +523,66 @@ const CreateProductModal = () => {
                   </span>
                 )}
               </div>
-              {/* <div className="flex flex-col">
-                <label className="text-sm" htmlFor="tags">
-                  Tags
-                </label>
-                <input
-                  type="text"
-                  className="input-box"
-                  {...register("tags", { required: false })}
-                />
-              </div> */}
               <TagsInput tags={tags} setTags={setTags} />
             </div>
+            {selectedSubCategory?.name == "Book" && (
+              <div className="flex flex-col gap-3 border rounded-lg pt-3 pb-5 px-4">
+                <label className="text-sm tracking-wide font-medium text-slate-400">
+                  BOOK SPECIFICATION
+                </label>
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm" htmlFor={`specifications.author`}>
+                    Author
+                  </label>
+                  <input
+                    className="input-box border-[#11111170]"
+                    id={`specifications.author`}
+                    {...register(`specifications.author`, {
+                      required: true,
+                    })}
+                  />
+                  {errors.specifications?.author && (
+                    <span className="text-xs text-red-600">
+                      This field is required
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm" htmlFor={`specifications.author`}>
+                    Edition
+                  </label>
+                  <input
+                    className="input-box border-[#11111170]"
+                    id={`specifications.edition`}
+                    {...register(`specifications.edition`, {
+                      required: false,
+                    })}
+                  />
+                  {errors.specifications?.edition && (
+                    <span className="text-xs text-red-600">
+                      This field is required
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm" htmlFor={`specifications.author`}>
+                    Book Length
+                  </label>
+                  <input
+                    className="input-box border-[#11111170]"
+                    id={`specifications.bookLength`}
+                    {...register(`specifications.bookLength`, {
+                      required: false,
+                    })}
+                  />
+                  {errors.specifications?.bookLength && (
+                    <span className="text-xs text-red-600">
+                      This field is required
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
             <div className="flex flex-col gap-3 border rounded-lg pt-3 pb-5 px-4">
               <label className="text-sm tracking-wide font-medium text-slate-400">
                 SPECIFICATION

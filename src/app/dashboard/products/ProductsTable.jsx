@@ -24,6 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const ProductsTable = ({ allProducts, isProductLoading }) => {
   const router = useRouter();
@@ -168,7 +169,14 @@ const ProductsTable = ({ allProducts, isProductLoading }) => {
     allProducts?.length > 0
       ? allProducts?.map((product, index) => ({
           id: product?._id,
-          name: product?.name,
+          name: (
+            <Link
+              href={`/product/${product?.slug}`}
+              className="transition-all duration-300 hover:text-blue-700"
+            >
+              {product?.name}
+            </Link>
+          ),
           slug: product?.slug,
           price: product?.salePrice || product?.price,
           stock: product?.stock?.quantity,

@@ -15,6 +15,11 @@ import BreadcrumbComponent, {
   BreadCrumbComponent,
 } from "./BreadCrumbComponent";
 import ImageSection from "./ImageSection";
+import { MdLibraryBooks, MdOutlineContentCopy } from "react-icons/md";
+import { BiEdit } from "react-icons/bi";
+import { GiBlackBook } from "react-icons/gi";
+import Link from "next/link";
+import ProductShare from "./ProductShare";
 
 export async function generateMetadata() {
   return {
@@ -67,12 +72,12 @@ const BookDetails = async ({ params }) => {
 
   console.log("items", items);
 
-  console.log("bookDetails?.images", bookDetails?.images);
+  console.log("bookDetails?.category", bookDetails?.category);
 
   return (
     <div className="bg-white">
-      <div className="container mx-auto text-black">
-        <p className="py-5">
+      <div className="container mx-auto px-0 text-black">
+        <p className="pb-5">
           {items?.length > 0 && <BreadCrumbComponent items={items} />}
         </p>
         <div className="grid grid-cols-4">
@@ -84,23 +89,85 @@ const BookDetails = async ({ params }) => {
                   cloudFrontURL={cloudFrontURL}
                 />
               </div>
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col">
-                  <h2 className="text-2xl">{bookDetails?.name}</h2>
-                  <div className="text-4xl text-red-500 font-bold">
-                    Tk {bookDetails?.salePrice || bookDetails?.price}
+              <div className="flex flex-col justify-between gap-4">
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col">
+                    <div className="flex flex-col gap-3">
+                      <h2 className="text-2xl">{bookDetails?.name}</h2>
+                      {bookDetails.specifications?.author && (
+                        <p>By {bookDetails.specifications?.author}</p>
+                      )}
+                      {bookDetails.specifications?.author && (
+                        <p>
+                          Category:{" "}
+                          <Link
+                            href={`/category/${bookDetails?.category?.slug}`}
+                            className="text-blue-600"
+                          >
+                            {bookDetails?.category?.name}
+                          </Link>
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex flex-col gap-3">
+                      <div className="text-4xl text-red-500 font-bold">
+                        Tk {bookDetails?.salePrice || bookDetails?.price}
+                      </div>
+                      <div className="flex gap-1 items-center text-sm">
+                        <span>
+                          {bookDetails?.stock?.quantity > 0 && "In Stock"}{" "}
+                        </span>
+                        <span className="text-[#dc3545]">
+                          {bookDetails?.stock?.quantity < 20 &&
+                            `(Only ${bookDetails?.stock?.quantity} left)`}
+                        </span>
+                      </div>
+                      <p className="text-sm">
+                        {" "}
+                        {bookDetails?.stock?.quantity < 20 &&
+                          "* স্টক আউট হওয়ার আগেই অর্ডার করুন"}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <div className="primary-btn w-fit">
+                  {/* <div className="primary-btn w-fit">
                   Offer Ends in: 2 days 09:20:30
+                </div> */}
                 </div>
-                <BookCartControl bookDetails={bookDetails} />
-                <p className="flex items-center gap-5">
-                  Share:
-                  <FaFacebookF className="bg-blue-500 p-1 text-3xl rounded-full text-white" />
-                  <FaTwitter className="bg-sky-500 p-1 text-3xl rounded-full text-white" />
-                  <FaInstagram className="bg-pink-500 p-1 text-3xl rounded-full text-white" />
-                </p>
+                <div className="flex flex-col gap-4">
+                  <BookCartControl bookDetails={bookDetails} />
+                  <div className="flex items-center gap-5">
+                    <span className="flex flex-col items-center gap-1">
+                      <p className="text-xs">Book Length</p>
+                      <MdOutlineContentCopy className="text-3xl" />
+                      <p className="text-xs">
+                        {bookDetails?.specifications?.bookLength} Pages
+                      </p>
+                    </span>
+                    <span className="flex flex-col gap-1">
+                      <p className="text-xs">Edition</p>
+                      <BiEdit className="text-3xl" />
+                      <p className="text-xs">
+                        {bookDetails?.specifications?.edition}
+                      </p>
+                    </span>
+                    {bookDetails?.specifications?.publication && (
+                      <span className="flex flex-col gap-1">
+                        <p className="text-xs">Book Length</p>
+                        <GiBlackBook className="text-3xl" />
+                        <p className="text-xs">
+                          {bookDetails?.specifications?.publication}
+                        </p>
+                      </span>
+                    )}
+                  </div>
+                  {/*   <div className="flex items-center gap-5">
+                    Share:
+                    <FaFacebookF className="bg-blue-500 p-1 text-3xl rounded-full text-white" />
+                    <FaTwitter className="bg-sky-500 p-1 text-3xl rounded-full text-white" />
+                    <FaInstagram className="bg-pink-500 p-1 text-3xl rounded-full text-white" />
+                  </div> */}
+                  <ProductShare />
+                </div>
               </div>
             </div>
             <div className="flex col-span-2 items-start h-fit">
@@ -109,7 +176,7 @@ const BookDetails = async ({ params }) => {
           </div>
           <div className="col-span-1 flex flex-col gap-5">
             <SecurityCard />
-            <ReviewCard  bookDetails={bookDetails} />
+            <ReviewCard bookDetails={bookDetails} />
             <RecommendedBooks productId={productId} />
           </div>
           <div className="col-span-4">
