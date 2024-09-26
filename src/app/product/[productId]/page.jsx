@@ -1,5 +1,10 @@
 import React from "react";
-import { FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa";
+import {
+  FaCheckCircle,
+  FaFacebookF,
+  FaInstagram,
+  FaTwitter,
+} from "react-icons/fa";
 import BookCartControl from "./BookCartControl";
 import RelatedBooks from "./RelatedBooks";
 import RecommendedBooks from "./RecommendedBooks";
@@ -114,17 +119,20 @@ const BookDetails = async ({ params }) => {
                         Tk {bookDetails?.salePrice || bookDetails?.price}
                       </div>
                       <div className="flex gap-1 items-center text-sm">
-                        <span>
+                        <span className="flex items-center gap-2">
+                          {bookDetails?.stock?.quantity > 0 && (
+                            <FaCheckCircle className="text-green-600" />
+                          )}
                           {bookDetails?.stock?.quantity > 0 && "In Stock"}{" "}
                         </span>
                         <span className="text-[#dc3545]">
-                          {bookDetails?.stock?.quantity < 20 &&
+                          {bookDetails?.stock?.quantity < 10 &&
                             `(Only ${bookDetails?.stock?.quantity} left)`}
                         </span>
                       </div>
                       <p className="text-sm">
                         {" "}
-                        {bookDetails?.stock?.quantity < 20 &&
+                        {bookDetails?.stock?.quantity < 10 &&
                           "* স্টক আউট হওয়ার আগেই অর্ডার করুন"}
                       </p>
                     </div>
@@ -136,20 +144,24 @@ const BookDetails = async ({ params }) => {
                 <div className="flex flex-col gap-4">
                   <BookCartControl bookDetails={bookDetails} />
                   <div className="flex items-center gap-5">
-                    <span className="flex flex-col items-center gap-1">
-                      <p className="text-xs">Book Length</p>
-                      <MdOutlineContentCopy className="text-3xl" />
-                      <p className="text-xs">
-                        {bookDetails?.specifications?.bookLength} Pages
-                      </p>
-                    </span>
-                    <span className="flex flex-col gap-1">
-                      <p className="text-xs">Edition</p>
-                      <BiEdit className="text-3xl" />
-                      <p className="text-xs">
-                        {bookDetails?.specifications?.edition}
-                      </p>
-                    </span>
+                    {bookDetails?.specifications?.bookLength && (
+                      <span className="flex flex-col items-center gap-1">
+                        <p className="text-xs">Book Length</p>
+                        <MdOutlineContentCopy className="text-3xl" />
+                        <p className="text-xs">
+                          {bookDetails?.specifications?.bookLength} Pages
+                        </p>
+                      </span>
+                    )}
+                    {bookDetails?.specifications?.edition && (
+                      <span className="flex flex-col gap-1">
+                        <p className="text-xs">Edition</p>
+                        <BiEdit className="text-3xl" />
+                        <p className="text-xs">
+                          {bookDetails?.specifications?.edition}
+                        </p>
+                      </span>
+                    )}
                     {bookDetails?.specifications?.publication && (
                       <span className="flex flex-col gap-1">
                         <p className="text-xs">Book Length</p>

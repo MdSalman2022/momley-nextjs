@@ -1,12 +1,18 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaFacebookF, FaTwitter, FaInstagram } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 
 const ProductShare = () => {
+  const [currentUrl, setCurrentUrl] = useState("");
+
+  useEffect(() => {
+    setCurrentUrl(window.location.href);
+  }, []);
+
   const handleShare = (url) => {
     window.open(url, "_blank");
   };
-  const currentUrl = window.location.href;
 
   const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
     currentUrl
@@ -25,8 +31,8 @@ const ProductShare = () => {
         className="bg-blue-500 p-1 text-3xl rounded-full text-white cursor-pointer"
         onClick={() => handleShare(facebookShareUrl)}
       />
-      <FaTwitter
-        className="bg-sky-500 p-1 text-3xl rounded-full text-white cursor-pointer"
+      <FaXTwitter
+        className="bg-black p-1 text-3xl rounded-full text-white cursor-pointer"
         onClick={() => handleShare(twitterShareUrl)}
       />
       <FaInstagram
