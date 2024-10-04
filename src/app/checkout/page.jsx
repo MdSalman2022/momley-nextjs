@@ -251,7 +251,7 @@ const CheckoutPage = () => {
       setDeliveryLocation(customerInfo?.city);
       setDeliveryMethod("homeDelivery");
     }
-  }, [userInfo]);
+  }, [userInfo, customerInfo]);
 
   const products = Array.isArray(cartInfo)
     ? cartInfo.map(({ productId, quantity }) => ({
@@ -603,6 +603,8 @@ const CheckoutPage = () => {
       <AddDeliveryAddressModal
         isOpen={isAddDeliveryAddressModalOpen}
         setIsOpen={setIsAddDeliveryAddressModalOpen}
+        setCustomerInfo={setCustomerInfo}
+        customerInfo={customerInfo}
       />
       <div className="container mx-auto my-5 min-h-screen">
         <form
@@ -615,7 +617,11 @@ const CheckoutPage = () => {
               <div className="flex flex-col gap-5">
                 <div
                   onClick={() => handleChangeDeliveryLocation("homeDelivery")}
-                  className="flex items-center px-0 bg-gray-100 w-full h-24 relative cursor-pointer"
+                  className={`flex items-center px-0 bg-gray-100 border  w-full h-24 relative cursor-pointer  ${
+                    errors?.deliveryAddress
+                      ? "border-red-500"
+                      : "border-gray-100"
+                  }`}
                 >
                   {userInfo?._id &&
                     userInfo?.customer?.shippingAddress[0]?.division && (
@@ -638,7 +644,7 @@ const CheckoutPage = () => {
                       </button>
                     )}
                   <div className="flex items-center justify-between w-full px-3">
-                    <div className="flex">
+                    <div className={`flex`}>
                       {userInfo?._id &&
                       userInfo?.customer?.shippingAddress[0]?.division ? (
                         <div className="flex flex-col items-center">
@@ -698,18 +704,35 @@ const CheckoutPage = () => {
                           </div>
                         </div>
                       ) : (
-                        <div className="flex flex-col w-full py-10 items-center px-3">
+                        <div
+                          className={`flex flex-col w-full py-10 items-center px-3`}
+                        >
                           <div
-                            // href="/profile/edit-profile"
-                            onClick={() =>
-                              setIsAddDeliveryAddressModalOpen(true)
-                            }
+                            onClick={() => {
+                              userInfo?._id
+                                ? router.push("/profile/edit-profile")
+                                : setIsAddDeliveryAddressModalOpen(true);
+                            }}
                             className="flex gap-3 items-center justify-center w-fit cursor-pointer"
                           >
                             <span className="text-xl text-black">
                               <FiPlus />
                             </span>
-                            <span>Add Delivery Address</span>
+                            <div className="flex flex-col">
+                              <input
+                                className="hidden"
+                                {...register("deliveryAddress", {
+                                  required: true,
+                                })}
+                                value={
+                                  userInfo?.customer?.shippingAddress[0]
+                                    ?.city || customerInfo?.city
+                                }
+                                placeholder="Delivery Address"
+                              />
+                              <p>Home Delivery</p>
+                              <span>Add Delivery Address</span>
+                            </div>
                           </div>
                         </div>
                       )}

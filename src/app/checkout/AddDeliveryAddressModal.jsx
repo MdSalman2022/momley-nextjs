@@ -5,7 +5,12 @@ import { useForm } from "react-hook-form";
 import { StateContext } from "@/contexts/StateProvider/StateProvider";
 import { setCookie } from "@/libs/utils/cookieUtils";
 
-const AddDeliveryAddressModal = ({ isOpen, setIsOpen }) => {
+const AddDeliveryAddressModal = ({
+  isOpen,
+  setIsOpen,
+  setCustomerInfo,
+  customerInfo,
+}) => {
   const { userInfo } = useContext(StateContext);
   const {
     register,
@@ -15,12 +20,12 @@ const AddDeliveryAddressModal = ({ isOpen, setIsOpen }) => {
     setValue,
   } = useForm({
     defaultValues: {
-      fname: "",
-      phone: "",
-      division: "",
-      city: "",
-      area: "",
-      address: "",
+      fname: customerInfo?.fname || "",
+      phone: customerInfo?.phone || "",
+      division: customerInfo?.division || "",
+      city: customerInfo?.city || "",
+      area: customerInfo?.area || "",
+      address: customerInfo?.address || "",
     },
   });
 
@@ -33,6 +38,7 @@ const AddDeliveryAddressModal = ({ isOpen, setIsOpen }) => {
     // Log a success message or show a toast if needed
     console.log("Form data saved in cookies:", data);
     setIsOpen(false);
+    setCustomerInfo(data);
   };
 
   return (
