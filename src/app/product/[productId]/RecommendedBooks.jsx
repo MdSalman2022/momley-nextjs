@@ -5,6 +5,7 @@ import React, { useContext } from "react";
 
 export default function RecommendedBooks({ bookId }) {
   const { allBooks } = useContext(StateContext);
+  console.log("allBooks", allBooks);
   const relatedBooks = allBooks.filter((book) => book._id !== bookId);
   console.log("relatedBooks", relatedBooks);
   return (

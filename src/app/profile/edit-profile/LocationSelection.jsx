@@ -121,13 +121,13 @@ const LocationSelection = ({ register, setValue, userInfo }) => {
           </SelectContent>
         </Select>
       </label>
-      <label htmlFor="address">
+      <label htmlFor="address" className="w-full col-span-3">
         <p>Address</p>
-        <input
+        <textarea
           type="text"
           {...register("address")}
           placeholder="Enter your address"
-          className="input-box w-full bg-[#F2F2F2] border-[#E0E0E0]"
+          className="input-box w-full h-20 bg-[#F2F2F2] border-[#E0E0E0] pl-1 pt-1"
         />
       </label>
     </div>

@@ -7,6 +7,7 @@ import useStore from "@/hooks/useStore";
 import { storeId } from "@/libs/utils/common";
 import useCategory from "@/hooks/useCategory";
 import useCart from "@/hooks/useCart";
+import { getCookie } from "@/libs/utils/cookieUtils";
 
 export const StateContext = createContext();
 
@@ -65,7 +66,7 @@ const StateProvider = ({ children }) => {
     enabled: !!uid,
   });
 
-  console.log("userInfo", userInfo);
+  console.log("userInfo isUserInfoLoading", userInfo, isUserInfoLoading);
 
   const {
     data: cartInfo = {},
@@ -75,13 +76,17 @@ const StateProvider = ({ children }) => {
     queryKey: ["cartInfo", storeId, userInfo?._id],
     queryFn: () => {
       if (storeId && userInfo?._id) {
-        return getCart(storeId, userInfo?._id);
+        return getCart(storeId, userInfo._id);
+      } else if (storeId) {
+        console.log("trigger");
+        const existingCart = JSON.parse(getCookie("userCart") || "[]");
+        console.log("existingCart", existingCart);
+        return Promise.resolve(existingCart);
       }
-      return Promise.resolve({}); // Return a default value if conditions are not met
     },
     cacheTime: 10 * (60 * 1000), // cache data for 10 minutes
     staleTime: 5 * (60 * 1000), // consider data fresh for 5 minutes
-    enabled: !!storeId && !!userInfo?._id, // Only enable the query if conditions are met
+    enabled: !!storeId, // Only enable the query if storeId is available
   });
 
   // console.log(page);

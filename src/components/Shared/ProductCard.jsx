@@ -10,6 +10,7 @@ import { storeId, TruncateText } from "@/libs/utils/common";
 import useCart from "@/hooks/useCart";
 import React from "react";
 import toast from "react-hot-toast";
+import { getCookie, setCookie } from "@/libs/utils/cookieUtils";
 
 const ProductCard = React.memo(({ book }) => {
   const { userInfo, storeInfo, cartInfo, refetchCartInfo } =
@@ -23,20 +24,14 @@ const ProductCard = React.memo(({ book }) => {
   useEffect(() => {
     if (cartInfo?.length > 0) {
       setProductCartCount(
-        cartInfo?.find((product) => product._id === book._id)?.quantity
+        cartInfo?.find((product) => product.productId === book._id)?.quantity
       );
     }
   }, [cartInfo]);
 
   const handleAddToCart = async () => {
     console.log("check stock", book?.stock?.quantity);
-    if (
-      cartInfo?.find((product) => product._id === book._id)?.quantity >=
-      book?.stock?.quantity
-    ) {
-      toast.error("Product out of stock");
-      return;
-    }
+
     const payload = {
       userId: userInfo?._id,
       storeId: storeId,
@@ -44,30 +39,49 @@ const ProductCard = React.memo(({ book }) => {
       quantity: 1,
     };
 
-    const response = await AddToCart(payload);
+    // Check if the user is logged in
+    if (userInfo?._id) {
+      // User is logged in, send request to the server
+      const response = await AddToCart(payload);
 
-    if (response?.success) {
-      refetchCartInfo();
+      if (response?.success) {
+        refetchCartInfo();
+        setProductCartCount(1);
+        toast.success("Product added to cart!");
+      }
+    } else {
+      const cartKey = "userCart"; // Define a key for the cart in cookies
+
+      // Get existing cart from cookies or create a new one
+      const existingCart = JSON.parse(getCookie(cartKey) || "[]");
+
+      // Update cart with the new product
+      const updatedCart = existingCart.map((product) =>
+        product._id === book._id
+          ? { productId: book?._id, quantity: product.quantity + 1 } // Update quantity if exists
+          : product
+      );
+
+      // If product doesn't exist in the cart, add it
+      if (!existingCart.some((product) => product._id === book._id)) {
+        updatedCart.push({
+          productId: book?._id,
+          storeId: storeId,
+          quantity: 1,
+        });
+      }
+      console.log("updatedCart", updatedCart);
+
+      // Store updated cart back to cookies
+      setCookie(cartKey, JSON.stringify(updatedCart), 7); // Store for 7 days
+
+      // Update product cart count in state
+
       setProductCartCount(1);
-    }
-  };
-
-  const handleMinusClick = async () => {
-    if (productCartCount <= 1) {
-      return;
-    }
-    const payload = {
-      userId: userInfo?._id,
-      storeId: storeId,
-      productId: book._id,
-      quantity: productCartCount - 1,
-    };
-
-    const response = await AddToCart(payload);
-
-    if (response?.success) {
       refetchCartInfo();
-      setProductCartCount((prevCount) => prevCount - 1);
+      toast.success("Product added to cart!");
+
+      // Check if the user is logged in
     }
   };
 
@@ -86,11 +100,72 @@ const ProductCard = React.memo(({ book }) => {
       quantity: productCartCount + 1,
     };
 
-    const response = await AddToCart(payload);
+    if (userInfo?._id) {
+      const response = await AddToCart(payload);
 
-    if (response?.success) {
-      refetchCartInfo();
+      if (response?.success) {
+        refetchCartInfo();
+        setProductCartCount((prevCount) => prevCount + 1);
+      }
+    } else if (productCartCount < book?.stock?.quantity) {
+      const cartKey = "userCart";
+
+      const existingCart = JSON.parse(getCookie(cartKey) || "[]");
+      console.log("existingCart", existingCart);
+      const updatedCart = existingCart.map((product) =>
+        product.productId === book._id
+          ? {
+              productId: book._id,
+              quantity: product.quantity + 1,
+              storeId: storeId,
+            }
+          : product
+      );
+
+      setCookie(cartKey, JSON.stringify(updatedCart), 7);
+
       setProductCartCount((prevCount) => prevCount + 1);
+    }
+  };
+
+  const handleMinusClick = async () => {
+    if (productCartCount <= 1) {
+      return;
+    }
+
+    const payload = {
+      userId: userInfo?._id,
+      storeId: storeId,
+      productId: book._id,
+      quantity: productCartCount - 1,
+    };
+
+    if (userInfo?._id) {
+      const response = await AddToCart(payload);
+
+      if (response?.success) {
+        refetchCartInfo();
+        setProductCartCount((prevCount) => prevCount - 1);
+      }
+    } else if (productCartCount > 1) {
+      const cartKey = "userCart";
+
+      const existingCart = JSON.parse(getCookie(cartKey) || "[]");
+      console.log("existingCart", existingCart);
+
+      const updatedCart = existingCart.map((product) =>
+        product.productId === book._id
+          ? {
+              productId: book._id,
+              quantity: product.quantity - 1,
+              storeId: storeId,
+            }
+          : product
+      );
+
+      setCookie(cartKey, JSON.stringify(updatedCart), 7);
+
+      setProductCartCount((prevCount) => prevCount - 1);
     }
   };
 
@@ -132,13 +207,19 @@ const ProductCard = React.memo(({ book }) => {
         </span>
       </div>
       {(productCartCount < 1 || productCartCount === undefined) && (
-        <div
+        <button
+          type="button"
           onClick={handleAddToCart}
-          className="primary-outline-btn w-full flex justify-center gap-2 cursor-pointer"
+          className={`primary-outline-btn w-full flex justify-center gap-2  ${
+            book?.stock?.quantity === 0
+              ? "opacity-20 cursor-not-allowed hover:bg-white hover:text-black"
+              : "cursor-pointer"
+          }`}
+          disabled={book?.stock?.quantity === 0}
         >
           <Image src={CartIcon} alt="cart" className="w-5 h-5" />
-          Add to cart
-        </div>
+          {book?.stock?.quantity === 0 ? "Out of stock" : "Add to cart"}
+        </button>
       )}
       {productCartCount > 0 && (
         <div className="flex items-center gap-3">

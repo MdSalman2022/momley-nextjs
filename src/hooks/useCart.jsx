@@ -14,7 +14,7 @@ const useCart = () => {
     return profile?.data;
   };
 
-  const getCart = async (id, userId) => { 
+  const getCart = async (id, userId) => {
     const response = await fetch(
       `${process.env.VITE_SERVER_URL}/cart/get?storeId=${id}&userId=${userId}`,
       {
@@ -26,31 +26,34 @@ const useCart = () => {
     );
     const profile = await response.json();
 
-    return profile?.data || []; 
+    return profile?.data || [];
   };
   const getCartCheckout = async (
     storeId,
     userId,
     deliveryLocation,
-    discountCode
+    discountCode,
+    products
   ) => {
     let url = `${
       process.env.VITE_SERVER_URL
     }/cart/get-checkout?storeId=${encodeURIComponent(
       storeId
-    )}&userId=${encodeURIComponent(
-      userId
     )}&deliveryLocation=${encodeURIComponent(deliveryLocation)}`;
 
+    if (userId) {
+      url += `&userId=${encodeURIComponent(userId)}`;
+    }
     if (discountCode) {
       url += `&discountCode=${encodeURIComponent(discountCode)}`;
     }
 
     const response = await fetch(url, {
-      method: "GET",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({ products }),
     });
 
     const profile = await response.json();

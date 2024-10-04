@@ -240,9 +240,9 @@ const BookDetailsPage = ({ bookDetails }) => {
           </div>
           <p className="text-xl font-semibold">Related Products</p>
           <div className="col-span-4 grid grid-cols-6 gap-5 py-5">
-            {allBooks.map((book, index) => (
+            {/* {allBooks.map((book, index) => (
               <ProductCard key={book._id} book={book} />
-            ))}
+            ))} */}
           </div>
         </div>
       </div>

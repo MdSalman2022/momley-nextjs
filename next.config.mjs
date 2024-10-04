@@ -5,6 +5,7 @@ const nextConfig = {
     VITE_X_API_KEY: process.env.VITE_X_API_KEY,
     VITE_STORE_ID: process.env.VITE_STORE_ID,
     VITE_IMGBB_KEY: process.env.VITE_IMGBB_KEY,
+    SECRET_KEY: process.env.SECRET_KEY,
     VITE_FIREBASE_API_KEY: process.env.VITE_FIREBASE_API_KEY,
     VITE_FIREBASE_AUTH_DOMAIN: process.env.VITE_FIREBASE_AUTH_DOMAIN,
     VITE_FIREBASE_PROJECT_ID: process.env.VITE_FIREBASE_PROJECT_ID,

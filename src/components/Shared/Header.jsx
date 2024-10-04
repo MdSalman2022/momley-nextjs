@@ -39,7 +39,7 @@ const Header = () => {
   const { totalLevel, userInfo, storeInfo, isStoreInfoLoading, cartInfo } =
     useContext(StateContext);
 
-  console.log("cartInfo header", cartInfo);
+  // console.log("cartInfo header", cartInfo);
 
   const { GetMenuByPosition } = useCategory();
 
