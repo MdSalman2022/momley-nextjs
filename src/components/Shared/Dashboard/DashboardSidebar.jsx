@@ -12,6 +12,7 @@ import { IoSettingsOutline } from "react-icons/io5";
 import {
   MdOutlineInventory,
   MdOutlineLocalShipping,
+  MdOutlineRateReview,
   MdOutlineRoomPreferences,
   MdPayments,
 } from "react-icons/md";
@@ -43,6 +44,7 @@ const iconMapping = {
   RiDashboardLine,
   MdPayments,
   MdOutlineLocalShipping,
+  MdOutlineRateReview,
 };
 
 const DashboardSidebar = () => {
@@ -111,7 +113,7 @@ const DashboardSidebar = () => {
               href={url}
               prefetch={true}
               onClick={() => setActiveSubLink(_id)}
-              className={`h-[52px] px-6 flex items-center gap-2 rounded ${
+              className={`h-[42px] px-6 flex items-center gap-2 rounded ${
                 pathname?.includes(url)
                   ? "bg-black text-white"
                   : "bg-white text-black hover:bg-gray-100"
@@ -140,13 +142,11 @@ const DashboardSidebar = () => {
                   key={_id}
                   href={url}
                   prefetch={true}
-                  className={`h-[42px] pl-12 flex items-center gap-2 rounded ${
-                    pathname === url ? "" : ""
-                  }`}
+                  className={`h-[42px] pl-12 flex items-center gap-2 rounded`}
                 >
                   <span
                     className={`w-2 h-2 ${
-                      pathname === url ? "opacity-1" : "opacity-0"
+                      pathname?.includes(url) ? "opacity-1" : "opacity-0"
                     } bg-black rounded-full`}
                   ></span>
                   {name}

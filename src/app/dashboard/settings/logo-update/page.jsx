@@ -19,6 +19,7 @@ const LogoUpdate = () => {
   // const [prevImage, setPrevImage] = useState("");
   const [prevImages, setPrevImages] = useState({
     mainLogo: "",
+    footerLogo: "",
     invoiceLogo: "",
     navigationLogo: "",
   });
@@ -97,6 +98,8 @@ const LogoUpdate = () => {
     const logoOptions = {};
     if (logoType === "mainLogo") {
       logoOptions.mainLogo = images[0];
+    } else if (logoType === "footerLogo") {
+      logoOptions.footerLogo = images[0];
     } else if (logoType === "invoiceLogo") {
       logoOptions.invoiceLogo = images[0];
     } else if (logoType === "navigationLogo") {
@@ -167,6 +170,53 @@ const LogoUpdate = () => {
           </div>
           <button
             onClick={() => handleUpdateLogo("mainLogo")}
+            type="button"
+            className="primary-btn bg-[#219653] hover:bg-[#1d6d40] w-[190px] flex justify-center"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+      <div className="border p-4 flex flex-col gap-3">
+        <p>Footer Logo</p>
+        <div className="flex justify-between items-end w-full">
+          <div className="flex flex-col gap-3">
+            {prevImages.footerLogo ? (
+              <Image
+                src={prevImages.footerLogo}
+                alt="profile"
+                className="border-2 border-blue-600 object-contain w-[234px] h-[51px]"
+                width={234}
+                height={51}
+              />
+            ) : (
+              storeInfo?.preferences?.logoOptions?.footerLogo && (
+                <Image
+                  src={storeCloudfrontURL?.replace(
+                    "*",
+                    `${storeInfo?.preferences?.logoOptions?.footerLogo}`
+                  )}
+                  className="object-contain w-[234px] h-[51px]"
+                  width={234}
+                  height={51}
+                />
+              )
+            )}
+            <div className="primary-btn relative">
+              <input
+                onChange={(e) => handleFileSelect(e, "footerLogo")}
+                accept="image/*"
+                type="file"
+                name="image"
+                className="opacity-0 w-full h-32 absolute cursor-pointer"
+                placeholder="Enter number of designers"
+              />
+              Choose a file
+            </div>
+            <span> (250px x 120px)</span>
+          </div>
+          <button
+            onClick={() => handleUpdateLogo("footerLogo")}
             type="button"
             className="primary-btn bg-[#219653] hover:bg-[#1d6d40] w-[190px] flex justify-center"
           >

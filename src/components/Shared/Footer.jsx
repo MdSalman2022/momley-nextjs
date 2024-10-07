@@ -1,30 +1,44 @@
-"use client";
+import useStore from "@/hooks/useStore";
+import { storeId } from "@/libs/utils/common";
 import React from "react";
-import {
-  FaFacebookF,
-  FaTwitter,
-  FaLinkedinIn,
-  FaYoutube,
-  FaInstagram,
-} from "react-icons/fa";
+import FooterSocialLinks from "./FooterSocialLinks";
+import Image from "next/image";
 
-const Footer = () => {
+// Simple in-memory cache
+let storeCache = null;
+
+const Footer = async () => {
+  const { getStore } = useStore();
+
+  // Check if the store information is already cached
+  if (!storeCache) {
+    storeCache = await getStore(storeId);
+  }
+
+  const storeInfo = storeCache;
+
+  console.log("store info", storeInfo);
   return (
     <div className="py-20 border-t flex flex-col items-center w-full bg-[#111111] text-white">
       <div className="flex items-start justify-between w-full container mx-auto">
-        <img
-          src="https://i.ibb.co/s5VRytN/momley.png"
-          alt="momley"
-          width={250}
-          height={120}
+        <Image
+          src={storeInfo?.cloudFrontURL?.replace(
+            "*",
+            `${storeInfo?.preferences?.logoOptions?.footerLogo}`
+          )}
+          className="object-contain w-[234px] h-[51px] cursor-pointer"
+          alt={storeInfo?.storeName || "store"}
+          width={234}
+          height={51}
         />
         <div>
           <p className="font-semibold">Useful Links</p>
-          <p>Contact Us</p>
-          <p>Blog</p>
-          <p>Cart</p>
-          <p>FAQ</p>
-          <p>Conditions</p>
+          <p>Sign In</p>
+          <p>Create Account</p>
+          <p>My Orders</p>
+          <p>Privacy Policy</p>
+          <p>Refund Policy</p>
+          <p>Terms & conditions</p>
         </div>
         <div>
           <p className="font-semibold">Popular</p>
@@ -36,18 +50,17 @@ const Footer = () => {
         <div>
           <p className="font-semibold">Contact</p>
           <p>Head Office</p>
-          <p>Mirpur,Dhaka-1216</p>
+          <p>{storeInfo?.supportInfo?.officeAddress}</p>
           <p>Phone:</p>
-          <p>017********</p>
-          <p>test@test.com</p>
-          <p className="flex items-center gap-3 text-xl">
-            <FaFacebookF /> <FaTwitter /> <FaLinkedinIn /> <FaYoutube />{" "}
-            <FaInstagram />
-          </p>
+          <p>{storeInfo?.supportInfo?.phone}</p>
+          <p>{storeInfo?.supportInfo?.email}</p>
+          <FooterSocialLinks
+            socialLinks={storeInfo?.supportInfo?.socialMediaLinks}
+          />
         </div>
       </div>
       <hr />
-      <div className="flex flex-col items-start container mx-auto">
+      {/* <div className="flex flex-col items-start container mx-auto">
         <div className="grid grid-cols-4">
           <p>Mom & Baby: </p>
           <span className="col-span-3 text-gray-400">
@@ -76,7 +89,7 @@ const Footer = () => {
             elit | Molestias | quidem
           </span>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
