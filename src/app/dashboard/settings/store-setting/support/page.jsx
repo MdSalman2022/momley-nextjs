@@ -17,18 +17,24 @@ const SupportPage = () => {
   } = useForm();
 
   useEffect(() => {
-    if (storeInfo?._id) {
-      reset({
-        email: storeInfo?.supportInfo?.email,
-        mobile: storeInfo?.supportInfo?.phone,
-        headOffice: storeInfo?.supportInfo?.officeAddress,
-        facebook: storeInfo?.supportInfo?.socialMediaLinks?.facebook,
-        instagram: storeInfo?.supportInfo?.socialMediaLinks?.instagram,
-        twitter: storeInfo?.supportInfo?.socialMediaLinks?.twitter,
-        linkedin: storeInfo?.supportInfo?.socialMediaLinks?.linkedin,
-        youtube: storeInfo?.supportInfo?.socialMediaLinks?.youtube,
-        pinterest: storeInfo?.supportInfo?.socialMediaLinks?.pinterest,
-      });
+    try {
+      if (storeInfo?._id) {
+        reset({
+          email: storeInfo?.supportInfo?.email,
+          mobile: storeInfo?.supportInfo?.phone,
+          headOffice: storeInfo?.supportInfo?.officeAddress,
+          facebook: storeInfo?.supportInfo?.socialMediaLinks?.facebook,
+          instagram: storeInfo?.supportInfo?.socialMediaLinks?.instagram,
+          twitter: storeInfo?.supportInfo?.socialMediaLinks?.twitter,
+          linkedin: storeInfo?.supportInfo?.socialMediaLinks?.linkedin,
+          youtube: storeInfo?.supportInfo?.socialMediaLinks?.youtube,
+          pinterest: storeInfo?.supportInfo?.socialMediaLinks?.pinterest,
+        });
+      }
+    } catch (error) {
+      console.error("Error resetting form values:", error);
+      // Optionally, you can display an error message to the user
+      // toast.error("Failed to reset form values. Please try again.");
     }
   }, [storeInfo, reset]);
 
