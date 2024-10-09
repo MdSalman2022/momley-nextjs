@@ -15,6 +15,7 @@ const nextConfig = {
     VITE_FIREBASE_APP_ID: process.env.VITE_FIREBASE_APP_ID,
   },
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",

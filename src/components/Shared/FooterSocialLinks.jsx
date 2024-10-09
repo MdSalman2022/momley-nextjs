@@ -10,7 +10,13 @@ import {
 } from "react-icons/fa";
 
 const FooterSocialLinks = ({ socialLinks }) => {
-  const { facebook, twitter, linkedin, youtube, instagram } = socialLinks;
+  const {
+    facebook = "",
+    twitter = "",
+    linkedin = "",
+    youtube = "",
+    instagram = "",
+  } = socialLinks;
   return (
     <div className="mt-2">
       <p className="flex items-center gap-3 text-xl">
