@@ -1,9 +1,12 @@
 "use client";
+import React, { useContext } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React from "react";
+import { AuthContext } from "@/contexts/AuthProvider/AuthProvider";
 
 const FooterLinks = ({ items }) => {
+  const { isAuthModalOpen, setIsAuthModalOpen, user, logOut } =
+    useContext(AuthContext);
   const router = useRouter();
 
   return (
@@ -11,7 +14,9 @@ const FooterLinks = ({ items }) => {
       {items.map((item, index) => (
         <Link
           href={!item?.slug ? item?.link : ""}
-          onClick={() => router.push(item?.link)}
+          onClick={() =>
+            item?.slug && !user?.uid & setIsAuthModalOpen(!isAuthModalOpen)
+          }
           key={index}
           className="cursor-pointer"
         >

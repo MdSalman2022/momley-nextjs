@@ -66,6 +66,28 @@ const useOrder = () => {
     }
   };
 
+  const getAllOrderByPhone = async (phone) => {
+    try {
+      const response = await fetch(
+        `${process.env.VITE_SERVER_URL}/orders/get-all-order-by-phone?phone=${phone}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const orders = await response.json();
+      return orders;
+    } catch (error) {
+      console.error("Failed to fetch book details:", error);
+      throw error;
+    }
+  };
+
   const getOrderByStatus = async (id, status) => {
     try {
       const response = await fetch(
@@ -162,6 +184,7 @@ const useOrder = () => {
     getOrderByStatus,
     getOrdersByOrderNumber,
     getReviewedOrderByStore,
+    getAllOrderByPhone,
   };
 };
 

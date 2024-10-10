@@ -1,22 +1,14 @@
-import useStore from "@/hooks/useStore";
-import { storeId } from "@/libs/utils/common";
-import React from "react";
+"use client";
+import React, { useContext } from "react";
 import FooterSocialLinks from "../FooterSocialLinks";
 import Image from "next/image";
 import FooterLinks from "./FooterLinks";
+import { StateContext } from "@/contexts/StateProvider/StateProvider";
 
-const Footer = async () => {
-  const { getStore } = useStore();
+const Footer = () => {
+  const { storeInfo, isStoreInfoLoading } = useContext(StateContext);
 
-  // Fetch the store information
-  let storeInfo;
-  try {
-    storeInfo = await getStore(storeId);
-  } catch (error) {
-    console.error("Error fetching store information:", error);
-    // Optionally, you can display an error message to the user
-    // return <div>Error loading store information. Please try again later.</div>;
-  }
+  console.log("storeInfo", storeInfo);
 
   const usefulLinks = [
     { name: "Sign In", slug: "signin", link: "/signin" },
@@ -34,7 +26,7 @@ const Footer = async () => {
     { name: "Package", link: "/package" },
   ];
 
-  if (!storeInfo) {
+  if (isStoreInfoLoading) {
     return <div>Loading...</div>;
   }
 
