@@ -181,27 +181,29 @@ const LogoUpdate = () => {
         <p>Footer Logo</p>
         <div className="flex justify-between items-end w-full">
           <div className="flex flex-col gap-3">
-            {prevImages.footerLogo ? (
-              <Image
-                src={prevImages.footerLogo}
-                alt="profile"
-                className="border-2 border-blue-600 object-contain w-[234px] h-[51px]"
-                width={234}
-                height={51}
-              />
-            ) : (
-              storeInfo?.preferences?.logoOptions?.footerLogo && (
+            <div className="bg-black/10 p-4">
+              {prevImages.footerLogo ? (
                 <Image
-                  src={storeCloudfrontURL?.replace(
-                    "*",
-                    `${storeInfo?.preferences?.logoOptions?.footerLogo}`
-                  )}
-                  className="object-contain w-[234px] h-[51px]"
+                  src={prevImages.footerLogo}
+                  alt="profile"
+                  className="border-2 border-blue-600 object-contain w-[234px] h-[51px]"
                   width={234}
                   height={51}
                 />
-              )
-            )}
+              ) : (
+                storeInfo?.preferences?.logoOptions?.footerLogo && (
+                  <Image
+                    src={storeCloudfrontURL?.replace(
+                      "*",
+                      `${storeInfo?.preferences?.logoOptions?.footerLogo}`
+                    )}
+                    className="object-contain w-[234px] h-[51px]"
+                    width={234}
+                    height={51}
+                  />
+                )
+              )}
+            </div>
             <div className="primary-btn relative">
               <input
                 onChange={(e) => handleFileSelect(e, "footerLogo")}

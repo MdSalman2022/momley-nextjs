@@ -3,7 +3,7 @@ import React from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryClientProvider } from "@/components/Shared/ReactQueryClientProvider";
 import Header from "@/components/Shared/Header";
-import Footer from "@/components/Shared/Footer";
+import Footer from "@/components/Shared/Footer/Footer";
 import { Toaster } from "react-hot-toast";
 import StateProvider from "@/contexts/StateProvider/StateProvider";
 import { AuthProvider } from "@/contexts/AuthProvider/AuthProvider";
