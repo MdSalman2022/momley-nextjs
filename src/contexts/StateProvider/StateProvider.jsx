@@ -17,7 +17,9 @@ const StateProvider = ({ children }) => {
   const { getAllCategoriesLevel } = useCategory();
   const { getCart } = useCart();
 
-  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+  const [screenWidth, setScreenWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 0
+  );
 
   const isMobile = screenWidth < mobileWidth;
 
