@@ -68,7 +68,7 @@ export function DataTable({
                 return (
                   <TableHead
                     key={header.id}
-                    className="font-semibold text-[#333333]"
+                    className="font-semibold text-[#333333] text-xs md:text-sm"
                   >
                     {header.isPlaceholder
                       ? null

@@ -22,7 +22,7 @@ const MyNotification = () => {
   ];
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 ">
       <p className="text-lg">Notification</p>
 
       <div className="flex flex-col gap-5">

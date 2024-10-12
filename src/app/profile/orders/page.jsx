@@ -175,7 +175,7 @@ const MyOrders = () => {
           </button>
         ))}
       </div>
-      <div className="flex gap-5 items-center">
+      <div className="grid grid-cols-2 md:flex gap-2 md:gap-5 items-center">
         <input
           type="text"
           className="input-box bg-[#F2F1F1] border-[#F2F2F2]"

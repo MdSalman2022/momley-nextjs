@@ -5,16 +5,20 @@ import { StateContext } from "@/contexts/StateProvider/StateProvider";
 import useUser from "@/hooks/useUser";
 import { storeId } from "@/libs/utils/common";
 import { GoogleAuthProvider, sendEmailVerification } from "firebase/auth";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaExclamationCircle, FaEye, FaEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
+import { RxCross2 } from "react-icons/rx";
 
 const Login = () => {
+  const router = useRouter();
   const [isLogin, setIsLogin] = useState(true);
   const [passwordShow, setPasswordShow] = useState(false);
-  const { refetchUserInfo } = useContext(StateContext);
+  const { refetchUserInfo, isMobile } = useContext(StateContext);
   const { CreateUser } = useUser();
   const {
     register,
@@ -136,26 +140,32 @@ const Login = () => {
     console.log("user.metadata", user);
 
     if (user.metadata.creationTime === user.metadata.lastSignInTime) {
-      setIsAuthModalOpen(false);
+      isMobile ? router.push("/") : setIsAuthModalOpen(false);
       toast.success("Account created successfully");
 
       const result = await saveToDb(user);
     } else {
-      setIsAuthModalOpen(false);
+      isMobile ? router.push("/") : setIsAuthModalOpen(false);
       toast.success("Logged in successfully");
     }
   };
 
   return (
-    <div className="flex flex-col gap-5 items-center justify-center  bg-[#ffffff] sm:max-w-2xl  rounded-lg border p-5">
+    <div className="flex flex-col gap-5 items-center justify-end md:justify-center  h-full md:h-auto bg-[#ffffff] sm:max-w-2xl  rounded-lg border p-5">
+      <div className="absolute top-5 w-full px-4 flex justify-between md:hidden">
+        <Link href="/">
+          <RxCross2 size={24} />
+        </Link>
+        <span className="font-medium">FAQ/HELP?</span>
+      </div>
       <img
-        className=""
+        className="w-60 md:w-[180px] absolute top-[20%] md:static"
         src="https://i.ibb.co/TW8T2kc/logo-momley.png"
         width={180}
         height={56}
       />
 
-      <div className="flex  ">
+      <div className="hidden md:flex">
         <span
           onClick={() => setIsLogin(true)}
           className={`flex justify-center text-xl w-40 p-3 cursor-pointer hover:bg-[#f5f5f5] hover:border-l-8 border-black ${
@@ -179,7 +189,7 @@ const Login = () => {
       </div>
       <div className="flex flex-col gap-2 w-full ">
         <form onSubmit={handleSubmit(handleSignUp)}>
-          <div className="mb-4">
+          <div className="mb-4 flex flex-col gap-4 md:gap-1">
             {!isLogin && (
               <input
                 className="input-box h-12 w-full"
@@ -228,16 +238,18 @@ const Login = () => {
           </div>
           <div
             onClick={handleGoogleLogin}
-            className={`${"flex items-center justify-center cursor-pointer bg-[#F2F2F2] w-80 py-3 rounded-lg"} mb-4`}
+            className={`${"flex items-center justify-center cursor-pointer border border-black w-full md:bg-[#F2F2F2] md:w-80 py-3 rounded-lg"} mb-4`}
             // style={{ border: "1px solid rgba(41, 41, 41, 0.20)" }}
           >
             <FcGoogle className={"text-blue-600 text-2xl mr-4"} />
-            <span className={"font-semibold"}>Continue with Google</span>
+            <span className={"font-medium md:font-semibold"}>
+              Continue with Google
+            </span>
           </div>
         </form>
       </div>
 
-      <div className="flex items-start gap-2">
+      <div className="hidden md:flex items-start gap-2">
         <FaExclamationCircle className="text-xl mt-1" />
         <span className="text-sm">
           {" "}
@@ -245,6 +257,15 @@ const Login = () => {
           Conditions of Use and Privacy Policy
         </span>
       </div>
+      <span className="flex md:hidden items-center gap-1 mt-10">
+        <p>Don't have an account?</p>{" "}
+        <span
+          onClick={() => setIsLogin(!isLogin)}
+          className="font-semibold text-red-600"
+        >
+          {isLogin ? "Sign Up " : "Sign In"}
+        </span>
+      </span>
     </div>
   );
 };

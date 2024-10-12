@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { AuthContext } from "../AuthProvider/AuthProvider";
 import useProfile from "@/hooks/useProfile";
 import useStore from "@/hooks/useStore";
-import { storeId } from "@/libs/utils/common";
+import { mobileWidth, storeId } from "@/libs/utils/common";
 import useCategory from "@/hooks/useCategory";
 import useCart from "@/hooks/useCart";
 import { getCookie } from "@/libs/utils/cookieUtils";
@@ -16,6 +16,12 @@ const StateProvider = ({ children }) => {
   const { getStore } = useStore();
   const { getAllCategoriesLevel } = useCategory();
   const { getCart } = useCart();
+
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+
+  const isMobile = screenWidth < mobileWidth;
+
+  console.log("isMobile state", isMobile);
 
   const { user } = useContext(AuthContext);
   const [page, setPage] = useState(1);
@@ -157,6 +163,8 @@ const StateProvider = ({ children }) => {
     cartInfo,
     isCartInfoLoading,
     refetchCartInfo,
+    screenWidth,
+    isMobile,
   };
 
   return (

@@ -36,9 +36,9 @@ const MyReview = () => {
   const notReviewedOrders = completedOrders?.data?.notReviewedOrders || [];
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 px-4 md:px-0 mb-20 md:mb-0">
       <div className="flex justify-between">
-        <p className="font-medium">My Reviews</p>
+        <p className="font-medium text-xl">My Reviews</p>
         {/* <button className="primary-btn">Save and Change</button> */}
       </div>
       <div className="flex justify-start space-x-4">

@@ -44,7 +44,7 @@
     "react-quill": "^2.0.0",
     "react-router-dom": "^6.11.1",
     "recharts": "^2.6.2",
-    "swiper": "^11.1.9",
+    "swiper": "^11.1.14",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8"

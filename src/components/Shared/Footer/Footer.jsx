@@ -32,7 +32,7 @@ const Footer = () => {
 
   console.log("store info", storeInfo);
   return (
-    <div className="py-20 border-t flex flex-col items-center w-full bg-[#111111] text-white">
+    <div className="py-20 border-t hidden md:flex flex-col items-center w-full bg-[#111111] text-white">
       <div className="flex items-start justify-between w-full container mx-auto">
         <Image
           src={storeInfo?.cloudFrontURL?.replace(

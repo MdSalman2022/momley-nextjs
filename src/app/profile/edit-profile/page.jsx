@@ -21,10 +21,22 @@ import GeneratedProfileImage from "@/components/Shared/GeneratedProfileImage";
 import LoadingAnimation from "@/libs/utils/LoadingAnimation";
 import { AuthContext } from "@/contexts/AuthProvider/AuthProvider";
 import LocationSelection from "./LocationSelection";
+import { useRouter } from "next/navigation";
 
 const EditProfile = () => {
-  const { user } = useContext(AuthContext);
-  const { userInfo, isUserInfoLoading } = useContext(StateContext);
+  const { user, loading, setIsAuthModalOpen } = useContext(AuthContext);
+  const { userInfo, isUserInfoLoading, isMobile } = useContext(StateContext);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!user?.uid && !loading) {
+      if (isMobile) {
+        router.push("/login");
+      } else {
+        setIsAuthModalOpen(true);
+      }
+    }
+  }, [user]);
 
   const [imageUploadProgress, setImageUploadProgress] = useState(0);
   const [prevImage, setPrevImage] = useState("");
@@ -216,7 +228,7 @@ const EditProfile = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-10">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-10 ">
       <div className="flex justify-between items-center w-full">
         <p className="font-semibold">Personal Info</p>
         <button type="submit" className="primary-btn">
@@ -269,7 +281,7 @@ const EditProfile = () => {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-y-5 gap-x-10">
+        <div className="flex flex-col md:grid grid-cols-3 gap-y-5 gap-x-10">
           {personalInfo.map(
             ({ label, type, name, required, options, placeholder }) => (
               <label htmlFor="" className="flex flex-col">

@@ -11,6 +11,7 @@ import brandImage6 from "../../../../../public/images/brands/6.png";
 import brandImage7 from "../../../../../public/images/brands/7.png";
 import { storeId, TruncateText } from "@/libs/utils/common";
 import useCategory from "@/hooks/useCategory";
+import CategorySlider from "./CategorySlider";
 
 const Categories = async () => {
   const { getAllCategories } = useCategory();
@@ -33,8 +34,8 @@ const Categories = async () => {
   ];
 
   return (
-    <div className="space-y-5 text-black">
-      <p className="font-semibold text-xl">Shop by Category</p>
+    <div className="md:space-y-5 text-black px-4 md:px-0">
+      <p className="font-semibold text-xl md:hidden">Shop by Category</p>
       <Suspense
         fallback={
           <div className="grid grid-cols-4 gap-5">
@@ -52,7 +53,7 @@ const Categories = async () => {
         }
       >
         <div className="flex flex-col">
-          <div className="grid grid-cols-6">
+          <div className="hidden md:grid grid-cols-6">
             {categories.map((category, index) => (
               <Link
                 href={`/category/${category?.slug}`}
@@ -82,10 +83,11 @@ const Categories = async () => {
               </Link>
             ))}
           </div>
+          <CategorySlider categories={categories} />
         </div>
       </Suspense>
 
-      <p className="font-semibold text-xl">Shop by Brands</p>
+      <p className="hidden md:block font-semibold text-xl">Shop by Brands</p>
       <Suspense
         fallback={
           <div className="grid grid-cols-5 gap-5">
@@ -102,7 +104,7 @@ const Categories = async () => {
           </div>
         }
       >
-        <div className="flex items-center gap-10">
+        <div className="hidden md:flex items-center gap-10">
           {brandImages.map((brandImage, index) => (
             <div key={index} className="flex justify-center">
               <Image src={brandImage} alt="brand" />

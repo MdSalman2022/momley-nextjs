@@ -57,7 +57,7 @@ const Layout = ({ children }) => {
 
   return (
     <div className="container mx-auto px-0 flex gap-6">
-      <nav className="w-[15%] min-h-fit mt-4">
+      <nav className="hidden md:block md:w-[15%] min-h-fit mt-4">
         <div className="flex flex-col gap-1 h-fit border p-3">
           {navigationLinks.map(({ href, label, icon, activeIcon }) => (
             <Link
@@ -85,7 +85,9 @@ const Layout = ({ children }) => {
           </button>
         </div>
       </nav>
-      <main className="w-[85%] p-4 min-h-screen mt-4">{children}</main>
+      <main className="w-full md:w-[85%] md:p-4 md:min-h-screen mt-4 px-4 md:px-0 mb-24 md:mb-0">
+        {children}
+      </main>
     </div>
   );
 };

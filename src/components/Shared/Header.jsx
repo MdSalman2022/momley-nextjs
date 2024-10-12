@@ -21,6 +21,7 @@ import Menus from "./Menus";
 import { IoReorderThree } from "react-icons/io5";
 import logo from "../../../public/images/logo.png";
 import DropdownMenus from "./DropDownMenus/DropdownMenus";
+import MobileHeader from "./MobileHeader";
 
 const NavigationItem = ({ name, item }) => (
   <Link
@@ -129,8 +130,8 @@ const Header = () => {
     <div className="fixed top-0 w-full z-50 bg-white">
       <div
         className={`w-full ${
-          isDashboardPage ? "hidden" : "flex flex-col justify-start"
-        } `}
+          isDashboardPage ? "hidden" : "hidden md:flex flex-col justify-start"
+        }`}
       >
         <div
           name="general-header"
@@ -264,6 +265,7 @@ const Header = () => {
           </div>
         )}
       </div>
+      <MobileHeader />
     </div>
   );
 };

@@ -174,7 +174,7 @@ const ProductCard = React.memo(({ book }) => {
   const truncatedText = TruncateText(book?.name, 15);
 
   return (
-    <div className="flex flex-col items-center justify-between gap-3 border border-[#EEEEEE80] p-3 rounded text-black max-w-[180px] h-fit">
+    <div className="flex flex-col items-center justify-between gap-3 border border-[#EEEEEE80] md:p-3 rounded text-black max-w-[180px] h-fit">
       <Link
         href={`/product/${book?.slug}`}
         className="w-[164px] h-[217px] flex items-center justify-center"

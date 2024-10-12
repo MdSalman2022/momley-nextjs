@@ -122,7 +122,7 @@ const BooksInHome = async () => {
   ];
 
   return (
-    <div className="flex flex-col gap-5 items-start">
+    <div className="flex flex-col gap-5 md:items-start">
       {sections.map((section, index) => (
         <ReusableItemsSection
           key={index}
