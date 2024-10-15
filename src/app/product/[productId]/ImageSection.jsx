@@ -1,8 +1,21 @@
 "use client";
+import { StateContext } from "@/contexts/StateProvider/StateProvider";
+import useMobileHeader from "@/hooks/reusable/useMobileHeader";
 import Image from "next/image";
-import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import React, { useState, useEffect, useContext } from "react";
 
 const ImageSection = ({ bookDetails, cloudFrontURL }) => {
+  const { setIsPrimaryMobileFooterVisible } = useContext(StateContext);
+
+  useEffect(() => {
+    setIsPrimaryMobileFooterVisible(false);
+
+    return () => {
+      setIsPrimaryMobileFooterVisible(true);
+    };
+  }, []);
+
   const [activeImage, setActiveImage] = useState(bookDetails?.images[0]);
 
   useEffect(() => {
@@ -21,13 +34,13 @@ const ImageSection = ({ bookDetails, cloudFrontURL }) => {
         <Image
           src={getImageSrc(activeImage)}
           alt="Active Product Image"
-          className="object-contain"
+          className="object-contain  md:w-[360px]"
           width={360}
           height={400}
         />
       )}
 
-      <div className="flex items-center gap-1">
+      <div className="hidden md:flex items-center gap-1">
         {bookDetails?.images?.map((image, index) => (
           <Image
             key={index}

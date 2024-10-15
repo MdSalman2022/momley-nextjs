@@ -5,15 +5,15 @@ import React from "react";
 const RelatedBooks = async () => {
   const { GetProducts } = useProduct();
 
-  // const allProducts = await GetProducts().then((res) => res?.products);
+  const allProducts = await GetProducts();
 
   return (
     <div className="flex flex-col w-full">
       <p className="text-xl font-semibold">Related Products</p>
-      <div className="col-span-4 grid grid-cols-6 gap-5 py-5">
-        {/* {allProducts.products?.slice(0, 6)?.map((book, index) => (
+      <div className="col-span-4 grid grid-cols-2 md:grid-cols-6 gap-5 py-5">
+        {allProducts.products?.slice(0, 6)?.map((book, index) => (
           <ProductCard key={book._id} book={book} />
-        ))} */}
+        ))}
       </div>
     </div>
   );

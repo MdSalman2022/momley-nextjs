@@ -19,7 +19,7 @@ const ProductDescription = ({ bookDetails }) => {
 
   return (
     <div>
-      <div className="flex flex-col py-10">
+      <div className="flex flex-col py-3 md:py-10">
         <div className="flex gap-10 py-5">
           <span
             className={`cursor-pointer border-b-2 ${

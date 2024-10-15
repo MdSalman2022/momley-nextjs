@@ -1,7 +1,8 @@
 "use client";
+import { StateContext } from "@/contexts/StateProvider/StateProvider";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { BsFillGrid1X2Fill, BsGrid1X2 } from "react-icons/bs";
 import { FaRegUserCircle, FaUserCircle } from "react-icons/fa";
 import { IoHome, IoHomeOutline } from "react-icons/io5";
@@ -28,6 +29,7 @@ const NavItem = ({
 };
 
 const MobileFooter = () => {
+  const { isPrimaryMobileFooterVisible } = useContext(StateContext);
   const [active, setActive] = useState("");
   const pathname = usePathname();
 
@@ -40,11 +42,11 @@ const MobileFooter = () => {
   if (pathname !== "/login")
     return (
       <div
-        className={
-          "fixed bottom-0 left-0 z-[300] w-screen bg-white py-3 shadow-lg border-t border-gray-200 md:hidden"
-        }
+        className={`fixed bottom-0 left-0 z-[300] w-screen bg-white py-3 shadow-lg border-t border-gray-200 md:hidden ${
+          isPrimaryMobileFooterVisible ? "flex" : "hidden"
+        }`}
       >
-        <div className="flex justify-around items-center text-black">
+        <div className="flex justify-around items-center text-black w-full">
           <NavItem
             href="/"
             active={active}

@@ -92,8 +92,6 @@ const useLocationData = (userInfo, setValue) => {
       const cities = await GetAddress(value);
       console.log("cities", cities);
       if (cities?.length > 0) {
-        setValue("city", cities[0].name);
-        setSelectedCity(cities[0].name);
         setAllCity(cities);
       }
     }
@@ -108,8 +106,6 @@ const useLocationData = (userInfo, setValue) => {
     setValue("city", selectedCityName);
     const areas = await GetAddress(value);
     if (areas?.length > 0) {
-      setValue("area", areas[0].name);
-      setSelectedArea(areas[0].name);
       setAllArea(areas);
     }
   };

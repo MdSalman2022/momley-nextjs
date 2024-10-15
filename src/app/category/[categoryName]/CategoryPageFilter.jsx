@@ -6,6 +6,9 @@ import PriceRange from "./PriceRange";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import FilterList from "./FilterList";
 import { usePathname, useRouter } from "next/navigation";
+import { IoOptionsOutline } from "react-icons/io5";
+import ModalBox from "@/components/Shared/ModalBox";
+import MobileModalBox from "@/components/Shared/MobileModalBox";
 
 const CategoryPageFilter = ({
   allCategories,
@@ -15,6 +18,7 @@ const CategoryPageFilter = ({
   query,
 }) => {
   const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const pathname = usePathname();
 
@@ -117,7 +121,125 @@ const CategoryPageFilter = ({
 
   return (
     <div>
-      <div className="col-span-1 border rounded-lg flex flex-col gap-5 max-h-none px-[26px] py-[15px] ">
+      <div
+        onClick={() => setIsModalOpen(true)}
+        className="fixed right-3 bottom-20 z-50 text-2xl bg-white text-black p-2 rounded-full cursor-pointer border border-black"
+      >
+        <IoOptionsOutline />
+      </div>
+      <MobileModalBox isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}>
+        <div className="col-span-1 border rounded-lg flex md:hidden flex-col gap-5 max-h-none px-[26px] py-[15px] ">
+          {/* Price Section */}
+          <div className="flex flex-col ">
+            <div
+              className="flex items-center justify-between border-b-[3px] relative"
+              onClick={togglePrice}
+            >
+              <span className="flex gap-5 items-center">Price </span>
+              <div className="absolute h-[3px] bg-black w-10 top-6"></div>
+              <span
+                className={`cursor-pointer duration-300 ${
+                  showPrice ? "transform rotate-180" : ""
+                } transition-transform`}
+              >
+                <FaChevronUp />
+              </span>
+            </div>
+            {showPrice && (
+              <PriceRange
+                priceRange={priceRange}
+                setPriceRange={setPriceRange}
+                handleSearch={handleSearch}
+                query={query}
+                params={params}
+              />
+            )}
+          </div>
+          {/* Colors Section */}
+          <div className="flex flex-col ">
+            <div
+              className="flex items-center justify-between border-b-[3px] relative"
+              onClick={toggleColors}
+            >
+              <span className="flex gap-5 items-center">Colors </span>
+              <div className="absolute h-[3px] bg-black w-14 top-6"></div>
+              <span
+                className={`cursor-pointer duration-300 ${
+                  showColors ? "transform rotate-180" : ""
+                } transition-transform`}
+              >
+                <FaChevronUp />
+              </span>
+            </div>
+            {showColors && (
+              <FilterList
+                items={colors}
+                selectedItem={selectedColor}
+                setSelectedItem={setSelectedColor}
+                itemType="color"
+                handleSearch={handleSearch}
+                query={query}
+                params={params}
+              />
+            )}
+          </div>
+          {/*   <div className="flex flex-col ">
+          <div
+            className="flex items-center justify-between border-b-[3px] relative"
+            onClick={toggleBrands}
+          >
+            <span className="flex gap-5 items-center">Brands </span>
+            <div className="absolute h-[3px] bg-black w-14 top-6"></div>
+            <span
+              className={`cursor-pointer duration-300 ${
+                showBrands ? "transform rotate-180" : ""
+              } transition-transform`}
+            >
+              <FaChevronUp />
+            </span>
+          </div>
+          {showBrands && (
+            <FilterList
+              items={brands}
+              selectedItem={selectedBrand}
+              setSelectedItem={setSelectedBrand}
+              itemType="brand"
+              handleSearch={handleSearch}
+              query={query}
+              params={params}
+            />
+          )}
+        </div> */}
+          <div className="flex flex-col ">
+            <div
+              className="flex items-center justify-between border-b-[3px] relative"
+              onClick={toggleCategories}
+            >
+              <span className="flex gap-5 items-center">Categories </span>
+              <div className="absolute h-[3px] bg-black w-24 top-6"></div>
+              <span
+                className={`cursor-pointer duration-300 ${
+                  showBrands ? "transform rotate-180" : ""
+                } transition-transform`}
+              >
+                <FaChevronUp />
+              </span>
+            </div>
+            {showCategories && (
+              <FilterList
+                items={allCategories}
+                selectedItem={selectedCategory}
+                setSelectedItem={setSelectedCategory}
+                itemType="category"
+                handleSearch={handleSearch}
+                query={query}
+                params={params}
+              />
+            )}
+          </div>
+        </div>
+      </MobileModalBox>
+      <div className="col-span-1 border rounded-lg hidden md:flex flex-col gap-5 max-h-none px-[26px] py-[15px] ">
         {/* Price Section */}
         <div className="flex flex-col ">
           <div

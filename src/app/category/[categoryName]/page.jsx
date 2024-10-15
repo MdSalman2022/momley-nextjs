@@ -43,10 +43,10 @@ const Category = async ({ params }) => {
   );
 
   return (
-    <div className="pb-10">
-      <div className="container mx-auto ">
-        <Banner />
-        <div className="grid grid-cols-4 gap-10 py-5">
+    <div className="pb-10 px-4">
+      <div className="container mx-auto px-0">
+        {/* <Banner /> */}
+        <div className="flex flex-col md:grid grid-cols-4 md:gap-10 md:py-5">
           <CategoryPageFilter
             allCategories={allFilterMetrics?.categories || []}
             brands={allFilterMetrics?.brands}
@@ -54,7 +54,7 @@ const Category = async ({ params }) => {
           />
           <div className="col-span-3 flex flex-col gap-5">
             <div className="flex flex-col gap-5 w-full">
-              <div className="flex justify-between min-w-full">
+              <div className="hidden md:flex justify-between min-w-full">
                 <p className="capitalize font-semibold">
                   {params?.categoryName || "All Books"}{" "}
                 </p>
@@ -102,7 +102,7 @@ const Category = async ({ params }) => {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-5">
+              <div className="flex flex-col md:gap-5">
                 {products?.length > 0 ? (
                   <ProductList books={products} allBooks={products} />
                 ) : (
@@ -115,12 +115,14 @@ const Category = async ({ params }) => {
             </div>
           </div>
         </div>
-        <strong>You may also like</strong>
-        <div className="grid grid-cols-6 gap-5">
-          {allProducts?.length > 0 &&
-            allProducts
-              ?.slice(0, 10)
-              ?.map((book, index) => <ProductCard key={index} book={book} />)}
+        <div className="flex flex-col gap-5 mt-5 mb-10">
+          <strong className="text-xl md:text-base">You may also like</strong>
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-5">
+            {allProducts?.length > 0 &&
+              allProducts
+                ?.slice(0, 10)
+                ?.map((book, index) => <ProductCard key={index} book={book} />)}
+          </div>
         </div>
       </div>
     </div>

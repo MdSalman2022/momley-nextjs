@@ -1,4 +1,6 @@
+import Header from "@/components/Shared/Header";
 import "./globals.css";
+import MyLayout from "./MyLayout";
 import Providers from "./providers";
 import { storeId } from "@/libs/utils/common";
 import localFont from "next/font/local";
@@ -73,11 +75,10 @@ export async function generateMetadata() {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${myFont.className} w-screen overflow-x-hidden`}>
+      <body className={`${myFont.className}`}>
         <div>
-          {" "}
           <Providers>
-            <div className="container mx-auto px-0">{children}</div>
+            <MyLayout>{children}</MyLayout>
           </Providers>
         </div>
       </body>

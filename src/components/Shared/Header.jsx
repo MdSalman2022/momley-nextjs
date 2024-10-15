@@ -37,8 +37,16 @@ const Header = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { isAuthModalOpen, setIsAuthModalOpen, user, logOut } =
     useContext(AuthContext);
-  const { totalLevel, userInfo, storeInfo, isStoreInfoLoading, cartInfo } =
-    useContext(StateContext);
+  const {
+    totalLevel,
+    userInfo,
+    storeInfo,
+    isStoreInfoLoading,
+    cartInfo,
+    isPrimaryMobileHeaderVisible,
+  } = useContext(StateContext);
+
+  console.log("isPrimaryMobileHeaderVisible", isPrimaryMobileHeaderVisible);
 
   // console.log("cartInfo header", cartInfo);
 
@@ -126,8 +134,16 @@ const Header = () => {
       )
     : 0;
 
+  const isLoginPage = pathname.includes("/login");
+
   return (
-    <div className="fixed top-0 w-full z-50 bg-white">
+    <div
+      className={`fixed top-0 w-screen z-50 ${
+        isPrimaryMobileHeaderVisible ? "flex h-16" : "hidden md:flex h-0"
+      } md:h-auto bg-white items-center ${
+        isDashboardPage || isLoginPage ? "" : "mb-16 md:mb-32"
+      }`}
+    >
       <div
         className={`w-full ${
           isDashboardPage ? "hidden" : "hidden md:flex flex-col justify-start"

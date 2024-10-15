@@ -16,6 +16,11 @@ const StateProvider = ({ children }) => {
   const { getStore } = useStore();
   const { getAllCategoriesLevel } = useCategory();
   const { getCart } = useCart();
+  const [isPrimaryMobileHeaderVisible, setIsPrimaryMobileHeaderVisible] =
+    useState(true);
+  const [isPrimaryMobileFooterVisible, setIsPrimaryMobileFooterVisible] =
+    useState(true);
+  const [secondaryHeader, setSecondaryHeader] = useState("");
 
   const [screenWidth, setScreenWidth] = useState(
     typeof window !== "undefined" ? window.innerWidth : 0
@@ -167,6 +172,12 @@ const StateProvider = ({ children }) => {
     refetchCartInfo,
     screenWidth,
     isMobile,
+    isPrimaryMobileHeaderVisible,
+    setIsPrimaryMobileHeaderVisible,
+    secondaryHeader,
+    setSecondaryHeader,
+    isPrimaryMobileFooterVisible,
+    setIsPrimaryMobileFooterVisible,
   };
 
   return (

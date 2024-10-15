@@ -24,14 +24,6 @@ const Providers = ({ children }) => {
           <AuthProvider>
             <StateProvider>
               <Toaster />
-              <div
-                className={
-                  isDashboardPage || isLoginPage ? "" : "mb-16 md:mb-32"
-                }
-              >
-                <Header />
-                {/* <NewHeader /> */}
-              </div>
               <div>{children}</div>
               <Footer />
               <MobileFooter />

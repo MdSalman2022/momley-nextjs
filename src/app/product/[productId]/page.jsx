@@ -115,14 +115,17 @@ const BookDetails = async ({ params }) => {
   console.log("bookDetails?.category", bookDetails?.category);
 
   return (
-    <div className="bg-white">
+    <div className="bg-white px-4 md:px-0 mb-14 md:mb-0">
+      <div className="block md:hidden relative">
+        <BookCartControl bookDetails={bookDetails} />
+      </div>
       <div className="container mx-auto px-0 text-black">
-        <p className="pb-5">
+        <p className="pb-5 hidden md:block">
           {items?.length > 0 && <BreadCrumbComponent items={items} />}
         </p>
-        <div className="grid grid-cols-4">
-          <div className="col-span-3 grid grid-cols-2 gap-5 h-fit">
-            <div className="flex col-span-2 w-full gap-10">
+        <div className="flex flex-col md:grid grid-cols-4">
+          <div className="col-span-3 flex flex-col md:grid grid-cols-2 md:gap-5 h-fit">
+            <div className="flex flex-col md:flex-row col-span-2 w-full gap-3 md:gap-10">
               <div className="flex flex-col gap-5">
                 <ImageSection
                   bookDetails={bookDetails}
@@ -131,29 +134,45 @@ const BookDetails = async ({ params }) => {
               </div>
               <div className="flex flex-col justify-between gap-4">
                 <div className="flex flex-col gap-4">
-                  <div className="flex flex-col">
+                  <div className="flex flex-row justify-between md:flex-col">
                     <div className="flex flex-col gap-3">
-                      <h2 className="text-2xl">{bookDetails?.name}</h2>
-                      {bookDetails.specifications?.author && (
-                        <p>By {bookDetails.specifications?.author}</p>
-                      )}
-                      {bookDetails.specifications?.author && (
-                        <p>
-                          Category:{" "}
-                          <Link
-                            href={`/category/${bookDetails?.category?.slug}`}
-                            className="text-blue-600"
-                          >
-                            {bookDetails?.category?.name}
-                          </Link>
-                        </p>
-                      )}
+                      <div className="flex flex-col gap-3">
+                        <h2 className="text-2xl">{bookDetails?.name}</h2>
+                        <div className="flex md:hidden gap-1 items-center text-sm">
+                          <span className="flex items-center gap-2">
+                            {bookDetails?.stock?.quantity > 0 && (
+                              <FaCheckCircle className="text-green-600" />
+                            )}
+                            {bookDetails?.stock?.quantity > 0 && "In Stock"}{" "}
+                          </span>
+                          <span className="text-[#dc3545]">
+                            {bookDetails?.stock?.quantity < 10 &&
+                              `(Only ${bookDetails?.stock?.quantity} left)`}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="hidden md:flex flex-col gap-3">
+                        {bookDetails.specifications?.author && (
+                          <p>By {bookDetails.specifications?.author}</p>
+                        )}
+                        {bookDetails.specifications?.author && (
+                          <p>
+                            Category:{" "}
+                            <Link
+                              href={`/category/${bookDetails?.category?.slug}`}
+                              className="text-blue-600"
+                            >
+                              {bookDetails?.category?.name}
+                            </Link>
+                          </p>
+                        )}
+                      </div>
                     </div>
                     <div className="flex flex-col gap-3">
-                      <div className="text-4xl text-red-500 font-bold">
+                      <div className="text-3xl md:text-4xl text-red-500 font-bold">
                         Tk {bookDetails?.salePrice || bookDetails?.price}
                       </div>
-                      <div className="flex gap-1 items-center text-sm">
+                      <div className="hidden md:flex gap-1 items-center text-sm">
                         <span className="flex items-center gap-2">
                           {bookDetails?.stock?.quantity > 0 && (
                             <FaCheckCircle className="text-green-600" />
@@ -165,8 +184,7 @@ const BookDetails = async ({ params }) => {
                             `(Only ${bookDetails?.stock?.quantity} left)`}
                         </span>
                       </div>
-                      <p className="text-sm">
-                        {" "}
+                      <p className="text-sm hidden md:block">
                         {bookDetails?.stock?.quantity < 10 &&
                           "* স্টক আউট হওয়ার আগেই অর্ডার করুন"}
                       </p>
@@ -176,7 +194,7 @@ const BookDetails = async ({ params }) => {
                   Offer Ends in: 2 days 09:20:30
                 </div> */}
                 </div>
-                <div className="flex flex-col gap-4">
+                <div className="hidden md:flex flex-col gap-4">
                   <BookCartControl bookDetails={bookDetails} />
                   <div className="flex items-center gap-5">
                     {bookDetails?.specifications?.bookLength && (
@@ -221,7 +239,7 @@ const BookDetails = async ({ params }) => {
               <ProductDescription bookDetails={bookDetails} />
             </div>
           </div>
-          <div className="col-span-1 flex flex-col gap-5">
+          <div className="col-span-1 hidden md:flex flex-col gap-5">
             <SecurityCard />
             <ReviewCard bookDetails={bookDetails} />
             <RecommendedBooks productId={productId} />
