@@ -59,6 +59,7 @@ const CategoryPageFilter = ({
   console.log("priceRange", priceRange);
   const handleSearch = async (item, itemValue) => {
     let searchParams = new URLSearchParams();
+    console.log("searchParams", searchParams);
 
     if (item === "color") {
       setSelectedColor(itemValue);
@@ -123,12 +124,12 @@ const CategoryPageFilter = ({
     <div>
       <div
         onClick={() => setIsModalOpen(true)}
-        className="fixed right-3 bottom-20 z-50 text-2xl bg-white text-black p-2 rounded-full cursor-pointer border border-black"
+        className="fixed right-3 bottom-20 z-50 text-2xl bg-white text-black p-2 rounded-full cursor-pointer border border-black md:hidden"
       >
         <IoOptionsOutline />
       </div>
       <MobileModalBox isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}>
-        <div className="col-span-1 border rounded-lg flex md:hidden flex-col gap-5 max-h-none px-[26px] py-[15px] ">
+        <div className="max-h-[500px] overflow-y-auto col-span-1 border rounded-lg flex md:hidden flex-col gap-5 px-[26px] py-[15px] ">
           {/* Price Section */}
           <div className="flex flex-col ">
             <div

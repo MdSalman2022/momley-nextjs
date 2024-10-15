@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const MobileModalBox = ({ isModalOpen, setIsModalOpen, children }) => {
@@ -23,21 +23,25 @@ const MobileModalBox = ({ isModalOpen, setIsModalOpen, children }) => {
     },
   };
 
-  if (isModalOpen === true) {
-    return (
-      <AnimatePresence>
+  return (
+    <AnimatePresence>
+      {isModalOpen && (
         <motion.div
           ref={dropdownRef}
           className="fixed right-0 bottom-0 z-[1000] w-full shadow-lg h-full bg-black bg-opacity-50 flex flex-col justify-end md:hidden"
+          initial="hidden"
+          animate="visible"
+          exit="hidden"
+          variants={modalVariants}
         >
           <div
             onClick={() => {
               setIsModalOpen(false);
             }}
-            className="h-full "
+            className="h-full"
           ></div>
           <motion.div
-            className="rounded-md ring-1 ring-black ring-opacity-5 p-5 bg-white  rounded-t-3xl flex flex-col gap-5"
+            className="rounded-md ring-1 ring-black ring-opacity-5 p-5 bg-white rounded-t-3xl flex flex-col gap-5"
             initial="hidden"
             animate="visible"
             exit="hidden"
@@ -46,9 +50,9 @@ const MobileModalBox = ({ isModalOpen, setIsModalOpen, children }) => {
             <div className="flex flex-col">{children}</div>
           </motion.div>
         </motion.div>
-      </AnimatePresence>
-    );
-  }
+      )}
+    </AnimatePresence>
+  );
 };
 
 export default MobileModalBox;

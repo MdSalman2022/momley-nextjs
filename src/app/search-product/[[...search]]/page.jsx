@@ -72,7 +72,9 @@ const SearchPage = async ({ params, searchParams }) => {
 
   return (
     <div className="flex flex-col container mx-auto gap-5">
-      <SearchSection search={params?.search} searchText={searchText} />
+      {params?.search?.length > 0 && (
+        <SearchSection search={params?.search} searchText={searchText} />
+      )}
       <div className="grid grid-cols-4 gap-5">
         <div className="col-span-1 w-full flex flex-col">
           <CategoryPageFilter

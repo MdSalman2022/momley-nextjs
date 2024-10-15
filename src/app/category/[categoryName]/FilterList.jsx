@@ -36,15 +36,18 @@ const FilterList = ({
 
   const handleRadioChange = (itemValue, filterType, slug) => {
     if (selectedItem === itemValue) {
-      setSelectedItem(null); // or setSelectedItem("") if you prefer an empty string
-      handleSearch(filterType, ""); // Clear the filter
-      UpdateSearch(filterType); // Trigger the new search
+      setSelectedItem(null);
+      handleSearch(filterType, "");
+      UpdateSearch(filterType);
     } else {
       if (pathname.includes("search-product")) {
         setSelectedItem(itemValue);
         handleSearch(filterType, itemValue);
-      } else {
+      } else if (slug) {
         router.push(`/category/${slug}`);
+      } else {
+        setSelectedItem(itemValue);
+        handleSearch(filterType, itemValue);
       }
     }
   };
@@ -63,9 +66,15 @@ const FilterList = ({
               className="radio radio-sm"
               checked={selectedItem === item[itemType]}
               // onChange={() => handleRadioChange(item[itemType], itemType)}
-              onClick={() =>
-                handleRadioChange(item[itemType], itemType, item?.slug)
-              }
+              onClick={() => {
+                console.log(
+                  "condition check",
+                  item[itemType],
+                  itemType,
+                  item?.slug
+                );
+                handleRadioChange(item[itemType], itemType, item?.slug);
+              }}
             />
             <div className="flex gap-5 py-3">
               <span className="transition-all duration-200 cursor-pointer font-medium hover:font-semibold capitalize flex items-center gap-1">
