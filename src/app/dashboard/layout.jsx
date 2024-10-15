@@ -13,7 +13,7 @@ const Layout = ({ children }) => {
   const sellerCloudFrontURL = userInfo?.sellerCloudFrontURL;
 
   return (
-    <div className="flex flex-col items-stretch w-full container px-0 ">
+    <div className="flex flex-col items-stretch w-screen container px-0 overflow-x-hidden">
       <div className="w-full bg-white">
         <div className="flex justify-between gap-6 w-full">
           <nav className="w-[30%] min-h-fit flex flex-col border">

@@ -5,12 +5,31 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import { GrSearch } from "react-icons/gr";
+import { PagesTable } from "./PagesTable";
 
 const PageCreate = () => {
   const pages = ["Published", "Draft", "Scheduled", "Trashed"];
   const [activePage, setActivePage] = useState(pages[0]);
 
-  const router = useRouter()
+  const myPages = [
+    {
+      title: "Home",
+      date: "7 hours ago",
+      preview: "View",
+    },
+    {
+      title: "Blog",
+      date: "7 hours ago",
+      preview: "View",
+    },
+    {
+      title: "Product",
+      date: "7 hours ago",
+      preview: "View",
+    },
+  ];
+
+  const router = useRouter();
 
   return (
     <div className="flex flex-col gap-5">
@@ -22,7 +41,7 @@ const PageCreate = () => {
             <span className="text-blue-600">Learn more</span>
           </div>
         }
-        handleFunction={() => router.push('/dashboard/page-create/add')}
+        handleFunction={() => router.push("/dashboard/page-create/add")}
         functionTitle="Add new page"
       />
       <div className="flex flex-col gap-5 border p-6 rounded">
@@ -56,45 +75,8 @@ const PageCreate = () => {
           </div>
         </div>
         <div className="overflow-x-auto">
-      <table className="min-w-full bg-white">
-        <thead>
-          <tr>
-            <th className="w-1/2 px-4 py-2 text-left">Title</th>
-            <th className="px-4 py-2 text-left">Date</th>
-            <th className="px-4 py-2 text-left">Preview</th>
-            <th className="px-4 py-2 text-left">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr className="border-t">
-            <td className="px-4 py-2 flex items-center gap-3">
-              <Checkbox aria-label="Select all" />
-              <div className="flex flex-col">
-                <p className="">Blog</p>
-              </div>
-            </td>
-            <td className="px-4 py-2">7 hours ago</td>
-            <td className="px-4 py-2 underline text-blue-600">View</td>
-            <td className="px-4 py-2">
-              <FaEllipsisVertical />
-            </td>
-          </tr>
-          <tr className="border-t">
-            <td className="px-4 py-2 flex items-center gap-3">
-              <Checkbox aria-label="Select all" />
-              <div className="flex flex-col">
-                <p className="">Product</p>
-              </div>
-            </td>
-            <td className="px-4 py-2">7 hours ago</td>
-            <td className="px-4 py-2 underline text-blue-600">View</td>
-            <td className="px-4 py-2">
-              <FaEllipsisVertical />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+          <PagesTable />
+        </div>
       </div>
     </div>
   );
