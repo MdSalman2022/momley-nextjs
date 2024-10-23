@@ -34,7 +34,7 @@ const PageCreate = () => {
   return (
     <div className="flex flex-col gap-5">
       <TopActionButtons
-        title="Page"
+        title="Page Create"
         subtitle={
           <div className="flex items-center gap-1">
             Create, edit, and manage the pages on your site.

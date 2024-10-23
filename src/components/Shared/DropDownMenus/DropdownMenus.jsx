@@ -27,7 +27,7 @@ const DropdownMenus = ({ userInfo, user }) => {
 
   return (
     <div className="flex gap-4 flex-1 justify-end items-center'">
-      <DropdownMenu className="" align="end">
+      <DropdownMenu className="" align="end" modal={false}>
         <DropdownMenuTrigger>
           {userInfo?.customer?.profilePicture ? (
             <img

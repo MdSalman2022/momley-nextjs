@@ -25,8 +25,12 @@ const ImageSection = ({ bookDetails, cloudFrontURL }) => {
   }, [bookDetails]);
 
   const getImageSrc = (image) => {
+    console.log("image url", image);
+    console.log("image cloudFrontURL", cloudFrontURL);
     return cloudFrontURL.replace("*", `products/${image}`);
   };
+
+  console.log("bookDetails?.images", bookDetails?.images);
 
   return (
     <div className="flex flex-col gap-5 w-full">
@@ -41,19 +45,20 @@ const ImageSection = ({ bookDetails, cloudFrontURL }) => {
       )}
 
       <div className="hidden md:flex items-center gap-1">
-        {bookDetails?.images?.map((image, index) => (
-          <Image
-            key={index}
-            src={getImageSrc(image)}
-            alt={`Product Thumbnail ${index + 1}`}
-            className={`object-contain cursor-pointer ${
-              activeImage === image ? "border-2 border-blue-500" : ""
-            }`}
-            width={100}
-            height={100}
-            onClick={() => setActiveImage(image)}
-          />
-        ))}
+        {bookDetails?.images?.length > 0 &&
+          bookDetails?.images?.map((image, index) => (
+            <Image
+              key={index}
+              src={getImageSrc(image)}
+              alt={`Product Thumbnail ${index + 1}`}
+              className={`object-contain cursor-pointer ${
+                activeImage === image ? "border-2 border-blue-500" : ""
+              }`}
+              width={100}
+              height={100}
+              onClick={() => setActiveImage(image)}
+            />
+          ))}
       </div>
     </div>
   );
