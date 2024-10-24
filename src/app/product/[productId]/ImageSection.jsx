@@ -34,9 +34,9 @@ const ImageSection = ({ bookDetails, cloudFrontURL }) => {
 
   return (
     <div className="flex flex-col gap-5 w-full">
-      {activeImage && (
+      {bookDetails?.images?.length > 0 && bookDetails?.images[0] && (
         <Image
-          src={getImageSrc(activeImage)}
+          src={cloudFrontURL.replace("*", `products/${bookDetails?.images[0]}`)}
           alt="Active Product Image"
           className="object-contain  md:w-[360px]"
           width={360}

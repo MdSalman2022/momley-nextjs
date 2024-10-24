@@ -129,7 +129,7 @@ const BookDetails = async ({ params }) => {
               <div className="flex flex-col gap-5">
                 <ImageSection
                   bookDetails={bookDetails}
-                  cloudFrontURL={cloudFrontURL}
+                  cloudFrontURL={productDetails?.data?.cloudFrontURL}
                 />
               </div>
               <div className="flex flex-col justify-between gap-4">
