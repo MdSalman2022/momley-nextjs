@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import React, { useState, useEffect, useContext } from "react";
 
 const ImageSection = ({ bookDetails, cloudFrontURL }) => {
-  const { setIsPrimaryMobileFooterVisible } = useContext(StateContext);
+  const { setIsPrimaryMobileFooterVisible, storeInfo } =
+    useContext(StateContext);
 
   useEffect(() => {
     setIsPrimaryMobileFooterVisible(false);
@@ -27,7 +28,7 @@ const ImageSection = ({ bookDetails, cloudFrontURL }) => {
   const getImageSrc = (image) => {
     console.log("image url", image);
     console.log("image cloudFrontURL", cloudFrontURL);
-    return cloudFrontURL.replace("*", `products/${image}`);
+    return storeInfo?.cloudFrontURL.replace("*", `products/${image}`);
   };
 
   console.log("bookDetails?.images", bookDetails?.images);
@@ -36,7 +37,10 @@ const ImageSection = ({ bookDetails, cloudFrontURL }) => {
     <div className="flex flex-col gap-5 w-full">
       {bookDetails?.images?.length > 0 && bookDetails?.images[0] && (
         <Image
-          src={cloudFrontURL.replace("*", `products/${bookDetails?.images[0]}`)}
+          src={storeInfo?.cloudFrontURL.replace(
+            "*",
+            `products/${bookDetails?.images[0]}`
+          )}
           alt="Active Product Image"
           className="object-contain  md:w-[360px]"
           width={360}
