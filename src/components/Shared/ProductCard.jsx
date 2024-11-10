@@ -13,9 +13,9 @@ import toast from "react-hot-toast";
 import { getCookie, setCookie } from "@/libs/utils/cookieUtils";
 
 const ProductCard = React.memo(({ book }) => {
-  const { userInfo, storeInfo, cartInfo, refetchCartInfo } =
+  const { userInfo, storeInfo, cartInfo, refetchCartInfo, isCartInfoLoading } =
     useContext(StateContext);
-  const { AddToCart, handleRemoveFromCart } = useCart();
+  const { AddToCart, handleRemoveFromCart, handleAddToCart } = useCart();
 
   // console.log("storeInfo", storeInfo);
 
@@ -34,60 +34,15 @@ const ProductCard = React.memo(({ book }) => {
     }
   }, [cartInfo]);
 
-  const handleAddToCart = async () => {
+  const handleAddToCartFunction = async () => {
     console.log("check stock", book?.stock?.quantity);
 
-    const payload = {
-      userId: userInfo?._id,
-      storeId: storeId,
-      productId: book._id,
-      quantity: 1,
-    };
-
-    // Check if the user is logged in
-    if (userInfo?._id) {
-      // User is logged in, send request to the server
-      const response = await AddToCart(payload);
-
-      if (response?.success) {
-        refetchCartInfo();
-        setProductCartCount(1);
-        toast.success("Product added to cart!");
-      }
-    } else {
-      const cartKey = "userCart"; // Define a key for the cart in cookies
-
-      // Get existing cart from cookies or create a new one
-      const existingCart = JSON.parse(getCookie(cartKey) || "[]");
-
-      // Update cart with the new product
-      const updatedCart = existingCart.map((product) =>
-        product._id === book._id
-          ? { productId: book?._id, quantity: product.quantity + 1 } // Update quantity if exists
-          : product
-      );
-
-      // If product doesn't exist in the cart, add it
-      if (!existingCart.some((product) => product._id === book._id)) {
-        updatedCart.push({
-          productId: book?._id,
-          storeId: storeId,
-          quantity: 1,
-        });
-      }
-      console.log("updatedCart", updatedCart);
-
-      // Store updated cart back to cookies
-      setCookie(cartKey, JSON.stringify(updatedCart), 7); // Store for 7 days
-
-      // Update product cart count in state
-
-      setProductCartCount(1);
-      refetchCartInfo();
-      toast.success("Product added to cart!");
-
-      // Check if the user is logged in
-    }
+    const addResponse = await handleAddToCart(
+      book,
+      userInfo,
+      setProductCartCount,
+      refetchCartInfo
+    );
   };
 
   const handlePlusClick = async () => {
@@ -135,10 +90,13 @@ const ProductCard = React.memo(({ book }) => {
 
   const handleMinusClick = async () => {
     if (productCartCount <= 1) {
-      handleRemoveFromCart(book, userInfo, cartInfo);
-      setProductCartCount(0);
-      refetchCartInfo();
-      return;
+      const response = handleRemoveFromCart(book, userInfo, cartInfo);
+      if (response?.success) {
+        refetchCartInfo();
+        setProductCartCount(0);
+        refetchCartInfo();
+        return;
+      }
     }
 
     const payload = {
@@ -223,30 +181,47 @@ const ProductCard = React.memo(({ book }) => {
           <span className="text-xs"> ({book?.reviews?.length} reviews)</span>
         </span>
       </div>
-      {(productCartCount < 1 || productCartCount === undefined) && (
-        <button
-          type="button"
-          onClick={handleAddToCart}
+      {isCartInfoLoading ? (
+        <p
           className={`primary-outline-btn w-full flex justify-center gap-2  ${
             book?.stock?.quantity === 0
               ? "opacity-20 cursor-not-allowed hover:bg-white hover:text-black"
               : "cursor-pointer"
           }`}
-          disabled={book?.stock?.quantity === 0}
         >
-          <Image src={CartIcon} alt="cart" className="w-5 h-5" />
-          {book?.stock?.quantity === 0 ? "Out of stock" : "Add to cart"}
-        </button>
-      )}
-      {productCartCount > 0 && (
-        <div className="flex items-center gap-3">
-          <button onClick={handleMinusClick} className="p-2 px-3 border">
-            <FaMinus />
-          </button>
-          <span>{productCartCount}</span>
-          <button onClick={handlePlusClick} className="p-2 px-3 primary-btn">
-            <FaPlus />
-          </button>
+          Loading...
+        </p>
+      ) : (
+        <div>
+          {(productCartCount < 1 || productCartCount === undefined) && (
+            <button
+              type="button"
+              onClick={handleAddToCartFunction}
+              className={`primary-outline-btn w-full flex justify-center gap-2  ${
+                book?.stock?.quantity === 0
+                  ? "opacity-20 cursor-not-allowed hover:bg-white hover:text-black"
+                  : "cursor-pointer"
+              }`}
+              disabled={book?.stock?.quantity === 0}
+            >
+              <Image src={CartIcon} alt="cart" className="w-5 h-5" />
+              {book?.stock?.quantity === 0 ? "Out of stock" : "Add to cart"}
+            </button>
+          )}
+          {productCartCount > 0 && (
+            <div className="flex items-center gap-3">
+              <button onClick={handleMinusClick} className="p-2 px-3 border">
+                <FaMinus />
+              </button>
+              <span>{productCartCount}</span>
+              <button
+                onClick={handlePlusClick}
+                className="p-2 px-3 primary-btn"
+              >
+                <FaPlus />
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

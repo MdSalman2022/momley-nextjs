@@ -457,13 +457,7 @@ const CheckoutPage = () => {
   };
 
   const handleRemoveItem = async (product) => {
-    const response = await handleRemoveFromCart(
-      product,
-      userInfo,
-      cartInfo,
-      refetchCheckoutInfo,
-      refetchCartInfo
-    );
+    const response = await handleRemoveFromCart(product, userInfo, cartInfo);
 
     console.log("return response", response);
 

@@ -28,6 +28,9 @@ const useCart = () => {
         refetchCartInfo();
         setProductCartCount(1);
         toast.success("Product added to cart!");
+        return {
+          success: true,
+        };
       }
     } else {
       const cartKey = "userCart"; // Define a key for the cart in cookies
@@ -60,6 +63,9 @@ const useCart = () => {
       setProductCartCount(1);
       refetchCartInfo();
       toast.success("Product added to cart!");
+      return {
+        success: true,
+      };
 
       // Check if the user is logged in
     }
@@ -168,7 +174,7 @@ const useCart = () => {
       userId: userInfo?._id,
       storeId: storeId,
       productId: newProduct._id,
-      itemId: cartInfo?.find((product) => product._id === newProduct._id)?._id,
+      itemId: newProduct._id,
       quantity: 0,
     };
 
