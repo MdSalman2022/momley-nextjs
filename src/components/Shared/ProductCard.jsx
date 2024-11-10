@@ -15,7 +15,7 @@ import { getCookie, setCookie } from "@/libs/utils/cookieUtils";
 const ProductCard = React.memo(({ book }) => {
   const { userInfo, storeInfo, cartInfo, refetchCartInfo } =
     useContext(StateContext);
-  const { AddToCart } = useCart();
+  const { AddToCart, handleRemoveFromCart } = useCart();
 
   // console.log("storeInfo", storeInfo);
 
@@ -135,6 +135,9 @@ const ProductCard = React.memo(({ book }) => {
 
   const handleMinusClick = async () => {
     if (productCartCount <= 1) {
+      handleRemoveFromCart(book, userInfo, cartInfo);
+      setProductCartCount(0);
+      refetchCartInfo();
       return;
     }
 
@@ -189,8 +192,17 @@ const ProductCard = React.memo(({ book }) => {
             className="object-contain"
             src={productCloudfrontUrl?.replace(
               "*",
-              `products/${book?.images[0]}`
+              `products/${book?.images[0]?.replace(
+                /\.[^/.]+$/,
+                "600by400.webp"
+              )}`
             )}
+            onError={(e) => {
+              e.target.src = productCloudfrontUrl?.replace(
+                "*",
+                `products/${book?.images[0]}`
+              );
+            }}
             alt={book?.name}
             width={164}
             height={217}

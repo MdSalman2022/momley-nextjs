@@ -3,6 +3,7 @@ import { getCookie, setCookie } from "@/libs/utils/cookieUtils";
 import toast from "react-hot-toast";
 
 const useCart = () => {
+  const expDays = 7;
   const handleAddToCart = async (
     newProduct,
     userInfo,
@@ -52,7 +53,7 @@ const useCart = () => {
       console.log("updatedCart", updatedCart);
 
       // Store updated cart back to cookies
-      setCookie(cartKey, JSON.stringify(updatedCart), 7); // Store for 7 days
+      setCookie(cartKey, JSON.stringify(updatedCart), expDays); // Store forexpDays days
 
       // Update product cart count in state
 
@@ -108,7 +109,7 @@ const useCart = () => {
           : product
       );
 
-      setCookie(cartKey, JSON.stringify(updatedCart), 7);
+      setCookie(cartKey, JSON.stringify(updatedCart), expDays);
 
       setProductCartCount((prevCount) => prevCount + 1);
     }
@@ -156,9 +157,40 @@ const useCart = () => {
           : product
       );
 
-      setCookie(cartKey, JSON.stringify(updatedCart), 7);
+      setCookie(cartKey, JSON.stringify(updatedCart), expDays);
 
       setProductCartCount((prevCount) => prevCount - 1);
+    }
+  };
+
+  const handleRemoveFromCart = async (newProduct, userInfo, cartInfo) => {
+    const payload = {
+      userId: userInfo?._id,
+      storeId: storeId,
+      productId: newProduct._id,
+      itemId: cartInfo?.find((product) => product._id === newProduct._id)?._id,
+      quantity: 0,
+    };
+
+    if (userInfo?._id) {
+      const response = await RemoveItemFromCart(payload);
+
+      if (response?.success) {
+        return { success: true };
+      }
+    } else {
+      const cartKey = "userCart";
+
+      const existingCart = JSON.parse(getCookie(cartKey) || "[]");
+      console.log("existingCart", existingCart);
+
+      const updatedCart = existingCart.filter(
+        (product) => product.productId !== newProduct._id
+      );
+
+      setCookie(cartKey, JSON.stringify(updatedCart), expDays);
+
+      return { success: true };
     }
   };
 
@@ -238,6 +270,20 @@ const useCart = () => {
 
     return data;
   };
+
+  const RemoveItemFromCart = async (payload) => {
+    const response = await fetch(`${process.env.VITE_SERVER_URL}/cart/remove`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json();
+
+    return data;
+  };
+
   const EmptyCart = async (id) => {
     const response = await fetch(
       `${process.env.VITE_SERVER_URL}/cart/empty?userId=${id}`,
@@ -263,6 +309,7 @@ const useCart = () => {
     handleAddToCart,
     handlePlusClick,
     handleMinusClick,
+    handleRemoveFromCart,
   };
 };
 

@@ -195,7 +195,8 @@ const PaymentMethods = ({ register, errors }) => (
 );
 
 const CheckoutPage = () => {
-  const { AddToCart, getCartCheckout, EmptyCart } = useCart();
+  const { AddToCart, getCartCheckout, EmptyCart, handleRemoveFromCart } =
+    useCart();
   const {
     control,
     register,
@@ -456,18 +457,26 @@ const CheckoutPage = () => {
   };
 
   const handleRemoveItem = async (product) => {
-    const payload = {
-      userId: userInfo?._id,
-      storeId: storeId,
-      productId: product._id,
-      quantity: 0,
-    };
+    const response = await handleRemoveFromCart(
+      product,
+      userInfo,
+      cartInfo,
+      refetchCheckoutInfo,
+      refetchCartInfo
+    );
 
-    const response = await AddToCart(payload);
+    console.log("return response", response);
 
     if (response?.success) {
       refetchCheckoutInfo();
+      refetchCartInfo();
     }
+
+    // if (response?.success) {
+    //   setCartData((prevData) =>
+    //     prevData.filter((item) => item._id !== product._id)
+    //   );
+    // }
   };
   const isQuantityExceedingStock =
     cartData?.length > 0 &&
@@ -571,6 +580,8 @@ const CheckoutPage = () => {
     firstLoad.current = false;
   }, []);
 
+  console.log("cartInfo", cartInfo);
+
   if (
     firstLoad.current &&
     ((isUserInfoLoading && user?.uid) || isCheckoutInfoLoading)
@@ -578,7 +589,7 @@ const CheckoutPage = () => {
     return <LoadingAnimation />;
   }
 
-  if (!isCheckoutInfoLoading && cartData?.length === 0) {
+  if (!isCheckoutInfoLoading && cartInfo?.length === 0) {
     return (
       <div className="flex flex-col justify-center items-center h-screen bg-gray-50">
         <BsCartXFill className="w-24 h-24 text-gray-400 mb-4" />
