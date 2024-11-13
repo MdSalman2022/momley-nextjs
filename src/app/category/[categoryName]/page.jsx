@@ -117,7 +117,7 @@ const Category = async ({ params }) => {
         </div>
         <div className="flex flex-col gap-5 mt-5 mb-10">
           <strong className="text-xl md:text-base">You may also like</strong>
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-7 gap-5">
             {allProducts?.length > 0 &&
               allProducts
                 ?.slice(0, 10)

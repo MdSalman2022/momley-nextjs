@@ -5,7 +5,7 @@ import React, { useContext } from "react";
 
 const ProductList = ({ books, allBooks }) => {
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5">
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-5 md:gap-5">
       {books?.length > 0 &&
         books?.map((book, index) => (
           <ProductCard key={index} book={book} />
