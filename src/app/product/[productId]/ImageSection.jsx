@@ -1,23 +1,20 @@
 "use client";
 import { StateContext } from "@/contexts/StateProvider/StateProvider";
-import useMobileHeader from "@/hooks/reusable/useMobileHeader";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import React, { useState, useEffect, useContext } from "react";
 
-const ImageSection = ({ bookDetails, cloudFrontURL }) => {
+const ImageSection = ({ bookDetails }) => {
   const { setIsPrimaryMobileFooterVisible, storeInfo } =
     useContext(StateContext);
 
   useEffect(() => {
     setIsPrimaryMobileFooterVisible(false);
-
     return () => {
       setIsPrimaryMobileFooterVisible(true);
     };
-  }, []);
+  }, [setIsPrimaryMobileFooterVisible]);
 
-  const [activeImage, setActiveImage] = useState(bookDetails?.images[0]);
+  const [activeImage, setActiveImage] = useState(null);
 
   useEffect(() => {
     if (bookDetails?.images?.length > 0) {
@@ -26,31 +23,32 @@ const ImageSection = ({ bookDetails, cloudFrontURL }) => {
   }, [bookDetails]);
 
   const getImageSrc = (image) => {
-    console.log("image url", image);
-    console.log("image cloudFrontURL", cloudFrontURL);
-    return storeInfo?.cloudFrontURL.replace("*", `products/${image}`);
+    if (storeInfo?.cloudFrontURL) {
+      return storeInfo.cloudFrontURL.replace("*", `products/${image}`);
+    } else {
+      // Handle the case where cloudFrontURL is undefined
+      return "/placeholder-image.png"; // Use a placeholder image or handle appropriately
+    }
   };
-
-  console.log("bookDetails?.images", bookDetails?.images);
 
   return (
     <div className="flex flex-col gap-5 w-full">
-      {bookDetails?.images?.length > 0 && bookDetails?.images[0] && (
+      {activeImage && storeInfo?.cloudFrontURL ? (
         <Image
-          src={storeInfo?.cloudFrontURL.replace(
-            "*",
-            `products/${bookDetails?.images[0]}`
-          )}
+          src={getImageSrc(activeImage)}
           alt="Active Product Image"
-          className="object-contain  md:w-[360px]"
+          className="object-contain md:w-[360px]"
           width={360}
           height={400}
         />
+      ) : (
+        // Optionally render a placeholder or loading state
+        <div>Loading image...</div>
       )}
 
       <div className="hidden md:flex items-center gap-1">
-        {bookDetails?.images?.length > 0 &&
-          bookDetails?.images?.map((image, index) => (
+        {bookDetails?.images?.length > 0 && storeInfo?.cloudFrontURL ? (
+          bookDetails.images.map((image, index) => (
             <Image
               key={index}
               src={getImageSrc(image)}
@@ -62,7 +60,11 @@ const ImageSection = ({ bookDetails, cloudFrontURL }) => {
               height={100}
               onClick={() => setActiveImage(image)}
             />
-          ))}
+          ))
+        ) : (
+          // Optionally render a placeholder or loading state
+          <div>Loading thumbnails...</div>
+        )}
       </div>
     </div>
   );
